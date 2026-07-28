@@ -1,0 +1,1711 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arena do Conhecimento | Fire Quiz — Todos contra a Máquina</title>
+    <style>
+        body { font-family: "Segoe UI", Arial, sans-serif; text-align: center; background: radial-gradient(circle at top, #fff3e0 0, #f4f7fb 42%, #e8eef7 100%); color:#172033; padding: 20px; transition: background-color 0.15s ease-in-out; min-height:100vh; }
+        
+        /* Cores de Feedback na Tela Inteira do Aluno */
+        body.flash-acerto { background-color: #a5d6a7 !important; }
+        body.flash-erro { background-color: #ef9a9a !important; }
+
+        .card { background: rgba(255,255,255,.97); padding: 20px; border-radius: 18px; box-shadow: 0 14px 35px rgba(28,42,70,.14); max-width: 900px; margin: 20px auto; position: relative; border:1px solid rgba(255,152,0,.15); }
+        
+        /* O Cabo de Guerra (Fogo) */
+        .trilho { position: relative; height: 44px; background: linear-gradient(to right, #d8f3dc 0%, #fff3cd 48%, #ffd4c8 100%); border-radius: 24px; margin: 14px 0 8px; border: 3px solid #263859; box-shadow: inset 0 3px 7px rgba(0,0,0,.12); overflow: visible; }
+        .marcador { position: absolute; top: 0; left: 50%; width: 40px; height: 40px; background: white; border: 3px solid #ff5722; box-sizing: border-box; border-radius: 50%; transform: translateX(-50%); transition: left 0.75s cubic-bezier(.22,.8,.28,1.15); display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 20px; box-shadow: 0 0 10px rgba(255, 87, 34, 0.8); }
+        
+        .opcoes, .opcoes-prof { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
+        .opcoes-prof { grid-template-columns: 1fr 1fr; display: grid; }
+        
+        button { padding: 12px; font-size: 16px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: all 0.2s ease; }
+        .btn-opcao { background: #e9ecef; color: #333; border: 3px solid transparent; }
+        .btn-opcao:hover:not(:disabled) { background: #dee2e6; }
+        .btn-opcao:disabled { opacity: 0.6; cursor: not-allowed; }
+        
+        /* Feedback Visual das Alternativas */
+        .btn-opcao.selecionada { background: #ff9800 !important; color: white !important; box-shadow: 0 4px 8px rgba(255,152,0,0.4); }
+        .btn-opcao.correta { background: #4caf50 !important; color: white !important; border-color: #2e7d32 !important; box-shadow: 0 0 15px rgba(76,175,80,0.8) !important; transform: scale(1.02); }
+        .btn-opcao.errada { background: #f44336 !important; color: white !important; border-color: #c62828 !important; }
+        
+        /* Gabarito Sutil do Professor */
+        .gabarito-prof { border-left: 6px solid #4caf50 !important; box-shadow: inset 2px 0 5px rgba(76,175,80,0.2); }
+
+        .btn-principal { background: linear-gradient(135deg,#ff6d00,#ff9800); color: white; box-shadow:0 5px 12px rgba(255,109,0,.25); }
+        .btn-principal:hover { transform:translateY(-1px); box-shadow:0 7px 15px rgba(255,109,0,.34); }
+        .btn-secundario { background: #607d8b; color: white; margin-top: 10px; }
+        .btn-pausa { background: #ffc107; color: #333; font-size: 18px; margin: 10px 0; width: 100%; display: none; }
+        .btn-confirmar { background: #4caf50; color: white; margin-top: 15px; width: 100%; font-size: 18px; padding: 15px; box-shadow: 0 4px 6px rgba(76,175,80,0.3); }
+        .btn-encerrar { background: #f44336; color: white; margin-top: 20px; padding: 12px 24px; width: 100%; font-size: 16px; }
+        .btn-expulsar { background: #f44336; color: white; padding: 4px 8px; font-size: 12px; border-radius: 4px; margin-left: 5px; cursor: pointer; }
+
+        .oculto { display: none !important; }
+        
+        /* Inputs e Configurações */
+        .inputs-login { display: flex; flex-direction: column; gap: 10px; max-width: 300px; margin: 20px auto; }
+        input[type="text"], input[type="number"], select { padding: 12px; font-size: 16px; border-radius: 8px; border: 2px solid #ccc; font-weight: bold; text-align: center; width: 100%; box-sizing: border-box; }
+        textarea { font-family: monospace; box-sizing: border-box; padding: 8px; width: 100%; border-radius: 8px; border: 2px solid #ccc; }
+        
+        .seletor-grupo { display: flex; justify-content: center; gap: 10px; margin: 10px 0 20px 0; flex-wrap: wrap; }
+        .btn-cfg { background: #e9ecef; border: 2px solid #ccc; padding: 8px 16px; font-size: 14px; }
+        .btn-cfg.ativo { background: #ff9800; color: white; border-color: #e65100; }
+        .btn-cfg.ativo-modo { background: #263859; color: white; border-color: #17233d; box-shadow:0 4px 10px rgba(38,56,89,.24); }
+
+        .placar { display: flex; justify-content: center; gap: 15px; font-size: 16px; font-weight: bold; margin: 10px 0; }
+        .placar-certas { color: #4caf50; background: #e8f5e9; padding: 6px 12px; border-radius: 8px; }
+        .placar-erradas { color: #f44336; background: #ffebee; padding: 6px 12px; border-radius: 8px; }
+
+        .feedback-flutuante {
+            position: fixed;
+            top: 18%;
+            left: 50%;
+            transform: translate(-50%, -20px) scale(0.95);
+            z-index: 3000;
+            min-width: 240px;
+            max-width: 90vw;
+            padding: 18px 28px;
+            border-radius: 16px;
+            color: white;
+            font-size: 24px;
+            font-weight: 900;
+            text-align: center;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.28);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+        .feedback-flutuante.visivel { opacity: 1; transform: translate(-50%, 0) scale(1); }
+        .feedback-flutuante.acerto { background: #2e7d32; }
+        .feedback-flutuante.erro { background: #c62828; }
+        .placar-solo { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin: 10px 0 15px; }
+
+        .cronometro { color: #fff; background: #e91e63; padding: 6px 12px; border-radius: 8px; }
+        
+        .cabecalho-jogo { display: flex; justify-content: space-between; align-items: center; margin: 0 auto 15px auto; }
+        
+        /* Layout Painel Professor */
+        .painel-grid { display: grid; grid-template-columns: 2.5fr 1.5fr; gap: 20px; text-align: left; }
+        @media (max-width: 768px) { .painel-grid { grid-template-columns: 1fr; } }
+        
+        /* Lobby e Ranking */
+        .ranking-container { background: #f8f9fa; border-radius: 8px; padding: 15px; border: 1px solid #ddd; max-height: 500px; overflow-y: auto; }
+        .ranking-item { display: grid; grid-template-columns: 0.55fr 2fr 0.7fr 0.8fr 0.8fr 0.9fr; padding: 8px; border-bottom: 1px solid #eee; font-weight: bold; font-size: 12px; text-align: center; align-items: center; gap: 5px; }
+        .ranking-item span:first-child { text-align: left; }
+        .offline { opacity: 0.5; color: #777; }
+        
+        /* Overlay de Pausa */
+        #overlay-pausa { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 12px; z-index: 1000; }
+        
+        /* Barra de Progresso Freeze */
+        .barra-freeze-container { width: 100%; height: 10px; background: #ddd; border-radius: 5px; overflow: hidden; margin-bottom: 15px; }
+        .barra-freeze-fill { height: 100%; background: #2196f3; width: 100%; transition: width 0.1s linear; }
+        .arena-legenda { display:grid; grid-template-columns:minmax(110px,1fr) minmax(160px,1.5fr) minmax(110px,1fr); align-items:center; font-weight:bold; margin:8px 0 15px; gap:10px; }
+        .arena-lado { padding:9px 10px; border-radius:12px; display:flex; align-items:center; justify-content:center; gap:7px; font-size:13px; }
+        .arena-lado.turma { color:#1b5e20; background:#e8f5e9; border:2px solid #81c784; }
+        .arena-lado.maquina { color:#b71c1c; background:#ffebee; border:2px solid #ef9a9a; }
+        .arena-objetivo { color:#e65100; font-size:13px; flex:1; text-align:center; background:#fff3e0; border-radius:12px; padding:8px; border:1px dashed #ff9800; }
+        @media(max-width:600px){ .arena-legenda{grid-template-columns:1fr 1fr}.arena-objetivo{grid-column:1 / -1; grid-row:1}.arena-lado{font-size:12px;} }
+        .status-coletivo { background:#e3f2fd; border:2px solid #2196f3; border-radius:8px; padding:10px; margin:12px 0; font-weight:bold; }
+        .resultado-coletivo { background:#f8f9fa; border-left:6px solid #ff9800; border-radius:8px; padding:12px; margin:12px 0; text-align:left; }
+
+        /* Placar final */
+        .placar-final { margin-top: 20px; padding: 22px; border-radius: 16px; background: linear-gradient(135deg, #fff8e1, #fff3e0); border: 3px solid #ff9800; box-shadow: 0 8px 22px rgba(255, 152, 0, 0.22); }
+        .placar-final h2 { margin: 0 0 6px; font-size: 30px; color: #e65100; }
+        .placar-final-subtitulo { margin: 0 0 18px; color: #555; font-weight: bold; }
+        .podio-final { display: flex; justify-content: center; align-items: flex-end; gap: 12px; margin: 22px 0; flex-wrap: wrap; }
+        .podio-item { width: 150px; padding: 14px 10px; border-radius: 14px 14px 6px 6px; background: white; box-shadow: 0 4px 12px rgba(0,0,0,.12); font-weight: bold; }
+        .podio-item.pos-1 { min-height: 145px; border: 3px solid #ffc107; order: 2; }
+        .podio-item.pos-2 { min-height: 115px; border: 3px solid #b0bec5; order: 1; }
+        .podio-item.pos-3 { min-height: 95px; border: 3px solid #bc8f5a; order: 3; }
+        .podio-medalha { font-size: 34px; display: block; }
+        .podio-nome { display: block; margin: 6px 0; overflow-wrap: anywhere; }
+        .podio-pontos { color: #2e7d32; font-size: 18px; }
+        .tabela-final { max-width: 680px; margin: 0 auto; text-align: left; }
+        .linha-final { display: grid; grid-template-columns: 48px minmax(110px, 2fr) 1fr 1fr 1fr; gap: 8px; align-items: center; padding: 10px; margin: 6px 0; border-radius: 9px; background: rgba(255,255,255,.9); border: 1px solid #ddd; font-weight: bold; }
+        .linha-final.cabecalho { background: #ff9800; color: white; }
+        .linha-final.eu { outline: 3px solid #2196f3; background: #e3f2fd; }
+        .resultado-vencedor { font-size: 22px; font-weight: bold; margin: 12px 0; }
+        @media (max-width: 600px) {
+            .linha-final { grid-template-columns: 36px minmax(90px, 1.7fr) .8fr .8fr .9fr; font-size: 12px; padding: 8px 5px; }
+            .podio-item { width: 110px; }
+        }
+
+        /* Identidade da tela inicial */
+        .home-hero { background:linear-gradient(135deg,#17233d 0%,#263859 55%,#ff6d00 140%); color:white; padding:30px 22px; border-radius:16px; margin:-4px -4px 24px; position:relative; overflow:hidden; }
+        .home-hero::after { content:"🔥"; position:absolute; right:22px; top:5px; font-size:90px; opacity:.13; transform:rotate(10deg); }
+        .home-kicker { text-transform:uppercase; letter-spacing:3px; font-size:13px; font-weight:800; color:#ffcc80; margin:0 0 8px; }
+        .home-hero h1 { margin:0; font-size:clamp(34px,6vw,56px); line-height:1; }
+        .home-subtitle { margin:10px 0 0; font-size:clamp(16px,2.3vw,22px); font-weight:700; color:#fff3e0; }
+        .home-actions { display:grid; grid-template-columns:repeat(3,minmax(220px,1fr)); gap:18px; }
+        .home-card { background:#fff; padding:22px; border-radius:16px; border:2px solid #edf0f5; box-shadow:0 7px 18px rgba(28,42,70,.08); transition:.2s; }
+        .home-card:hover { transform:translateY(-3px); border-color:#ffb74d; box-shadow:0 11px 22px rgba(28,42,70,.13); }
+        .home-card h3 { margin:4px 0 8px; font-size:21px; }
+        .home-card p { min-height:34px; font-size:13px; color:#5d6575; }
+        .home-card.solo { background:linear-gradient(180deg,#fff8e1,#fff); border-color:#ffcc80; }
+        .btn-como-jogar { margin-top:20px; background:#263859; color:white; padding:13px 24px; }
+        @media(max-width:820px){ .home-actions{grid-template-columns:1fr}.home-card p{min-height:auto}.home-hero::after{font-size:60px;} }
+
+        /* Modal Como Jogar */
+        .modal-como-jogar { position:fixed; inset:0; background:rgba(12,20,36,.78); z-index:3000; display:flex; align-items:center; justify-content:center; padding:18px; }
+        .modal-conteudo { width:min(900px,96vw); max-height:88vh; overflow:auto; background:white; border-radius:18px; text-align:left; box-shadow:0 18px 50px rgba(0,0,0,.35); }
+        .modal-topo { position:sticky; top:0; z-index:1; display:flex; justify-content:space-between; align-items:center; gap:10px; background:#263859; color:white; padding:16px 20px; }
+        .modal-topo h2 { margin:0; }
+        .modal-fechar { background:#ff6d00; color:white; width:42px; height:42px; padding:0; font-size:22px; }
+        .como-jogar-grid { display:grid; grid-template-columns:1fr 1fr; gap:18px; padding:22px; }
+        .como-bloco { border:2px solid #e7ebf2; border-radius:14px; padding:18px; background:#fafbfe; }
+        .como-bloco h3 { margin-top:0; color:#263859; }
+        .como-bloco ol, .como-bloco ul { padding-left:22px; line-height:1.55; }
+        .como-modos { grid-column:1 / -1; background:#fff7ed; border-color:#ffcc80; }
+        .modo-explicacao { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+        .modo-card { background:white; border-radius:12px; padding:14px; border:1px solid #ffd6a0; }
+        @media(max-width:720px){ .como-jogar-grid,.modo-explicacao{grid-template-columns:1fr}.como-modos{grid-column:auto} }
+
+        /* Ranking vivo mais legível */
+        .ranking-container { background:linear-gradient(180deg,#f9fbff,#f3f6fb); border:2px solid #dce4ef; }
+        .ranking-item.ranking-top-1 { background:#fff8d6; border-left:5px solid #ffc107; }
+        .ranking-item.ranking-top-2 { background:#f2f5f7; border-left:5px solid #90a4ae; }
+        .ranking-item.ranking-top-3 { background:#fff0e2; border-left:5px solid #bc8f5a; }
+
+
+        /* Alertas visuais de fim de partida */
+        .trilho.alerta-perigo { animation: piscarPerigo .7s infinite alternate; border-color:#c62828; box-shadow:0 0 18px rgba(198,40,40,.8), inset 0 3px 7px rgba(0,0,0,.12); }
+        .trilho.alerta-vitoria { animation: piscarVitoria .7s infinite alternate; border-color:#ff8f00; box-shadow:0 0 18px rgba(255,143,0,.8), inset 0 3px 7px rgba(0,0,0,.12); }
+        .marcador.alerta-pulso { animation:pulsarFogo .55s infinite alternate; }
+        .cronometro.alerta-tempo { animation:piscarTempo .6s infinite alternate; }
+        .aviso-final { margin:10px 0; padding:10px 14px; border-radius:12px; font-weight:900; text-align:center; }
+        .aviso-final.perigo { background:#ffebee; color:#b71c1c; border:2px solid #ef5350; }
+        .aviso-final.vitoria { background:#fff8e1; color:#e65100; border:2px solid #ffb300; }
+        @keyframes piscarPerigo { from{background:linear-gradient(to right,#ffcdd2,#ffebee,#ef9a9a)} to{background:linear-gradient(to right,#ef9a9a,#ffcdd2,#e57373)} }
+        @keyframes piscarVitoria { from{background:linear-gradient(to right,#fff3cd,#ffe082,#ffcc80)} to{background:linear-gradient(to right,#ffe082,#ffcc80,#ffb74d)} }
+        @keyframes pulsarFogo { from{transform:translateX(-50%) scale(1)} to{transform:translateX(-50%) scale(1.18)} }
+        @keyframes piscarTempo { from{opacity:1; transform:scale(1)} to{opacity:.55; transform:scale(1.08)} }
+
+    </style>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+</head>
+<body>
+
+    <div id="tela-selecao" class="card">
+        <div class="home-hero">
+            <p class="home-kicker">Arena do Conhecimento</p>
+            <h1>Fire Quiz 🔥</h1>
+            <p class="home-subtitle">Todos contra a Máquina</p>
+        </div>
+
+        <div class="home-actions">
+            <div class="home-card">
+                <h3>👩‍🏫 Professor</h3>
+                <p>Crie uma sala, escolha as questões e conduza a missão cooperativa.</p>
+                <button class="btn-principal" onclick="iniciarSalaProfessor()" style="width:100%;">Criar Nova Sala</button>
+            </div>
+
+            <div class="home-card">
+                <h3>👨‍🎓 Aluno</h3>
+                <p>Entre com seu nome e o código fornecido pelo professor.</p>
+                <div class="inputs-login">
+                    <input type="text" id="input-aluno-nome" placeholder="Seu Nome ou Chamada" required>
+                    <input type="text" id="input-sala-id" placeholder="Código da Sala" required>
+                    <button class="btn-secundario" onclick="entrarSalaAluno()">Entrar na Partida</button>
+                </div>
+            </div>
+
+            <div class="home-card solo">
+                <h3>🕹️ Jogar Sozinho</h3>
+                <p>Treine individualmente usando os mesmos bancos de questões.</p>
+                <button class="btn-principal" onclick="iniciarModoIndividual()" style="width:100%;">Modo Individual</button>
+            </div>
+        </div>
+        <button class="btn-como-jogar" onclick="abrirComoJogar()">❓ Como Jogar</button>
+    </div>
+
+    <div id="modal-como-jogar" class="modal-como-jogar oculto" onclick="fecharComoJogarAoFundo(event)">
+        <div class="modal-conteudo" role="dialog" aria-modal="true" aria-labelledby="titulo-como-jogar">
+            <div class="modal-topo">
+                <h2 id="titulo-como-jogar">Como Jogar</h2>
+                <button class="modal-fechar" onclick="fecharComoJogar()" aria-label="Fechar">×</button>
+            </div>
+            <div class="como-jogar-grid">
+                <section class="como-bloco">
+                    <h3>👩‍🏫 Para o professor</h3>
+                    <ol>
+                        <li>Crie uma sala e compartilhe o código com a turma.</li>
+                        <li>Escolha o banco de questões, o modo e os tempos da partida.</li>
+                        <li>Aguarde os alunos aparecerem no lobby e inicie o jogo.</li>
+                        <li>Acompanhe respostas, ranking e avanço do fogo em tempo real.</li>
+                        <li>Use a pausa para explicar dúvidas e retome quando desejar.</li>
+                    </ol>
+                    <p><strong>Objetivo:</strong> conduzir uma atividade cooperativa em que o desempenho coletivo empurra o fogo para a máquina.</p>
+                    <div style="margin-top: 14px; padding: 12px; background: #fff7ed; border-left: 4px solid #ff7a00; border-radius: 8px;">
+                        <h4 style="margin: 0 0 10px 0; color: #9a3412;">Como criar um banco personalizado</h4>
+                        <p style="margin: 0 0 8px 0;">Selecione a opção <strong>Criar Banco Personalizado</strong>.</p>
+                        <p style="margin: 0 0 8px 0;">Digite <strong>uma questão por linha</strong>, seguindo esta ordem:</p>
+                        <p style="margin: 0 0 10px 0; padding: 8px; background: white; border-radius: 6px; font-family: monospace; overflow-wrap: anywhere;"><strong>Pergunta;Alternativa A;Alternativa B;Alternativa C;Alternativa D;Número da resposta correta</strong></p>
+                        <p style="margin: 0 0 6px 0;">Use um número para indicar a alternativa correta:</p>
+                        <p style="margin: 0 0 10px 0;"><strong>0 = A &nbsp;|&nbsp; 1 = B &nbsp;|&nbsp; 2 = C &nbsp;|&nbsp; 3 = D</strong></p>
+                        <p style="margin: 0 0 6px 0;"><strong>Exemplo:</strong></p>
+                        <p style="margin: 0 0 8px 0; padding: 8px; background: white; border-radius: 6px; font-family: monospace; overflow-wrap: anywhere;">Quanto é 5 + 3?;6;7;8;9;2</p>
+                        <p style="margin: 0 0 8px 0;">Nesse exemplo, a resposta correta é <strong>8</strong>, que está na terceira posição e, por isso, recebe o número <strong>2</strong>.</p>
+                        <p style="margin: 0;"><strong>Importante:</strong> inclua sempre quatro alternativas e não use ponto e vírgula dentro da pergunta ou das alternativas.</p>
+                    </div>
+                </section>
+
+                <section class="como-bloco">
+                    <h3>👨‍🎓 Para o aluno</h3>
+                    <ol>
+                        <li>Digite seu nome e o código da sala.</li>
+                        <li>Leia a questão durante o tempo de preparação.</li>
+                        <li>Escolha uma alternativa e confirme sua resposta.</li>
+                        <li>Aguarde os colegas: a rodada considera a turma inteira.</li>
+                        <li>Ajude a empurrar o fogo até a máquina com respostas corretas.</li>
+                    </ol>
+                    <p><strong>Importante:</strong> cada aluno responde uma vez por rodada. Quem não responder dentro do tempo pode prejudicar o resultado coletivo.</p>
+                </section>
+
+                <section class="como-bloco como-modos">
+                    <h3>🎮 Modos de jogo</h3>
+                    <div class="modo-explicacao">
+                        <div class="modo-card"><strong>🔥 Sobrevivência</strong><p>A turma e a máquina disputam o fogo rodada após rodada. A turma vence ao empurrá-lo até a máquina.</p></div>
+                        <div class="modo-card"><strong>⏱️ Contra o Tempo</strong><p>A turma precisa manter vantagem e avançar antes que o cronômetro geral chegue ao fim.</p></div>
+                        <div class="modo-card"><strong>📊 Placar</strong><p>O fogo responde apenas ao desempenho coletivo, sem contra-ataque automático da máquina.</p></div>
+                        <div class="modo-card"><strong>☠️ Super Difícil</strong><p>A máquina empurra o fogo continuamente em direção à turma enquanto todos respondem.</p></div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <div id="painel-professor" class="card oculto">
+        <h2>Fire Quiz — Todos contra a Máquina 🔥 | Sala: <span id="display-sala-id" style="color: #ff9800;"></span></h2>
+        
+        <div class="painel-grid">
+            <div>
+                <div id="configuracoes-professor">
+                    <label><strong>Escolha o Banco de Questões:</strong></label>
+                    <select id="seletor-banco" onchange="alternarVisibilidadeBanco()">
+                        <option value="Biologia">🧬 Biologia</option>
+                        <option value="Filosofia">🦉 Filosofia</option>
+                        <option value="Geografia">🌍 Geografia</option>
+                        <option value="Historia">📜 História</option>
+                        <option value="Matematica">📐 Matemática</option>
+                        <option value="Portugues">📚 Português</option>
+                        <option value="Quimica">🧪 Química</option>
+                        <option value="ConhecimentosGerais">🧠 Conhecimentos Gerais</option>
+                        <option value="personalizado">✨ Criar Banco Personalizado</option>
+                    </select>
+
+                    <div id="area-cadastro-perguntas" class="oculto" style="margin-top: 10px; background: #fff7ed; padding: 14px; border-radius: 8px; border: 1px dashed #ff9800;">
+                        <h4 style="margin: 0 0 8px 0; color: #9a3412;">Crie suas próprias questões</h4>
+                        <p style="font-size: 13px; margin: 0 0 8px 0;">Digite <strong>uma questão por linha</strong> no formato:</p>
+                        <p style="font-size: 12px; margin: 0 0 8px 0; padding: 8px; background: white; border-radius: 6px; font-family: monospace; overflow-wrap: anywhere;"><strong>Pergunta;Alternativa A;Alternativa B;Alternativa C;Alternativa D;Resposta correta</strong></p>
+                        <p style="font-size: 13px; margin: 0 0 8px 0;"><strong>0 = A &nbsp;|&nbsp; 1 = B &nbsp;|&nbsp; 2 = C &nbsp;|&nbsp; 3 = D</strong></p>
+                        <p style="font-size: 12px; margin: 0 0 8px 0;"><strong>Exemplo:</strong> Quanto é 5 + 3?;6;7;8;9;2</p>
+                        <textarea id="campo-perguntas" rows="6" placeholder="Quanto é 5 + 3?;6;7;8;9;2"></textarea>
+                        <p style="font-size: 11px; color: #666; margin: 8px 0 0 0;">Não use ponto e vírgula dentro da pergunta ou das alternativas.</p>
+                    </div>
+                    <br><br>
+                    
+                    <label><strong>Modo de Jogo:</strong></label>
+                    <div class="seletor-grupo">
+                        <button class="btn-cfg ativo-modo" id="modo-survivor" onclick="mudarModo('survivor')">🔥 Sobrevivência</button>
+                        <button class="btn-cfg" id="modo-time" onclick="mudarModo('time_attack')">⏱️ Contra o Tempo</button>
+                        <button class="btn-cfg" id="modo-placar" onclick="mudarModo('placar')">📊 Placar</button>
+                        <button class="btn-cfg" id="modo-super-hard" onclick="mudarModo('super_hard')">☠️ Super Difícil</button>
+                    </div>
+                    
+                    <div id="config-tempo-container" class="oculto" style="margin-bottom: 15px;">
+                        <label><strong>Duração (segundos):</strong></label><br>
+                        <input type="number" id="tempo-customizado" value="60" min="5" max="600" style="width: 100px;">
+                    </div>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <label><strong>Tempo para responder cada questão (segundos):</strong></label><br>
+                        <input type="number" id="tempo-questao" value="15" min="5" max="120" style="width: 100px;">
+                    </div>
+
+                    <div id="config-dificuldade-container">
+                        <label><strong>Força da Máquina por rodada:</strong></label>
+                        <div class="seletor-grupo">
+                            <button class="btn-cfg" id="dif-easy" onclick="mudarDificuldade('easy')">Easy</button>
+                            <button class="btn-cfg ativo" id="dif-medium" onclick="mudarDificuldade('medium')">Medium</button>
+                            <button class="btn-cfg" id="dif-hard" onclick="mudarDificuldade('hard')">Hard</button>
+                        </div>
+                    </div>
+                    
+                    <button class="btn-principal" id="btn-iniciar" onclick="iniciarJogo(false)" style="width: 100%; padding: 15px;">Iniciar Jogo</button>
+                    <button class="btn-secundario" id="btn-voltar-inicio-lobby" onclick="voltarAoInicioDoLobby()" style="width: 100%; padding: 13px; margin-top: 10px;">🏠 Voltar à Arena do Conhecimento</button>
+                </div>
+
+                <div id="area-jogo-professor" class="oculto">
+                    <button id="btn-pausar-jogo" class="btn-pausa" style="display: block;" onclick="alternarPausa()">⏸️ Pausar Partida</button>
+                    
+                    <div class="cabecalho-jogo">
+                        <p id="info-rodada" style="font-size: 18px; font-weight: bold; margin: 0;">Rodada: 1</p>
+                        <div id="prof-timer-container" class="oculto"><span class="cronometro">⏱️ <span id="prof-tempo">60s</span></span></div>
+                    </div>
+                    <div id="placar-solo" class="placar-solo oculto">
+                        <span class="placar-certas">✨ Acertos: <span id="solo-acertos">0</span></span>
+                        <span class="placar-erradas">❌ Erros: <span id="solo-erros">0</span></span>
+                    </div>
+
+                    <div class="trilho"><div id="marcador" class="marcador">🔥</div></div>
+                    <div class="arena-legenda">
+                        <span id="arena-lado-prof" class="arena-lado turma">🧑‍🎓 TURMA</span>
+                        <span id="arena-objetivo-prof" class="arena-objetivo">ACERTEM JUNTOS E EMPURREM O FOGO →</span>
+                        <span class="arena-lado maquina">MÁQUINA 🤖</span>
+                    </div>
+                    <div id="prof-aviso-final" class="aviso-final oculto"></div>
+                    <div id="prof-status-coletivo" class="status-coletivo">Aguardando a rodada...</div>
+                    <div id="prof-resultado-coletivo" class="resultado-coletivo oculto"></div>
+                    
+                    <div id="prof-quiz-container" style="background: #fff3e0; padding: 20px; border-radius: 8px; border: 2px solid #ff9800;">
+                        <h3 id="prof-pergunta-texto"></h3>
+                        <div class="opcoes-prof" id="prof-lista-opcoes" style="pointer-events: none;"></div>
+                    </div>
+                </div>
+                <div id="placar-final-professor" class="placar-final oculto"></div>
+                <button class="btn-encerrar oculto" id="btn-encerrar-geral" onclick="forcarEncerramento()">❌ Encerrar Partida</button>
+            </div>
+            
+            <div class="ranking-container">
+                <h4 id="titulo-monitor" style="margin-top: 0; border-bottom: 2px solid #ccc; padding-bottom: 5px; text-align:center;">Estudantes no Lobby</h4>
+                <div class="ranking-item" style="border-bottom: 2px solid #ddd; background:#eee;">
+                    <span>#</span><span>Nome</span><span>St</span><span>✨ AC</span><span>❌ ER</span><span>Ação</span>
+                </div>
+                <div id="lista-ranking-alunos">Aguardando conexões...</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="tela-aluno" class="card oculto">
+        <div id="overlay-pausa" class="oculto">
+            <h1 style="font-size: 50px; margin: 10px;">⏸️</h1>
+            <h2>Jogo Pausado!</h2>
+            <p>Preste atenção na explicação do professor.</p>
+        </div>
+
+        <div class="cabecalho-jogo" id="cabecalho-aluno-gameplay" style="visibility: hidden;">
+            <p id="aluno-info-rodada" style="font-size: 16px; font-weight: bold; margin: 0;">Rodada: 1</p>
+            <div class="placar">
+                <span class="cronometro">⏱️ <span id="aluno-tempo-label">Tempo</span>: <span id="aluno-tempo">--</span></span>
+                <span class="placar-certas">✨ Acertos: <span id="aluno-meus-acertos">0</span></span>
+                <span class="placar-erradas">❌ Erros: <span id="aluno-meus-erros">0</span></span>
+            </div>
+        </div>
+
+        <div id="aluno-trilho-container" style="visibility: hidden; margin-bottom: 15px;">
+            <div class="trilho"><div id="aluno-marcador" class="marcador">🔥</div></div>
+            <div class="arena-legenda">
+                <span class="arena-lado turma">🧑‍🎓 TURMA</span>
+                <span class="arena-objetivo">ACERTEM JUNTOS E EMPURREM O FOGO →</span>
+                <span class="arena-lado maquina">MÁQUINA 🤖</span>
+            </div>
+            <div id="aluno-aviso-final" class="aviso-final oculto"></div>
+        </div>
+        
+        <h2 id="status-aluno">Aguardando o professor...</h2>
+        <div id="placar-final-aluno" class="placar-final oculto"></div>
+        
+        <div id="container-quiz" class="oculto">
+            <div id="container-freeze" class="barra-freeze-container oculto">
+                <div id="barra-freeze" class="barra-freeze-fill"></div>
+            </div>
+            
+            <div id="aluno-status-coletivo" class="status-coletivo oculto"></div>
+            <div id="aluno-resultado-coletivo" class="resultado-coletivo oculto"></div>
+            <h3 id="pergunta-texto"></h3>
+            <div class="opcoes" id="lista-opcoes"></div>
+            <button id="btn-confirmar-puxao" class="btn-confirmar oculto" onclick="confirmarEEnviar()">Empurrar Fogo 🔥</button>
+        </div>
+    </div>
+
+    <div id="feedback-flutuante" class="feedback-flutuante" aria-live="assertive"></div>
+
+    <footer style="text-align: center; padding: 20px; color: #666; font-weight: bold; font-size: 14px; margin-top: 20px;">
+        Desenvolvido por Prof. Job Inácio
+    </footer>
+
+    <script>
+        // CONFIGURAÇÃO FIREBASE (INSIRA A SUA AQUI)
+        const firebaseConfig = { databaseURL: "https://cabo-de-guerra-coop-default-rtdb.firebaseio.com/" };
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        function abrirComoJogar() {
+            document.getElementById('modal-como-jogar').classList.remove('oculto');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function fecharComoJogar() {
+            document.getElementById('modal-como-jogar').classList.add('oculto');
+            document.body.style.overflow = '';
+        }
+
+        function fecharComoJogarAoFundo(event) {
+            if (event.target.id === 'modal-como-jogar') fecharComoJogar();
+        }
+
+        document.addEventListener('keydown', event => {
+            if (event.key === 'Escape') fecharComoJogar();
+        });
+
+        // ---------------------------------------------------------
+        // INSIRA AQUI O SEU ACERVO COMPLETO DE 350 QUESTÕES
+        // ---------------------------------------------------------
+        const bancosNativos = {
+            Biologia: [
+                {"q": "Qual organela celular é responsável pela maior parte da produção de ATP?","alt": ["Ribossomo","Mitocôndria","Lisossomo","Complexo golgiense"],"correta": 1},
+                {"q": "Qual pigmento capta principalmente a energia luminosa na fotossíntese?","alt": ["Clorofila","Hemoglobina","Queratina","Insulina"],"correta": 0},
+                {"q": "Qual estrutura controla a entrada e a saída de substâncias da célula?","alt": ["Parede celular","Membrana plasmática","Núcleo","Centríolo"],"correta": 1},
+                {"q": "Em células eucarióticas, onde se encontra a maior parte do DNA?","alt": ["Citoplasma","Núcleo","Vacúolo","Ribossomo"],"correta": 1},
+                {"q": "Qual processo produz duas células-filhas geneticamente semelhantes?","alt": ["Meiose","Mitose","Fecundação","Mutação"],"correta": 1},
+                {"q": "Qual processo forma gametas com metade do número de cromossomos?","alt": ["Mitose","Brotamento","Meiose","Fragmentação"],"correta": 2},
+                {"q": "Qual molécula é considerada a unidade básica da hereditariedade?","alt": ["Gene","Lipídio","Glicose","Vitamina"],"correta": 0},
+                {"q": "Qual base nitrogenada aparece no RNA no lugar da timina?","alt": ["Adenina","Citosina","Uracila","Guanina"],"correta": 2},
+                {"q": "A tradução da informação genética ocorre principalmente em qual estrutura?","alt": ["Ribossomo","Lisossomo","Cloroplasto","Centríolo"],"correta": 0},
+                {"q": "Qual reino inclui organismos procariontes como as bactérias?","alt": ["Fungi","Plantae","Animalia","Monera"],"correta": 3},
+                {"q": "Qual grupo é formado por organismos sem núcleo celular definido?","alt": ["Procariontes","Eucariontes","Pluricelulares","Autótrofos"],"correta": 0},
+                {"q": "Qual relação ecológica beneficia as duas espécies envolvidas?","alt": ["Predatismo","Parasitismo","Mutualismo","Competição"],"correta": 2},
+                {"q": "Em uma cadeia alimentar, qual organismo ocupa o primeiro nível trófico?","alt": ["Consumidor primário","Produtor","Decompositor","Predador"],"correta": 1},
+                {"q": "Qual processo devolve nutrientes ao ambiente pela decomposição da matéria orgânica?","alt": ["Decomposição","Fotossíntese","Transpiração","Polinização"],"correta": 0},
+                {"q": "Qual bioma brasileiro apresenta árvores retorcidas e estação seca bem definida?","alt": ["Amazônia","Cerrado","Pampa","Pantanal"],"correta": 1},
+                {"q": "Qual bioma brasileiro é caracterizado por clima semiárido e vegetação xerófita?","alt": ["Caatinga","Mata Atlântica","Pampa","Amazônia"],"correta": 0},
+                {"q": "Qual gás é consumido na respiração celular aeróbica?","alt": ["Nitrogênio","Oxigênio","Metano","Ozônio"],"correta": 1},
+                {"q": "Qual gás é absorvido pelas plantas durante a fotossíntese?","alt": ["Oxigênio","Gás carbônico","Hidrogênio","Nitrogênio"],"correta": 1},
+                {"q": "Qual órgão humano realiza principalmente as trocas gasosas?","alt": ["Fígado","Pulmão","Rim","Estômago"],"correta": 1},
+                {"q": "Em qual estrutura pulmonar ocorrem as trocas gasosas?","alt": ["Brônquios","Alvéolos","Traqueia","Diafragma"],"correta": 1},
+                {"q": "Qual órgão bombeia o sangue pelo corpo?","alt": ["Pulmão","Coração","Pâncreas","Baço"],"correta": 1},
+                {"q": "Qual componente do sangue transporta principalmente oxigênio?","alt": ["Plaquetas","Hemácias","Leucócitos","Plasma"],"correta": 1},
+                {"q": "Qual órgão filtra o sangue e produz a urina?","alt": ["Rim","Fígado","Intestino","Pulmão"],"correta": 0},
+                {"q": "Qual hormônio reduz a glicemia ao favorecer a entrada de glicose nas células?","alt": ["Adrenalina","Insulina","Tiroxina","Glucagon"],"correta": 1},
+                {"q": "Qual sistema coordena respostas rápidas por impulsos elétricos?","alt": ["Digestório","Nervoso","Respiratório","Linfático"],"correta": 1},
+                {"q": "Qual estrutura do sistema nervoso central está protegida pela coluna vertebral?","alt": ["Cerebelo","Medula espinal","Hipófise","Retina"],"correta": 1},
+                {"q": "Qual vitamina pode ser produzida na pele com auxílio da luz solar?","alt": ["Vitamina C","Vitamina D","Vitamina K","Vitamina B12"],"correta": 1},
+                {"q": "Qual nutriente é a principal fonte imediata de energia para o organismo?","alt": ["Carboidrato","Vitamina","Sal mineral","Água"],"correta": 0},
+                {"q": "Qual doença é transmitida pelo mosquito Aedes aegypti?","alt": ["Tuberculose","Dengue","Leptospirose","Esquistossomose"],"correta": 1},
+                {"q": "Qual agente causa a doença de Chagas?","alt": ["Vírus","Bactéria","Protozoário","Fungo"],"correta": 2},
+                {"q": "Vacinas estimulam principalmente qual tipo de resposta?","alt": ["Resposta imunológica específica","Digestão química","Respiração anaeróbica","Filtração renal"],"correta": 0},
+                {"q": "Antibióticos são usados principalmente contra quais agentes?","alt": ["Vírus","Bactérias","Protozoários","Vermes"],"correta": 1},
+                {"q": "Qual teoria explica a mudança das populações ao longo das gerações?","alt": ["Teoria celular","Evolução biológica","Geração espontânea","Fixismo"],"correta": 1},
+                {"q": "Segundo a seleção natural, indivíduos com características vantajosas tendem a quê?","alt": ["Deixar mais descendentes","Parar de sofrer mutações","Tornar-se idênticos","Eliminar toda competição"],"correta": 0},
+                {"q": "Qual evidência indica ancestralidade comum entre espécies?","alt": ["Estruturas homólogas","Órgãos sem função","Cores semelhantes apenas","Mesmo habitat obrigatoriamente"],"correta": 0},
+                {"q": "Qual técnica permite amplificar trechos específicos de DNA?","alt": ["PCR","Cromatografia","Centrifugação","Fermentação"],"correta": 0},
+                {"q": "Um organismo que recebeu gene de outra espécie é chamado de quê?","alt": ["Clone natural","Transgênico","Híbrido estéril","Mutante espontâneo"],"correta": 1},
+                {"q": "Qual ferramenta de edição genética usa uma molécula-guia para direcionar cortes no DNA?","alt": ["CRISPR-Cas9","ELISA","Microscopia óptica","Eletroforese simples"],"correta": 0},
+                {"q": "Qual processo realizado por leveduras pode produzir etanol?","alt": ["Fermentação alcoólica","Fotólise","Quimiossíntese","Transcrição"],"correta": 0},
+                {"q": "Qual nível de organização inclui seres vivos e fatores não vivos interagindo?","alt": ["População","Comunidade","Ecossistema","Espécie"],"correta": 2}
+            ],
+            Filosofia: [
+                {"q": "A palavra filosofia significa originalmente o quê?","alt": ["Amor à sabedoria","Domínio político","Conhecimento religioso","Arte de governar"],"correta": 0},
+                {"q": "Qual filósofo é associado à frase 'Só sei que nada sei'?","alt": ["Platão","Sócrates","Aristóteles","Descartes"],"correta": 1},
+                {"q": "Qual método de Sócrates utilizava perguntas para estimular a reflexão?","alt": ["Maiêutica","Silogismo","Empirismo","Dialética materialista"],"correta": 0},
+                {"q": "Quem escreveu a obra 'A República'?","alt": ["Platão","Epicuro","Nietzsche","Kant"],"correta": 0},
+                {"q": "Para Platão, o mundo percebido pelos sentidos é chamado de quê?","alt": ["Mundo inteligível","Mundo sensível","Estado de natureza","Vontade de poder"],"correta": 1},
+                {"q": "Quem formulou a lógica do silogismo na Antiguidade?","alt": ["Aristóteles","Heráclito","Agostinho","Hobbes"],"correta": 0},
+                {"q": "Qual filósofo afirmou que tudo flui e está em constante mudança?","alt": ["Parmênides","Heráclito","Sócrates","Tomás de Aquino"],"correta": 1},
+                {"q": "Para os estoicos, a vida virtuosa exige principalmente o quê?","alt": ["Controle racional das paixões","Busca ilimitada do prazer","Rejeição de toda sociedade","Acúmulo de riqueza"],"correta": 0},
+                {"q": "O epicurismo defendia a busca de qual estado?","alt": ["Ataraxia","Alienação","Angústia","Conflito permanente"],"correta": 0},
+                {"q": "Qual pensador cristão foi fortemente influenciado por Platão?","alt": ["Santo Agostinho","Maquiavel","Locke","Marx"],"correta": 0},
+                {"q": "Qual filósofo medieval procurou conciliar Aristóteles e o cristianismo?","alt": ["Tomás de Aquino","Rousseau","Hume","Sartre"],"correta": 0},
+                {"q": "O Renascimento valorizou especialmente qual característica humana?","alt": ["Razão e criatividade","Obediência feudal","Isolamento cultural","Negação da ciência"],"correta": 0},
+                {"q": "Quem escreveu 'O Príncipe'?","alt": ["Maquiavel","Montesquieu","Voltaire","Spinoza"],"correta": 0},
+                {"q": "Segundo Maquiavel, a política deve ser analisada principalmente como quê?","alt": ["Ela funciona na prática","Ela deveria seguir apenas a religião","Ela depende somente da moral privada","Ela rejeita qualquer conflito"],"correta": 0},
+                {"q": "Qual frase é associada a René Descartes?","alt": ["Penso, logo existo","O homem é a medida de todas as coisas","Deus está morto","A existência precede a essência"],"correta": 0},
+                {"q": "O racionalismo destaca qual fonte do conhecimento?","alt": ["Razão","Tradição oral","Autoridade política","Instinto"],"correta": 0},
+                {"q": "O empirismo afirma que o conhecimento se origina principalmente de quê?","alt": ["Experiência sensível","Ideias inatas apenas","Revelação sobrenatural","Memória genética"],"correta": 0},
+                {"q": "Qual filósofo comparou a mente ao nascer a uma tábula rasa?","alt": ["John Locke","Immanuel Kant","Karl Marx","Friedrich Nietzsche"],"correta": 0},
+                {"q": "Quem defendeu que o conhecimento começa com a experiência, mas não deriva todo dela?","alt": ["Kant","Hobbes","Epicuro","Comte"],"correta": 0},
+                {"q": "Qual conceito é central na ética de Kant?","alt": ["Imperativo categórico","Luta de classes","Estado de natureza","Prazer máximo"],"correta": 0},
+                {"q": "O utilitarismo avalia uma ação principalmente por suas consequências para quê?","alt": ["Maior felicidade possível","Manutenção da tradição","Obediência a um governante","Vontade individual isolada"],"correta": 0},
+                {"q": "Quem afirmou que o ser humano é naturalmente livre, mas vive em correntes?","alt": ["Rousseau","Hobbes","Aristóteles","Freud"],"correta": 0},
+                {"q": "Para Hobbes, o estado de natureza seria marcado principalmente por quê?","alt": ["Conflito e insegurança","Harmonia permanente","Igualdade econômica plena","Ausência de medo"],"correta": 0},
+                {"q": "Qual pensador defendeu a separação dos poderes do Estado?","alt": ["Montesquieu","Descartes","Agostinho","Schopenhauer"],"correta": 0},
+                {"q": "O contrato social procura explicar a origem de quê?","alt": ["Autoridade política legítima","Movimento dos planetas","Linguagem escrita","Produção artística"],"correta": 0},
+                {"q": "Qual filósofo desenvolveu a ideia de luta de classes?","alt": ["Karl Marx","Auguste Comte","John Locke","Platão"],"correta": 0},
+                {"q": "Para Marx, a base econômica influencia o quê?","alt": ["Instituições e relações sociais","Somente a vida privada","Apenas a religião antiga","Exclusivamente a ciência natural"],"correta": 0},
+                {"q": "Quem criou o positivismo?","alt": ["Auguste Comte","Jean-Paul Sartre","David Hume","Michel Foucault"],"correta": 0},
+                {"q": "Qual corrente valoriza o conhecimento científico como forma privilegiada de explicar a sociedade?","alt": ["Positivismo","Ceticismo antigo","Cinismo","Sofismo"],"correta": 0},
+                {"q": "A expressão 'Deus está morto' é associada a quem?","alt": ["Nietzsche","Kant","Rousseau","Locke"],"correta": 0},
+                {"q": "No existencialismo de Sartre, o que precede a essência?","alt": ["Existência","Natureza","Sociedade","Linguagem"],"correta": 0},
+                {"q": "Para Sartre, a liberdade humana implica também o quê?","alt": ["Responsabilidade","Determinismo absoluto","Ausência de escolhas","Obediência automática"],"correta": 0},
+                {"q": "Qual área da filosofia estuda o conhecimento?","alt": ["Epistemologia","Estética","Política","Ontologia"],"correta": 0},
+                {"q": "Qual área da filosofia investiga princípios da ação correta?","alt": ["Ética","Lógica","Metafísica","Cosmologia"],"correta": 0},
+                {"q": "Qual área estuda o belo e a arte?","alt": ["Estética","Epistemologia","Filosofia política","Lógica formal"],"correta": 0},
+                {"q": "Um argumento válido é aquele em que o quê?","alt": ["A conclusão decorre das premissas","A conclusão é popular","As premissas são longas","O autor tem autoridade"],"correta": 0},
+                {"q": "Uma falácia é o quê?","alt": ["Erro de raciocínio","Prova científica","Lei moral universal","Experimento controlado"],"correta": 0},
+                {"q": "Qual atitude caracteriza o pensamento crítico?","alt": ["Examinar razões e evidências","Aceitar toda informação sem questionar","Rejeitar qualquer opinião diferente","Seguir apenas a maioria"],"correta": 0},
+                {"q": "O dilema ético ocorre quando há o quê?","alt": ["Conflito entre valores ou deveres","Ausência total de escolha","Uma resposta matemática única","Apenas uma regra simples"],"correta": 0},
+                {"q": "A cidadania envolve principalmente o exercício de quê?","alt": ["Direitos e deveres","Poder absoluto","Privilégios hereditários","Isolamento político"],"correta": 0}
+            ],
+            Geografia: [
+                {"q": "Qual é o maior país do mundo em extensão territorial?","alt": ["Canadá","China","Estados Unidos","Rússia"],"correta": 3},
+                {"q": "Qual linha imaginária divide a Terra em hemisférios Norte e Sul?","alt": ["Trópico de Câncer","Equador","Meridiano de Greenwich","Círculo Polar Ártico"],"correta": 1},
+                {"q": "Qual meridiano é referência para os fusos horários?","alt": ["Greenwich","Equador","Capricórnio","Câncer"],"correta": 0},
+                {"q": "Qual movimento da Terra provoca a sucessão de dias e noites?","alt": ["Translação","Rotação","Precessão","Revolução lunar"],"correta": 1},
+                {"q": "Qual movimento da Terra está associado ao ano?","alt": ["Rotação","Translação","Nutação","Deriva continental"],"correta": 1},
+                {"q": "Qual instrumento cartográfico indica a relação entre distância no mapa e distância real?","alt": ["Legenda","Escala","Rosa dos ventos","Coordenada"],"correta": 1},
+                {"q": "Qual coordenada mede a distância ao norte ou ao sul do Equador?","alt": ["Longitude","Latitude","Altitude","Fuso"],"correta": 1},
+                {"q": "Qual coordenada mede a distância a leste ou oeste de Greenwich?","alt": ["Latitude","Longitude","Declividade","Pressão"],"correta": 1},
+                {"q": "Qual camada da Terra é formada por placas tectônicas rígidas?","alt": ["Litosfera","Núcleo interno","Astenosfera líquida","Hidrosfera"],"correta": 0},
+                {"q": "Terremotos e vulcões concentram-se principalmente em quê?","alt": ["Limites de placas tectônicas","Centros dos continentes","Regiões polares apenas","Planícies fluviais"],"correta": 0},
+                {"q": "Qual processo desgasta e transporta materiais da superfície terrestre?","alt": ["Erosão","Fusão nuclear","Condensação","Fotossíntese"],"correta": 0},
+                {"q": "Qual rocha se forma pelo resfriamento do magma?","alt": ["Sedimentar","Metamórfica","Ígnea","Calcária orgânica"],"correta": 2},
+                {"q": "Qual fator climático diminui geralmente a temperatura com o aumento da altura?","alt": ["Altitude","Longitude","Vegetação urbana","Maritimidade"],"correta": 0},
+                {"q": "Qual clima predomina na Amazônia?","alt": ["Equatorial","Mediterrâneo","Desértico","Polar"],"correta": 0},
+                {"q": "Qual domínio brasileiro apresenta clima semiárido?","alt": ["Caatinga","Pampa","Pantanal","Mata de Araucárias"],"correta": 0},
+                {"q": "Qual bioma ocupa grande parte do Centro-Oeste brasileiro?","alt": ["Cerrado","Pampa","Mata Atlântica","Manguezal"],"correta": 0},
+                {"q": "Qual rio possui a maior bacia hidrográfica do mundo?","alt": ["Nilo","Amazonas","Mississippi","Danúbio"],"correta": 1},
+                {"q": "Uma bacia hidrográfica é definida como o quê?","alt": ["Área drenada por um rio e seus afluentes","Somente o leito principal de um rio","Qualquer área oceânica","Uma reserva subterrânea isolada"],"correta": 0},
+                {"q": "Qual setor econômico transforma matérias-primas em produtos?","alt": ["Primário","Secundário","Terciário","Quaternário apenas"],"correta": 1},
+                {"q": "Qual setor reúne comércio e serviços?","alt": ["Primário","Secundário","Terciário","Extrativista"],"correta": 2},
+                {"q": "Urbanização é o processo de quê?","alt": ["Crescimento da população urbana","Redução das cidades","Aumento exclusivo da agricultura","Desaparecimento das indústrias"],"correta": 0},
+                {"q": "Conurbação ocorre quando o quê?","alt": ["Áreas urbanas de cidades vizinhas se unem","Uma cidade perde habitantes","Uma zona rural vira floresta","Um rio muda de curso"],"correta": 0},
+                {"q": "Metrópole é uma cidade que exerce o quê?","alt": ["Influência sobre ampla região","Somente função agrícola","Nenhuma centralidade","Apenas atividade turística"],"correta": 0},
+                {"q": "Migração pendular é o deslocamento frequente entre quê?","alt": ["Moradia e trabalho ou estudo","Países em guerra","Continentes por turismo","Campo e floresta"],"correta": 0},
+                {"q": "Êxodo rural significa migração do quê?","alt": ["Campo para a cidade","Cidade para o campo","Litoral para o interior","País rico para país pobre"],"correta": 0},
+                {"q": "Densidade demográfica corresponde a quê?","alt": ["Número de habitantes por área","Total de nascimentos","Quantidade de cidades","Renda média"],"correta": 0},
+                {"q": "Qual indicador combina renda, educação e expectativa de vida?","alt": ["PIB","IDH","Taxa de natalidade","Saldo migratório"],"correta": 1},
+                {"q": "Globalização intensificou principalmente o quê?","alt": ["Fluxos de mercadorias, capitais e informações","Isolamento entre países","Fim das tecnologias","Desaparecimento das cidades"],"correta": 0},
+                {"q": "Uma empresa transnacional atua em quê?","alt": ["Vários países","Somente em uma cidade","Apenas no setor público","Exclusivamente na agricultura familiar"],"correta": 0},
+                {"q": "Qual bloco econômico inclui Brasil, Argentina, Paraguai e Uruguai?","alt": ["Mercosul","União Europeia","USMCA","ASEAN"],"correta": 0},
+                {"q": "Qual continente possui o maior número de países?","alt": ["África","Europa","América","Oceania"],"correta": 0},
+                {"q": "Qual oceano é o maior do planeta?","alt": ["Atlântico","Índico","Pacífico","Ártico"],"correta": 2},
+                {"q": "Qual país tem a maior população da América do Sul?","alt": ["Argentina","Brasil","Colômbia","Peru"],"correta": 1},
+                {"q": "Qual região brasileira possui a maior extensão territorial?","alt": ["Norte","Sul","Sudeste","Centro-Oeste"],"correta": 0},
+                {"q": "Qual região brasileira concentra a maior parcela da população?","alt": ["Sudeste","Norte","Centro-Oeste","Sul"],"correta": 0},
+                {"q": "Desmatamento pode contribuir diretamente para o quê?","alt": ["Perda de biodiversidade","Aumento garantido das chuvas","Redução da erosão","Formação de novos solos imediata"],"correta": 0},
+                {"q": "O efeito estufa natural é importante porque quê?","alt": ["Mantém temperaturas adequadas à vida","Impede toda radiação solar","Elimina o ciclo da água","Produz oxigênio diretamente"],"correta": 0},
+                {"q": "Qual fonte de energia é renovável?","alt": ["Solar","Carvão mineral","Petróleo","Gás natural"],"correta": 0},
+                {"q": "Ilha de calor urbana é caracterizada por quê?","alt": ["Temperaturas maiores nas áreas urbanizadas","Frio extremo no centro urbano","Aumento de geleiras","Redução total da poluição"],"correta": 0},
+                {"q": "Desenvolvimento sustentável busca conciliar o quê?","alt": ["Economia, sociedade e ambiente","Somente crescimento econômico","Apenas conservação sem pessoas","Consumo ilimitado"],"correta": 0}
+            ],
+            Historia: [
+                {"q": "Qual atividade marcou o início da sedentarização humana?","alt": ["Agricultura","Caça nômade","Navegação oceânica","Indústria"],"correta": 0},
+                {"q": "Em qual região surgiram algumas das primeiras cidades da Antiguidade?","alt": ["Mesopotâmia","Escandinávia","Oceania","Patagônia"],"correta": 0},
+                {"q": "Qual rio foi essencial para a civilização egípcia?","alt": ["Nilo","Tigre","Ganges","Tâmisa"],"correta": 0},
+                {"q": "A democracia ateniense da Antiguidade era exercida diretamente por quem?","alt": ["Cidadãos homens livres","Toda a população","Escravizados","Estrangeiros residentes"],"correta": 0},
+                {"q": "Qual cidade grega ficou conhecida por sua organização militar?","alt": ["Esparta","Atenas","Corinto","Mileto"],"correta": 0},
+                {"q": "Qual povo fundou Roma segundo a tradição histórica?","alt": ["Latinos","Vikings","Astecas","Fenícios"],"correta": 0},
+                {"q": "Qual forma de governo sucedeu a República Romana?","alt": ["Império","Feudalismo","Democracia direta","Socialismo"],"correta": 0},
+                {"q": "A queda do Império Romano do Ocidente ocorreu tradicionalmente em qual ano?","alt": ["476","1492","1789","1914"],"correta": 0},
+                {"q": "Qual relação caracterizou grande parte da sociedade feudal?","alt": ["Suserania e vassalagem","Trabalho assalariado industrial","Cidadania universal","Livre comércio global"],"correta": 0},
+                {"q": "As Cruzadas foram expedições principalmente de caráter quê?","alt": ["Religioso e militar","Científico e espacial","Industrial","Esportivo"],"correta": 0},
+                {"q": "O Renascimento cultural começou com maior intensidade em qual região?","alt": ["Península Itálica","Sibéria","África Austral","Oceania"],"correta": 0},
+                {"q": "Quem pintou a Mona Lisa?","alt": ["Leonardo da Vinci","Michelangelo","Rafael","Donatello"],"correta": 0},
+                {"q": "A Reforma Protestante foi iniciada por quem em 1517?","alt": ["Martinho Lutero","Galileu Galilei","Nicolau Maquiavel","Cristóvão Colombo"],"correta": 0},
+                {"q": "Qual invenção favoreceu a difusão das ideias reformistas?","alt": ["Imprensa de tipos móveis","Máquina a vapor","Telégrafo","Rádio"],"correta": 0},
+                {"q": "Qual país liderou inicialmente as Grandes Navegações europeias?","alt": ["Portugal","Alemanha","Rússia","Suíça"],"correta": 0},
+                {"q": "Em que ano os portugueses chegaram ao território que se tornaria o Brasil?","alt": ["1500","1492","1530","1822"],"correta": 0},
+                {"q": "Qual produto predominou na economia colonial brasileira no século XVI?","alt": ["Açúcar","Café","Borracha","Soja"],"correta": 0},
+                {"q": "A maior parte da mão de obra nos engenhos coloniais era formada por quem?","alt": ["Africanos escravizados","Trabalhadores assalariados europeus","Imigrantes japoneses","Militares"],"correta": 0},
+                {"q": "Qual atividade impulsionou a ocupação do interior no século XVIII?","alt": ["Mineração","Indústria automobilística","Cultivo de soja","Turismo"],"correta": 0},
+                {"q": "Qual movimento de 1789 ocorreu em Minas Gerais?","alt": ["Inconfidência Mineira","Revolta da Vacina","Cabanagem","Sabinada"],"correta": 0},
+                {"q": "A Independência do Brasil foi proclamada em qual ano?","alt": ["1822","1808","1888","1889"],"correta": 0},
+                {"q": "Quem foi o primeiro imperador do Brasil?","alt": ["Dom Pedro I","Dom Pedro II","Dom João VI","Deodoro da Fonseca"],"correta": 0},
+                {"q": "Qual lei aboliu oficialmente a escravidão no Brasil?","alt": ["Lei Áurea","Lei de Terras","Lei do Ventre Livre","Lei Eusébio de Queirós"],"correta": 0},
+                {"q": "A Proclamação da República no Brasil ocorreu em qual ano?","alt": ["1889","1822","1930","1964"],"correta": 0},
+                {"q": "Quem liderou o movimento que proclamou a República?","alt": ["Deodoro da Fonseca","Getúlio Vargas","Juscelino Kubitschek","Floriano Peixoto"],"correta": 0},
+                {"q": "A Revolução Industrial começou em qual país?","alt": ["Inglaterra","Brasil","Japão","México"],"correta": 0},
+                {"q": "Qual fonte de energia foi central na Primeira Revolução Industrial?","alt": ["Carvão mineral","Energia solar","Urânio","Petróleo apenas"],"correta": 0},
+                {"q": "A Revolução Francesa começou em qual ano?","alt": ["1789","1776","1815","1848"],"correta": 0},
+                {"q": "Qual lema ficou associado à Revolução Francesa?","alt": ["Liberdade, igualdade e fraternidade","Ordem e progresso","Paz, terra e pão","Trabalho e disciplina"],"correta": 0},
+                {"q": "A Primeira Guerra Mundial ocorreu entre quais anos?","alt": ["1914 e 1918","1939 e 1945","1870 e 1871","1964 e 1985"],"correta": 0},
+                {"q": "Qual evento desencadeou diretamente a Primeira Guerra Mundial?","alt": ["Assassinato do arquiduque Francisco Ferdinando","Queda do Muro de Berlim","Ataque a Pearl Harbor","Revolução Cubana"],"correta": 0},
+                {"q": "A Revolução Russa de 1917 derrubou qual regime?","alt": ["Czarismo","Feudalismo francês","República romana","Monarquia inglesa"],"correta": 0},
+                {"q": "A Segunda Guerra Mundial ocorreu entre quais anos?","alt": ["1939 e 1945","1914 e 1918","1947 e 1991","1929 e 1933"],"correta": 0},
+                {"q": "O Holocausto foi a perseguição e o extermínio sistemático principalmente de quem?","alt": ["Judeus e outros grupos perseguidos pelo nazismo","Soldados romanos","Camponeses medievais","Navegadores portugueses"],"correta": 0},
+                {"q": "A Organização das Nações Unidas foi criada após qual conflito?","alt": ["Segunda Guerra Mundial","Guerra do Paraguai","Guerra dos Cem Anos","Revolução Industrial"],"correta": 0},
+                {"q": "A Guerra Fria envolveu principalmente a rivalidade entre quais potências?","alt": ["Estados Unidos e União Soviética","Brasil e Argentina","França e Espanha","China e Japão apenas"],"correta": 0},
+                {"q": "Quem governou o Brasil durante o Estado Novo?","alt": ["Getúlio Vargas","João Goulart","Tancredo Neves","Fernando Henrique Cardoso"],"correta": 0},
+                {"q": "Qual período brasileiro ocorreu entre 1964 e 1985?","alt": ["Ditadura militar","Primeiro Reinado","República Velha","Período Regencial"],"correta": 0},
+                {"q": "A Constituição brasileira atualmente em vigor foi promulgada em qual ano?","alt": ["1988","1967","1937","1824"],"correta": 0},
+                {"q": "A redemocratização brasileira consolidou principalmente o retorno de quê?","alt": ["Direitos políticos e eleições civis","Monarquia hereditária","Escravidão","Colonialismo português"],"correta": 0}
+            ],
+            Matematica: [
+                {"q": "Quanto é 7 + 8?","alt": ["13","14","15","16"],"correta": 2},
+                {"q": "Quanto é 9 × 6?","alt": ["45","54","63","72"],"correta": 1},
+                {"q": "Quanto é 72 ÷ 8?","alt": ["7","8","9","10"],"correta": 2},
+                {"q": "Qual é o valor de 5²?","alt": ["10","20","25","32"],"correta": 2},
+                {"q": "Qual é a raiz quadrada de 144?","alt": ["10","11","12","14"],"correta": 2},
+                {"q": "Qual fração equivale a 0,5?","alt": ["1/2","1/3","2/3","3/4"],"correta": 0},
+                {"q": "Quanto é 25% de 200?","alt": ["25","40","50","75"],"correta": 2},
+                {"q": "Qual é o resultado de 3/4 + 1/4?","alt": ["1/2","1","4/8","2"],"correta": 1},
+                {"q": "Qual é o mínimo múltiplo comum de 4 e 6?","alt": ["8","10","12","24"],"correta": 2},
+                {"q": "Qual é o máximo divisor comum de 18 e 24?","alt": ["3","6","9","12"],"correta": 1},
+                {"q": "Resolva: x + 7 = 15.","alt": ["6","7","8","9"],"correta": 2},
+                {"q": "Resolva: 3x = 21.","alt": ["6","7","8","9"],"correta": 1},
+                {"q": "Qual é o valor de 2x + 3 quando x = 4?","alt": ["8","10","11","12"],"correta": 2},
+                {"q": "Qual expressão representa o dobro de um número mais cinco?","alt": ["2x + 5","x + 2","5x + 2","2(x + 5)"],"correta": 0},
+                {"q": "Qual é a solução de x² = 49, considerando x positivo?","alt": ["5","6","7","8"],"correta": 2},
+                {"q": "Qual é o valor de 2³ × 2²?","alt": ["16","24","32","64"],"correta": 2},
+                {"q": "Qual é a forma decimal de 3/5?","alt": ["0,3","0,5","0,6","0,8"],"correta": 2},
+                {"q": "Um produto de R$ 80 recebeu desconto de 10%. Qual é o novo preço?","alt": ["R$ 70","R$ 72","R$ 74","R$ 78"],"correta": 1},
+                {"q": "Qual é a média de 6, 8 e 10?","alt": ["7","8","9","10"],"correta": 1},
+                {"q": "Qual é a mediana do conjunto 2, 4, 7, 9, 10?","alt": ["4","6","7","9"],"correta": 2},
+                {"q": "Qual é a moda do conjunto 1, 2, 2, 3, 4?","alt": ["1","2","3","4"],"correta": 1},
+                {"q": "Um triângulo possui quantos lados?","alt": ["2","3","4","5"],"correta": 1},
+                {"q": "A soma dos ângulos internos de um triângulo é igual a quê?","alt": ["90°","180°","270°","360°"],"correta": 1},
+                {"q": "Qual é a área de um retângulo de lados 5 cm e 3 cm?","alt": ["8 cm²","15 cm²","16 cm²","30 cm²"],"correta": 1},
+                {"q": "Qual é o perímetro de um quadrado de lado 6 cm?","alt": ["12 cm","18 cm","24 cm","36 cm"],"correta": 2},
+                {"q": "Qual é a área de um quadrado de lado 4 cm?","alt": ["8 cm²","12 cm²","16 cm²","20 cm²"],"correta": 2},
+                {"q": "Qual fórmula calcula a área de um círculo?","alt": ["πr²","2πr","bh/2","l²/2"],"correta": 0},
+                {"q": "Se o raio de um círculo é 3, qual é seu diâmetro?","alt": ["3","6","9","12"],"correta": 1},
+                {"q": "Qual sólido possui seis faces quadradas iguais?","alt": ["Cubo","Cone","Cilindro","Esfera"],"correta": 0},
+                {"q": "Qual é o volume de um cubo de aresta 2 cm?","alt": ["4 cm³","6 cm³","8 cm³","12 cm³"],"correta": 2},
+                {"q": "Em um triângulo retângulo, qual relação é dada pelo teorema de Pitágoras?","alt": ["a² = b² + c²","a = b + c","a² = b + c","a + b = c²"],"correta": 0},
+                {"q": "Qual é a hipotenusa de um triângulo retângulo com catetos 3 e 4?","alt": ["5","6","7","8"],"correta": 0},
+                {"q": "A função y = 2x + 1 é de qual tipo?","alt": ["Afim","Quadrática","Exponencial","Logarítmica"],"correta": 0},
+                {"q": "Na função y = 3x - 2, qual é o coeficiente angular?","alt": ["-2","1","2","3"],"correta": 3},
+                {"q": "Quais são as raízes de x² - 9 = 0?","alt": ["-3 e 3","0 e 9","3 e 9","-9 e 9"],"correta": 0},
+                {"q": "Qual é o discriminante da equação x² - 5x + 6 = 0?","alt": ["1","5","12","25"],"correta": 0},
+                {"q": "Uma progressão aritmética tem razão igual a quê?","alt": ["Diferença constante entre termos consecutivos","Produto constante","Quociente variável","Soma de todos os termos"],"correta": 0},
+                {"q": "Na PA 2, 5, 8, 11, qual é a razão?","alt": ["2","3","5","8"],"correta": 1},
+                {"q": "Ao lançar uma moeda equilibrada, qual é a probabilidade de sair cara?","alt": ["1/4","1/3","1/2","1"],"correta": 2},
+                {"q": "Em um dado comum, qual é a probabilidade de sair o número 6?","alt": ["1/2","1/3","1/6","1/12"],"correta": 2}
+            ],
+            Portugues: [
+                {"q": "Qual classe gramatical nomeia seres, lugares, sentimentos e ideias?","alt": ["Substantivo","Verbo","Advérbio","Preposição"],"correta": 0},
+                {"q": "Qual classe gramatical caracteriza o substantivo?","alt": ["Adjetivo","Artigo","Numeral","Conjunção"],"correta": 0},
+                {"q": "Qual classe gramatical indica ações, estados ou fenômenos?","alt": ["Verbo","Pronome","Substantivo","Interjeição"],"correta": 0},
+                {"q": "Qual palavra é um pronome pessoal?","alt": ["Ele","Casa","Bonito","Rapidamente"],"correta": 0},
+                {"q": "Qual palavra é um advérbio?","alt": ["Rapidamente","Rápido","Rapidez","Correr"],"correta": 0},
+                {"q": "Em 'A menina alegre chegou', qual palavra é o adjetivo?","alt": ["menina","alegre","chegou","a"],"correta": 1},
+                {"q": "Em 'Os alunos estudaram', qual é o sujeito?","alt": ["Os alunos","estudaram","alunos estudaram","Não há sujeito"],"correta": 0},
+                {"q": "Em 'Pedro comprou um livro', qual é o predicado?","alt": ["Pedro","comprou um livro","um livro","comprou"],"correta": 1},
+                {"q": "Qual é o plural correto de 'cidadão'?","alt": ["cidadãos","cidadões","cidadães","cidadãoses"],"correta": 0},
+                {"q": "Qual é o feminino de 'ator'?","alt": ["atriz","atora","atorina","atriza"],"correta": 0},
+                {"q": "Qual palavra está grafada corretamente?","alt": ["Exceção","Excessão","Eceção","Esceção"],"correta": 0},
+                {"q": "Qual palavra está corretamente acentuada?","alt": ["Lâmpada","Lampáda","Lámpada","Lampada"],"correta": 0},
+                {"q": "A palavra 'saída' recebe acento por apresentar o quê?","alt": ["Hiato","Ditongo","Tritongo","Encontro consonantal"],"correta": 0},
+                {"q": "Qual sinal indica uma pergunta direta?","alt": ["Ponto de interrogação","Dois-pontos","Ponto e vírgula","Travessão"],"correta": 0},
+                {"q": "Qual sinal pode introduzir uma fala em diálogo?","alt": ["Travessão","Vírgula","Parêntese","Reticências apenas"],"correta": 0},
+                {"q": "Em 'Maria, feche a porta', a vírgula separa o quê?","alt": ["Vocativo","Sujeito","Predicado","Objeto direto"],"correta": 0},
+                {"q": "Qual alternativa apresenta concordância correta?","alt": ["As meninas chegaram cedo","As menina chegou cedo","As meninas chegou cedo","A meninas chegaram cedo"],"correta": 0},
+                {"q": "Qual alternativa apresenta concordância verbal correta?","alt": ["Faz dois anos que estudo aqui","Fazem dois anos que estudo aqui","Fizeram dois anos que estudo aqui","Faziam dois ano que estudo aqui"],"correta": 0},
+                {"q": "Qual forma verbal completa corretamente: 'Ontem nós ___ ao cinema'?","alt": ["fomos","iremos","vamos","iríamos"],"correta": 0},
+                {"q": "Qual palavra é sinônimo de 'feliz'?","alt": ["contente","triste","irritado","frágil"],"correta": 0},
+                {"q": "Qual palavra é antônimo de 'claro'?","alt": ["escuro","brilhante","limpo","leve"],"correta": 0},
+                {"q": "Quando uma palavra possui mais de um sentido, ocorre o quê?","alt": ["Polissemia","Concordância","Regência","Derivação"],"correta": 0},
+                {"q": "Qual figura de linguagem compara implicitamente dois elementos?","alt": ["Metáfora","Pleonasmo","Eufemismo","Hipérbato"],"correta": 0},
+                {"q": "Em 'Estou morrendo de fome', ocorre qual figura de linguagem?","alt": ["Hipérbole","Metonímia","Ironia","Antítese"],"correta": 0},
+                {"q": "Em 'O vento cantava', ocorre qual figura de linguagem?","alt": ["Personificação","Comparação","Eufemismo","Onomatopeia"],"correta": 0},
+                {"q": "Qual gênero textual geralmente apresenta uma notícia de fato recente?","alt": ["Notícia","Receita","Poema lírico","Bula"],"correta": 0},
+                {"q": "Qual gênero textual ensina a preparar um alimento?","alt": ["Receita","Crônica","Editorial","Biografia"],"correta": 0},
+                {"q": "Qual é a finalidade principal de uma propaganda?","alt": ["Persuadir o público","Narrar uma história antiga","Registrar uma lei","Descrever um experimento"],"correta": 0},
+                {"q": "Em um texto argumentativo, a tese é o quê?","alt": ["Ideia principal defendida","Lista de personagens","Descrição do cenário","Conclusão obrigatoriamente neutra"],"correta": 0},
+                {"q": "Qual elemento conecta ideias e contribui para a coesão textual?","alt": ["Conectivo","Título apenas","Margem","Ilustração"],"correta": 0},
+                {"q": "Qual conectivo indica oposição?","alt": ["Porém","Portanto","Porque","Além disso"],"correta": 0},
+                {"q": "Qual conectivo indica conclusão?","alt": ["Portanto","Embora","Enquanto","Mas"],"correta": 0},
+                {"q": "Qual é o foco narrativo de um narrador que participa da história?","alt": ["Primeira pessoa","Terceira pessoa onisciente","Segunda pessoa obrigatória","Discurso indireto livre"],"correta": 0},
+                {"q": "Qual elemento da narrativa indica onde os fatos acontecem?","alt": ["Espaço","Clímax","Narrador","Enredo"],"correta": 0},
+                {"q": "Qual é o ponto de maior tensão da narrativa?","alt": ["Clímax","Introdução","Desfecho","Epígrafe"],"correta": 0},
+                {"q": "Qual escola literária brasileira valorizou a identidade nacional no século XIX?","alt": ["Romantismo","Arcadismo","Concretismo","Parnasianismo apenas europeu"],"correta": 0},
+                {"q": "Quem escreveu 'Dom Casmurro'?","alt": ["Machado de Assis","José de Alencar","Carlos Drummond de Andrade","Graciliano Ramos"],"correta": 0},
+                {"q": "Qual movimento literário apresentou forte crítica social e análise psicológica?","alt": ["Realismo","Trovadorismo","Quinhentismo","Simbolismo apenas"],"correta": 0},
+                {"q": "A Semana de Arte Moderna ocorreu em qual ano?","alt": ["1922","1822","1889","1964"],"correta": 0},
+                {"q": "Qual autor escreveu 'Vidas Secas'?","alt": ["Graciliano Ramos","Jorge Amado","Manuel Bandeira","Euclides da Cunha"],"correta": 0}
+            ],
+            Quimica: [
+                {"q": "Qual é a menor unidade de um elemento químico que conserva suas propriedades?","alt": ["Átomo","Célula","Molécula orgânica","Íon obrigatoriamente"],"correta": 0},
+                {"q": "Qual partícula possui carga elétrica negativa?","alt": ["Elétron","Próton","Nêutron","Núcleo"],"correta": 0},
+                {"q": "Qual partícula possui carga elétrica positiva?","alt": ["Próton","Elétron","Nêutron","Fóton"],"correta": 0},
+                {"q": "Qual partícula do núcleo não possui carga elétrica?","alt": ["Nêutron","Próton","Elétron","Íon"],"correta": 0},
+                {"q": "O número atômico corresponde ao número de quê?","alt": ["Prótons","Nêutrons","Elétrons mais nêutrons","Moléculas"],"correta": 0},
+                {"q": "O número de massa corresponde à soma de quê?","alt": ["Prótons e nêutrons","Prótons e elétrons","Elétrons e nêutrons","Átomos e moléculas"],"correta": 0},
+                {"q": "Átomos do mesmo elemento com diferentes números de nêutrons são chamados de quê?","alt": ["Isótopos","Isóbaros","Isótonos","Cátions"],"correta": 0},
+                {"q": "Qual tabela organiza os elementos químicos?","alt": ["Tabela periódica","Tabela nutricional","Escala de pH","Tabela de densidade"],"correta": 0},
+                {"q": "Elementos de uma mesma família da tabela periódica possuem geralmente o quê?","alt": ["Propriedades químicas semelhantes","Mesmo número de massa","Mesmo número de nêutrons","Mesmo estado físico"],"correta": 0},
+                {"q": "Qual elemento possui símbolo O?","alt": ["Oxigênio","Ouro","Ósmio","Hidrogênio"],"correta": 0},
+                {"q": "Qual elemento possui símbolo Na?","alt": ["Sódio","Nitrogênio","Neônio","Níquel"],"correta": 0},
+                {"q": "Qual elemento possui símbolo Fe?","alt": ["Ferro","Flúor","Fósforo","Frâncio"],"correta": 0},
+                {"q": "Uma ligação entre metal e ametal é geralmente de qual tipo?","alt": ["Iônica","Metálica","Covalente apolar apenas","Ponte de hidrogênio"],"correta": 0},
+                {"q": "Uma ligação baseada no compartilhamento de elétrons é chamada de quê?","alt": ["Covalente","Iônica","Metálica","Nuclear"],"correta": 0},
+                {"q": "Qual substância é formada por moléculas de H₂O?","alt": ["Água","Oxigênio","Hidrogênio","Sal de cozinha"],"correta": 0},
+                {"q": "Qual é a fórmula do gás carbônico?","alt": ["CO₂","CO","O₂","CH₄"],"correta": 0},
+                {"q": "Qual é a fórmula do cloreto de sódio?","alt": ["NaCl","HCl","NaOH","KClO₃"],"correta": 0},
+                {"q": "Uma transformação que não forma novas substâncias é chamada de quê?","alt": ["Transformação física","Reação química","Combustão","Oxidação"],"correta": 0},
+                {"q": "Qual evidência pode indicar uma reação química?","alt": ["Formação de gás","Mudança de posição","Quebra de um objeto","Derretimento do gelo apenas"],"correta": 0},
+                {"q": "Em uma reação química, a massa total se conserva segundo qual lei?","alt": ["Lei de Lavoisier","Lei de Ohm","Lei de Newton","Lei de Coulomb"],"correta": 0},
+                {"q": "Qual processo separa sólido insolúvel de líquido usando filtro?","alt": ["Filtração","Destilação","Decantação gasosa","Sublimação"],"correta": 0},
+                {"q": "Qual método separa líquidos com diferentes pontos de ebulição?","alt": ["Destilação","Filtração","Peneiração","Imantação"],"correta": 0},
+                {"q": "Qual grandeza relaciona massa e volume?","alt": ["Densidade","Pressão","Temperatura","Energia cinética"],"correta": 0},
+                {"q": "Uma solução é formada por quê?","alt": ["Soluto e solvente","Prótons e elétrons","Ácido e base obrigatoriamente","Metal e ametal"],"correta": 0},
+                {"q": "Em água com açúcar, o açúcar é o quê?","alt": ["Soluto","Solvente","Catalisador","Precipitado"],"correta": 0},
+                {"q": "Uma solução com pH menor que 7 é geralmente o quê?","alt": ["Ácida","Básica","Neutra","Metálica"],"correta": 0},
+                {"q": "Uma solução com pH igual a 7, a 25 °C, é considerada quê?","alt": ["Neutra","Ácida","Básica","Oxidante"],"correta": 0},
+                {"q": "Qual substância é uma base comum?","alt": ["Hidróxido de sódio","Ácido clorídrico","Gás carbônico","Etanol"],"correta": 0},
+                {"q": "A reação entre ácido e base pode formar o quê?","alt": ["Sal e água","Somente gás","Metal puro","Petróleo"],"correta": 0},
+                {"q": "Oxidação envolve geralmente o quê?","alt": ["Perda de elétrons","Ganho de prótons apenas","Perda de nêutrons","Formação de luz obrigatória"],"correta": 0},
+                {"q": "Qual gás é necessário para a combustão completa de muitos combustíveis?","alt": ["Oxigênio","Nitrogênio","Hélio","Argônio"],"correta": 0},
+                {"q": "Qual fator aumenta geralmente a velocidade de uma reação?","alt": ["Aumento da temperatura","Redução de colisões","Diminuição total da concentração","Retirada de reagentes"],"correta": 0},
+                {"q": "Qual substância acelera uma reação sem ser consumida permanentemente?","alt": ["Catalisador","Solvente","Produto","Indicador"],"correta": 0},
+                {"q": "A quantidade de matéria é medida em qual unidade do SI?","alt": ["Mol","Grama","Litro","Pascal"],"correta": 0},
+                {"q": "Um mol contém aproximadamente quantas entidades?","alt": ["6,02 × 10²³","3,0 × 10⁸","9,8","1,6 × 10⁻¹⁹"],"correta": 0},
+                {"q": "Qual gás ocupa maior proporção do ar atmosférico?","alt": ["Nitrogênio","Oxigênio","Gás carbônico","Hidrogênio"],"correta": 0},
+                {"q": "Hidrocarbonetos são compostos formados principalmente por quais elementos?","alt": ["Carbono e hidrogênio","Oxigênio e nitrogênio","Sódio e cloro","Ferro e carbono"],"correta": 0},
+                {"q": "Qual função orgânica apresenta o grupo hidroxila ligado a carbono saturado?","alt": ["Álcool","Ácido carboxílico","Aldeído","Éster"],"correta": 0},
+                {"q": "Qual polímero natural forma grande parte da parede celular vegetal?","alt": ["Celulose","PVC","Náilon","Polietileno"],"correta": 0},
+                {"q": "A radioatividade ocorre devido a alterações em qual parte do átomo?","alt": ["Núcleo","Eletrosfera apenas","Ligação covalente","Camada de valência apenas"],"correta": 0}
+            ]
+        };
+        // VARIÁVEIS GLOBAIS (MULTIPLAYER E SINGLEPLAYER)
+        let papel = '', salaId = '', nomeAluno = '', jogadorRef = null, engineInterval = null;
+        let perguntasSelecionadas = [], perguntaAtualIndex = 0, alternativaSelecionadaIndex = null;
+        let dificuldadeSelecionada = 'medium', modoSelecionado = 'survivor', tempoSelecionado = 60, tempoQuestaoSelecionado = 15;
+        let isSingleplayer = false;
+        let soloAcertos = 0, soloErros = 0;
+        let feedbackFlutuanteTimer = null;
+        let ultimaRodadaFeedbackAluno = null;
+        let ultimaOrdemPerguntas = ''; // Evita repetir exatamente a sequência da partida anterior
+        
+        const TEMPO_FREEZE = 2500;
+        const TEMPO_FEEDBACK = 4000;
+        
+        let gameState = {
+            fase: "setup", paused: false, gameMode: "survivor", timeLeft: 0, ropePosition: 50, 
+            round: 1, vencedor: null, currentQuestion: null, scoreGlobal: { certas: 0, erradas: 0 },
+            questionTimeLeft: 0, participantsRound: {}, answersReceived: 0, roundResult: null, finalRanking: [],
+            timers: { freezeRestante: 0, feedbackRestante: 0 }
+        };
+
+        const forcaMaquinaPorRodada = { easy: 2, medium: 4, hard: 6 };
+        const configForca = { easy: 0.05, medium: 0.08, hard: 0.12 };
+        const FORCA_CONTINUA_SUPER_DIFICIL = 0.10;
+        const configPesos = { easy: { acerto: 4, erro: 2 }, medium: { acerto: 3, erro: 2 }, hard: { acerto: 3, erro: 2.5 }, placar: { acerto: 4, erro: 5 } };
+
+        function PatternShuffle(array) {
+            let m = array.length, t, i;
+            while (m) { i = Math.floor(Math.random() * m--); t = array[m]; array[m] = array[i]; array[i] = t; }
+            return array;
+        }
+
+        function alternarVisibilidadeBanco() {
+            document.getElementById('area-cadastro-perguntas').className = (document.getElementById('seletor-banco').value === 'personalizado') ? '' : 'oculto';
+        }
+
+        function mudarModo(modo) { 
+            modoSelecionado = modo; 
+            document.querySelectorAll('.seletor-grupo .btn-cfg').forEach(b => b.classList.remove('ativo-modo'));
+            const idModo = modo === 'time_attack' ? 'time' : modo === 'super_hard' ? 'super-hard' : modo;
+            document.getElementById('modo-' + idModo).classList.add('ativo-modo');
+            document.getElementById('config-tempo-container').className = (modo === 'time_attack') ? '' : 'oculto';
+            document.getElementById('config-dificuldade-container').className = (modo === 'placar' || modo === 'super_hard') ? 'oculto' : '';
+        }
+
+        function mudarDificuldade(nivel) { 
+            dificuldadeSelecionada = nivel; 
+            document.querySelectorAll('#config-dificuldade-container .btn-cfg').forEach(b => b.classList.remove('ativo'));
+            document.getElementById('dif-' + nivel).classList.add('ativo');
+        }
+
+        // ---------------------------------------------------------
+        // MODO INDIVIDUAL (INICIA DA TELA DE LOGIN)
+        // ---------------------------------------------------------
+        function iniciarModoIndividual() {
+            isSingleplayer = true; 
+            papel = 'aluno';
+            
+            document.getElementById('tela-selecao').classList.add('oculto');
+            
+            document.getElementById('painel-professor').classList.remove('oculto');
+            document.querySelector('#painel-professor h2').innerText = "Fire Quiz — Todos contra a Máquina 🔥 | Modo Solo";
+            
+            document.querySelector('.ranking-container').classList.add('oculto');
+            document.getElementById('painel-professor').style.maxWidth = "600px";
+            document.querySelector('.painel-grid').style.gridTemplateColumns = "1fr";
+            
+            document.getElementById('btn-iniciar').setAttribute('onclick', 'iniciarJogo(true)');
+        }
+
+        // ---------------------------------------------------------
+        // PROFESSOR E ALUNO (MULTI-SALAS)
+        // ---------------------------------------------------------
+        function iniciarSalaProfessor() {
+            const senha = prompt("Digite a senha de administrador:");
+            if (senha !== "mestre123") return alert("Senha incorreta.");
+            
+            salaId = Math.floor(1000 + Math.random() * 9000).toString();
+            papel = 'professor'; isSingleplayer = false;
+            
+            document.getElementById('tela-selecao').classList.add('oculto');
+            document.getElementById('painel-professor').classList.remove('oculto');
+            document.getElementById('display-sala-id').innerText = salaId;
+            
+            database.ref(`Salas/${salaId}`).set({ state: gameState, respostas: null, jogadores: null });
+            ouvirLobbyETabelaRanking();
+        }
+
+        function expulsarAluno(nome) {
+            if (confirm(`Tem a certeza que deseja expulsar o aluno(a) ${nome}?`)) {
+                database.ref(`Salas/${salaId}/jogadores/${nome}`).remove();
+            }
+        }
+
+        function entrarSalaAluno() {
+            nomeAluno = document.getElementById('input-aluno-nome').value.trim().toUpperCase();
+            salaId = document.getElementById('input-sala-id').value.trim();
+            if (!nomeAluno || !salaId) return alert("Preencha todos os campos!");
+            
+            papel = 'aluno'; isSingleplayer = false;
+            const salaRef = database.ref(`Salas/${salaId}`);
+
+            salaRef.once('value').then(snapSala => {
+                if (!snapSala.exists()) return alert("⚠️ Código de sala inválido! Verifique o número e tente novamente.");
+                
+                jogadorRef = database.ref(`Salas/${salaId}/jogadores/${nomeAluno}`);
+                jogadorRef.once('value').then(snapJog => {
+                    if (snapJog.exists() && snapJog.val().online === true) {
+                        alert("⚠️ Esse nome já está em uso por outro jogador ativo. Adicione o seu apelido ou número!");
+                        document.getElementById('input-aluno-nome').value = '';
+                        return;
+                    }
+                    if (snapJog.exists()) jogadorRef.update({ online: true });
+                    else jogadorRef.set({ acertos: 0, erros: 0, online: true });
+                    
+                    document.getElementById('tela-selecao').classList.add('oculto');
+                    document.getElementById('tela-aluno').classList.remove('oculto');
+                    
+                    jogadorRef.child('online').onDisconnect().set(false);
+                    
+                    jogadorRef.on('value', monitor => {
+                        if (!monitor.exists() && gameState.fase !== "setup") {
+                            alert("⚠️ Foi removido desta partida pelo professor.");
+                            location.reload();
+                        }
+                    });
+                    ouvirEstadoDaSala();
+                });
+            });
+        }
+
+        // ---------------------------------------------------------
+        // MOTOR DE JOGO E REGRAS DA ARENA
+        // ---------------------------------------------------------
+        function prepararBancoPerguntas() {
+            const escolhaBanco = document.getElementById('seletor-banco').value;
+            let tempPerguntas = [];
+            
+            if (escolhaBanco === 'personalizado') {
+                const texto = document.getElementById('campo-perguntas').value.trim();
+                if (texto === "") { alert("⚠️ Insira as suas questões customizadas."); return false; }
+                texto.split("\n").forEach(linha => {
+                    const partes = linha.trim().split(";");
+                    if (partes.length === 6) tempPerguntas.push({ q: partes[0].trim(), alt: [partes[1].trim(), partes[2].trim(), partes[3].trim(), partes[4].trim()], correta: parseInt(partes[5].trim()) });
+                });
+            } else if (escolhaBanco === 'ConhecimentosGerais') {
+                const materias = ["Biologia", "Geografia", "Historia", "Matematica", "Portugues", "Quimica", "Filosofia"];
+                materias.forEach(mat => {
+                    if(bancosNativos[mat]) tempPerguntas = tempPerguntas.concat(PatternShuffle(JSON.parse(JSON.stringify(bancosNativos[mat]))).slice(0, 10));
+                });
+            } else {
+                if(!bancosNativos[escolhaBanco]) { alert("Banco vazio ou não encontrado. Cole as perguntas no script."); return false;}
+                tempPerguntas = JSON.parse(JSON.stringify(bancosNativos[escolhaBanco]));
+            }
+
+            if (tempPerguntas.length === 0) { alert("⚠️ Banco de dados vazio."); return false; }
+            
+            // Cada pergunta recebe um identificador antes do embaralhamento.
+            tempPerguntas.forEach((item, indice) => item._shuffleId = `${indice}-${item.q}`);
+            perguntasSelecionadas = PatternShuffle(tempPerguntas);
+
+            // Se houver mais de uma pergunta, não repete exatamente a ordem da partida anterior.
+            let assinaturaAtual = perguntasSelecionadas.map(item => item._shuffleId).join('|');
+            if (perguntasSelecionadas.length > 1 && assinaturaAtual === ultimaOrdemPerguntas) {
+                perguntasSelecionadas.push(perguntasSelecionadas.shift());
+                assinaturaAtual = perguntasSelecionadas.map(item => item._shuffleId).join('|');
+            }
+            ultimaOrdemPerguntas = assinaturaAtual;
+
+            // As alternativas também são embaralhadas em cada nova partida.
+            perguntasSelecionadas.forEach(item => {
+                const textoCerto = item.alt[item.correta];
+                item.alt = PatternShuffle(item.alt);
+                item.correta = item.alt.indexOf(textoCerto);
+                delete item._shuffleId;
+            });
+            return true;
+        }
+
+        async function iniciarJogo(modoSolo) {
+            if (!prepararBancoPerguntas()) return;
+            
+            document.getElementById('configuracoes-professor').classList.add('oculto');
+            document.getElementById('placar-final-professor').classList.add('oculto');
+            document.getElementById('placar-final-professor').innerHTML = '';
+
+            // Cada nova partida começa com o placar individual zerado.
+            if (!modoSolo) {
+                const jogadoresSnap = await database.ref(`Salas/${salaId}/jogadores`).once('value');
+                const atualizacoes = {};
+                jogadoresSnap.forEach(child => {
+                    atualizacoes[`${child.key}/acertos`] = 0;
+                    atualizacoes[`${child.key}/erros`] = 0;
+                });
+                if (Object.keys(atualizacoes).length) {
+                    await database.ref(`Salas/${salaId}/jogadores`).update(atualizacoes);
+                }
+            }
+            
+            perguntaAtualIndex = 0;
+            tempoQuestaoSelecionado = parseInt(document.getElementById('tempo-questao').value) || 15;
+            gameState = { fase: "setup", paused: false, gameMode: modoSelecionado, ropePosition: 50, round: 1, vencedor: null, scoreGlobal: { certas: 0, erradas: 0 }, questionTimeLeft: tempoQuestaoSelecionado, participantsRound: {}, answersReceived: 0, roundResult: null, finalRanking: [], timers: { freezeRestante: 0, feedbackRestante: 0 } };
+            
+            if (modoSelecionado === 'time_attack') {
+                gameState.timeLeft = parseInt(document.getElementById('tempo-customizado').value) || 60;
+            }
+
+            if (modoSolo) {
+                soloAcertos = 0;
+                soloErros = 0;
+                document.getElementById('solo-acertos').innerText = '0';
+                document.getElementById('solo-erros').innerText = '0';
+                document.getElementById('placar-solo').classList.remove('oculto');
+                document.getElementById('arena-lado-prof').innerText = '🧑 VOCÊ';
+                document.getElementById('arena-objetivo-prof').innerText = 'ACERTE E EMPURRE O FOGO →';
+                document.getElementById('area-jogo-professor').classList.remove('oculto');
+                document.getElementById('btn-pausar-jogo').classList.remove('oculto');
+                document.getElementById('btn-pausar-jogo').innerText = '⏸️ Pausar Partida';
+                document.getElementById('btn-encerrar-geral').classList.remove('oculto');
+                document.getElementById('btn-encerrar-geral').innerText = "❌ Sair do Modo Solo";
+                if (modoSelecionado === 'time_attack') document.getElementById('prof-timer-container').classList.remove('oculto');
+                
+                iniciarRodada();
+                if(engineInterval) clearInterval(engineInterval);
+                engineInterval = setInterval(gameEngineLoopLocal, 100);
+            } else {
+                document.getElementById('placar-solo').classList.add('oculto');
+                document.getElementById('arena-lado-prof').innerText = '🧑‍🎓 TURMA';
+                document.getElementById('arena-objetivo-prof').innerText = 'ACERTEM JUNTOS E EMPURREM O FOGO →';
+                document.getElementById('area-jogo-professor').classList.remove('oculto');
+                document.getElementById('btn-pausar-jogo').classList.remove('oculto');
+                document.getElementById('btn-pausar-jogo').style.display = 'block';
+                document.getElementById('btn-pausar-jogo').innerText = '⏸️ Pausar Partida';
+                document.getElementById('btn-encerrar-geral').classList.remove('oculto');
+                document.getElementById('titulo-monitor').innerText = "Ranking ao vivo";
+                if (modoSelecionado === 'time_attack') document.getElementById('prof-timer-container').classList.remove('oculto');
+                
+                iniciarRodada();
+                if(engineInterval) clearInterval(engineInterval);
+                engineInterval = setInterval(gameEngineLoopFirebase, 100);
+            }
+        }
+
+        async function obterParticipantesOnline() {
+            const snap = await database.ref(`Salas/${salaId}/jogadores`).once('value');
+            const participantes = {};
+            snap.forEach(child => {
+                const dados = child.val();
+                if (dados && dados.online === true) participantes[child.key] = true;
+            });
+            return participantes;
+        }
+
+        async function iniciarRodada() {
+            gameState.currentQuestion = perguntasSelecionadas[perguntaAtualIndex];
+            gameState.fase = "leitura";
+            gameState.timers.freezeRestante = TEMPO_FREEZE;
+            gameState.questionTimeLeft = tempoQuestaoSelecionado;
+            gameState.answersReceived = 0;
+            gameState.roundResult = null;
+            alternativaSelecionadaIndex = null;
+            
+            if (!isSingleplayer) {
+                gameState.participantsRound = await obterParticipantesOnline();
+                await database.ref(`Salas/${salaId}/respostas`).remove();
+                atualizarFirebaseState();
+                renderizarTelaProfessor();
+            } else {
+                renderizarTelaSolo();
+            }
+        }
+
+        function calcularImpulsoColetivo(percentual) {
+            if (percentual >= 0.90) return 10;
+            if (percentual >= 0.75) return 7;
+            if (percentual >= 0.60) return 4;
+            if (percentual >= 0.50) return 1;
+            if (percentual >= 0.30) return -3;
+            return -6;
+        }
+
+        async function encerrarVotacaoECalcularRodada() {
+            if (gameState.fase !== "respondendo") return;
+            gameState.fase = "calculando";
+            atualizarFirebaseState();
+
+            const snap = await database.ref(`Salas/${salaId}/respostas`).once('value');
+            const respostas = snap.val() || {};
+            const participantes = Object.keys(gameState.participantsRound || {});
+            const totalParticipantes = participantes.length;
+            let acertos = 0;
+            let erros = 0;
+            const distribuicao = [0, 0, 0, 0];
+
+            for (const nome of participantes) {
+                const voto = respostas[nome];
+                const acertou = voto && voto.round === gameState.round && voto.alternativa === gameState.currentQuestion.correta;
+                if (voto && voto.round === gameState.round && Number.isInteger(voto.alternativa)) {
+                    distribuicao[voto.alternativa]++;
+                }
+                if (acertou) {
+                    acertos++;
+                    database.ref(`Salas/${salaId}/jogadores/${nome}/acertos`).transaction(c => (c || 0) + 1);
+                } else {
+                    erros++;
+                    database.ref(`Salas/${salaId}/jogadores/${nome}/erros`).transaction(e => (e || 0) + 1);
+                }
+            }
+
+            const percentual = totalParticipantes > 0 ? acertos / totalParticipantes : 0;
+            const impulsoTurma = calcularImpulsoColetivo(percentual);
+            const ataqueMaquina = (gameState.gameMode === 'placar' || gameState.gameMode === 'super_hard') ? 0 : forcaMaquinaPorRodada[dificuldadeSelecionada];
+
+            // A máquina oferece resistência, mas nunca pode inverter um resultado coletivo positivo.
+            // Com 50% ou mais de acertos, o fogo sempre avança para a direita, em direção à máquina.
+            // Com menos de 50%, o fogo recua para a esquerda, em direção aos estudantes.
+            let movimentoFinal;
+            if (impulsoTurma > 0) {
+                movimentoFinal = gameState.gameMode === 'placar'
+                    ? impulsoTurma
+                    : Math.max(1, impulsoTurma - ataqueMaquina);
+            } else {
+                movimentoFinal = impulsoTurma - ataqueMaquina;
+            }
+
+            gameState.ropePosition = Math.max(0, Math.min(100, gameState.ropePosition + movimentoFinal));
+            gameState.scoreGlobal.certas += acertos;
+            gameState.scoreGlobal.erradas += erros;
+            gameState.roundResult = {
+                participantes: totalParticipantes, respostas: Object.keys(respostas).length,
+                acertos, erros, percentual: Math.round(percentual * 100),
+                impulsoTurma, ataqueMaquina, movimentoFinal, distribuicao
+            };
+
+            if (gameState.ropePosition >= 100) return finalizarJogo('alunos');
+            if (gameState.ropePosition <= 0) return finalizarJogo('maquina');
+
+            gameState.fase = "feedback";
+            gameState.timers.feedbackRestante = TEMPO_FEEDBACK;
+            atualizarFirebaseState();
+            renderizarTelaProfessor();
+        }
+
+        function mostrarFeedbackFlutuante(acertou) {
+            const caixa = document.getElementById('feedback-flutuante');
+            if (!caixa) return;
+            caixa.textContent = acertou ? '✅ Você acertou!' : '❌ Você errou!';
+            caixa.className = 'feedback-flutuante ' + (acertou ? 'acerto' : 'erro') + ' visivel';
+            clearTimeout(feedbackFlutuanteTimer);
+            feedbackFlutuanteTimer = setTimeout(() => {
+                caixa.classList.remove('visivel');
+            }, 1800);
+        }
+
+        function alternarPausa() {
+            gameState.paused = !gameState.paused;
+            document.getElementById('btn-pausar-jogo').innerText = gameState.paused ? "▶️ Retomar Jogo" : "⏸️ Pausar Partida";
+            if (!isSingleplayer) atualizarFirebaseState();
+        }
+
+        // MOTOR: FIREBASE (PROFESSOR GERENCIA A SALA)
+        function gameEngineLoopFirebase() {
+            if (gameState.paused || gameState.fase === "setup" || gameState.fase === "ended" || gameState.fase === "calculando") return;
+
+            if (gameState.fase === "leitura") {
+                gameState.timers.freezeRestante -= 100;
+                if (gameState.timers.freezeRestante <= 0) {
+                    gameState.fase = "respondendo";
+                    gameState.questionTimeLeft = tempoQuestaoSelecionado;
+                    atualizarFirebaseState();
+                }
+            } else if (gameState.fase === "respondendo") {
+                gameState.questionTimeLeft = Math.max(0, gameState.questionTimeLeft - 0.1);
+
+                if (gameState.gameMode === 'super_hard') {
+                    gameState.ropePosition = Math.max(0, gameState.ropePosition - FORCA_CONTINUA_SUPER_DIFICIL);
+                    database.ref(`Salas/${salaId}/state/ropePosition`).set(gameState.ropePosition);
+                    if (gameState.ropePosition <= 0) return finalizarJogo('maquina');
+                }
+
+                if (gameState.gameMode === "time_attack") {
+                    gameState.timeLeft = Math.max(0, gameState.timeLeft - 0.1);
+                    document.getElementById('prof-tempo').innerText = Math.ceil(gameState.timeLeft) + "s";
+                    if (gameState.timeLeft <= 0) return finalizarJogo(gameState.ropePosition > 50 ? 'alunos' : 'maquina');
+                }
+
+                const totalParticipantes = Object.keys(gameState.participantsRound || {}).length;
+                if (totalParticipantes > 0 && gameState.answersReceived >= totalParticipantes) {
+                    encerrarVotacaoECalcularRodada();
+                    return;
+                }
+                if (gameState.questionTimeLeft <= 0) {
+                    encerrarVotacaoECalcularRodada();
+                    return;
+                }
+
+                if (Math.round(gameState.questionTimeLeft * 10) % 10 === 0) atualizarFirebaseState();
+            } else if (gameState.fase === "feedback") {
+                gameState.timers.feedbackRestante -= 100;
+                if (gameState.timers.feedbackRestante <= 0) {
+                    perguntaAtualIndex = (perguntaAtualIndex + 1) % perguntasSelecionadas.length;
+                    gameState.round++;
+                    iniciarRodada();
+                    return;
+                }
+            }
+            renderizarTelaProfessor();
+        }
+
+        // MOTOR: LOCAL (SINGLEPLAYER)
+        function gameEngineLoopLocal() {
+            if (gameState.paused || gameState.fase === "setup" || gameState.fase === "ended") return;
+
+            if (gameState.fase === "leitura") {
+                gameState.timers.freezeRestante -= 100;
+                document.getElementById('barra-freeze-solo').style.width = (gameState.timers.freezeRestante / TEMPO_FREEZE * 100) + '%';
+                if (gameState.timers.freezeRestante <= 0) {
+                    gameState.fase = "respondendo";
+                    document.getElementById('container-freeze-solo').classList.add('oculto');
+                    document.querySelectorAll('#prof-lista-opcoes .btn-opcao').forEach(b => b.disabled = false);
+                }
+            } 
+            else if (gameState.fase === "feedback") {
+                gameState.timers.feedbackRestante -= 100;
+                if (gameState.timers.feedbackRestante <= 0) {
+                    perguntaAtualIndex = (perguntaAtualIndex + 1) % perguntasSelecionadas.length;
+                    gameState.round++;
+                    iniciarRodada();
+                    return;
+                }
+            }
+            else if (gameState.fase === "respondendo") {
+                if (gameState.gameMode === "time_attack") {
+                    gameState.timeLeft = Math.max(0, gameState.timeLeft - 0.1);
+                    document.getElementById('prof-tempo').innerText = Math.ceil(gameState.timeLeft) + "s";
+                    if (gameState.timeLeft <= 0) return finalizarJogo(gameState.ropePosition > 50 ? 'alunos' : 'maquina');
+                }
+                if (gameState.gameMode === 'super_hard') {
+                    gameState.ropePosition -= FORCA_CONTINUA_SUPER_DIFICIL;
+                    if (gameState.ropePosition <= 0) return finalizarJogo('maquina');
+                } else if (gameState.gameMode !== 'placar') {
+                    gameState.ropePosition -= configForca[dificuldadeSelecionada];
+                    if (gameState.ropePosition <= 0) return finalizarJogo('maquina');
+                }
+            }
+            document.getElementById('marcador').style.left = gameState.ropePosition + '%';
+        }
+
+        async function voltarAoInicioDoLobby() {
+            const mensagem = isSingleplayer
+                ? "Deseja voltar à Arena do Conhecimento?"
+                : "Deseja fechar esta sala e voltar à Arena do Conhecimento? Os alunos também retornarão ao início.";
+
+            if (!confirm(mensagem)) return;
+
+            clearInterval(engineInterval);
+            engineInterval = null;
+
+            if (isSingleplayer || !salaId) {
+                location.reload();
+                return;
+            }
+
+            try {
+                await database.ref(`Salas/${salaId}/state`).set({
+                    fase: "closed",
+                    paused: false,
+                    ropePosition: 50,
+                    round: 1,
+                    vencedor: null,
+                    currentQuestion: null,
+                    closedMessage: "A sala foi encerrada pelo professor."
+                });
+
+                setTimeout(async () => {
+                    try {
+                        await database.ref(`Salas/${salaId}`).remove();
+                    } finally {
+                        location.reload();
+                    }
+                }, 700);
+            } catch (erro) {
+                console.error("Erro ao fechar a sala:", erro);
+                alert("Não foi possível fechar a sala no Firebase. A página será reiniciada.");
+                location.reload();
+            }
+        }
+
+        async function forcarEncerramento() {
+            const mensagem = isSingleplayer
+                ? "Deseja sair do modo individual e voltar à tela inicial?"
+                : "Deseja encerrar a partida e voltar ao lobby desta mesma sala?";
+
+            if (!confirm(mensagem)) return;
+
+            clearInterval(engineInterval);
+            engineInterval = null;
+
+            if (isSingleplayer) {
+                location.reload();
+                return;
+            }
+
+            gameState = {
+                fase: "setup",
+                paused: false,
+                gameMode: modoSelecionado,
+                timeLeft: 0,
+                ropePosition: 50,
+                round: 1,
+                vencedor: null,
+                currentQuestion: null,
+                scoreGlobal: { certas: 0, erradas: 0 },
+                questionTimeLeft: tempoQuestaoSelecionado,
+                participantsRound: {},
+                answersReceived: 0,
+                roundResult: null,
+                finalRanking: [],
+                timers: { freezeRestante: 0, feedbackRestante: 0 }
+            };
+
+            await database.ref(`Salas/${salaId}/respostas`).remove();
+            await database.ref(`Salas/${salaId}/state`).set(gameState);
+
+            document.getElementById('area-jogo-professor').classList.add('oculto');
+            document.getElementById('configuracoes-professor').classList.remove('oculto');
+            document.getElementById('btn-encerrar-geral').classList.add('oculto');
+            document.getElementById('prof-timer-container').classList.add('oculto');
+            document.getElementById('btn-pausar-jogo').innerText = "⏸️ Pausar Partida";
+            document.getElementById('titulo-monitor').innerText = "Estudantes no Lobby";
+            document.getElementById('prof-resultado-coletivo').classList.add('oculto');
+            document.getElementById('placar-final-professor').classList.add('oculto');
+            document.getElementById('placar-final-professor').innerHTML = '';
+            document.getElementById('prof-status-coletivo').innerText = "Aguardando a rodada...";
+            document.getElementById('marcador').style.left = '50%';
+        }
+
+        function escaparHtml(texto) {
+            return String(texto).replace(/[&<>'"]/g, caractere => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+            })[caractere]);
+        }
+
+        function criarHtmlPlacarFinal(ranking, vencedor, nomeDestaque = '') {
+            const tituloResultado = vencedor === 'alunos'
+                ? '🎉 Parabéns, a turma venceu!'
+                : vencedor === 'empate'
+                    ? '🤝 EMPATE!'
+                    : '🤖 Que pena, a máquina venceu!';
+            const medalhas = ['🥇', '🥈', '🥉'];
+            const podio = ranking.slice(0, 3).map((jogador, indice) => `
+                <div class="podio-item pos-${indice + 1}">
+                    <span class="podio-medalha">${medalhas[indice]}</span>
+                    <span class="podio-nome">${escaparHtml(jogador.nome)}</span>
+                    <span class="podio-pontos">${jogador.acertos} acertos</span><br>
+                    <small>${jogador.aproveitamento}%</small>
+                </div>`).join('');
+
+            const linhas = ranking.map((jogador, indice) => `
+                <div class="linha-final ${jogador.nome === nomeDestaque ? 'eu' : ''}">
+                    <span>${indice + 1}º</span>
+                    <span>${escaparHtml(jogador.nome)}${jogador.nome === nomeDestaque ? ' 👤' : ''}</span>
+                    <span>✅ ${jogador.acertos}</span>
+                    <span>❌ ${jogador.erros}</span>
+                    <span>${jogador.aproveitamento}%</span>
+                </div>`).join('');
+
+            return `
+                <h2>PLACAR FINAL</h2>
+                <div class="resultado-vencedor">${tituloResultado}</div>
+                <p class="placar-final-subtitulo">Classificação individual da partida</p>
+                <div class="podio-final">${podio || '<strong>Nenhum participante pontuou.</strong>'}</div>
+                <div class="tabela-final">
+                    <div class="linha-final cabecalho"><span>#</span><span>Aluno</span><span>Acertos</span><span>Erros</span><span>Aprov.</span></div>
+                    ${linhas || '<p>Nenhum jogador registrado.</p>'}
+                </div>`;
+        }
+
+        async function montarRankingFinal() {
+            const snap = await database.ref(`Salas/${salaId}/jogadores`).once('value');
+            const ranking = [];
+            snap.forEach(child => {
+                const dados = child.val() || {};
+                const acertos = dados.acertos || 0;
+                const erros = dados.erros || 0;
+                const total = acertos + erros;
+                ranking.push({
+                    nome: child.key,
+                    acertos,
+                    erros,
+                    aproveitamento: total > 0 ? Math.round((acertos / total) * 100) : 0
+                });
+            });
+            ranking.sort((a, b) =>
+                b.acertos - a.acertos ||
+                a.erros - b.erros ||
+                b.aproveitamento - a.aproveitamento ||
+                a.nome.localeCompare(b.nome, 'pt-BR')
+            );
+            return ranking;
+        }
+
+        async function finalizarJogo(vencedor) {
+            clearInterval(engineInterval);
+            engineInterval = null;
+            gameState.fase = "ended";
+            gameState.vencedor = vencedor;
+
+            if (!isSingleplayer) {
+                // Aguarda as transações de pontuação concluírem antes de montar o ranking.
+                await new Promise(resolve => setTimeout(resolve, 300));
+                gameState.finalRanking = await montarRankingFinal();
+                await atualizarFirebaseState();
+                exibirPlacarFinalProfessor(gameState.finalRanking, vencedor);
+            } else {
+                setTimeout(() => alert(vencedor === 'alunos' ? '🎉 Parabéns, você venceu!' : '🤖 Que pena, a máquina venceu!'), 300);
+            }
+        }
+
+        function exibirPlacarFinalProfessor(ranking, vencedor) {
+            const painel = document.getElementById('placar-final-professor');
+            painel.innerHTML = criarHtmlPlacarFinal(ranking || [], vencedor);
+            painel.classList.remove('oculto');
+            document.getElementById('prof-quiz-container').classList.add('oculto');
+            document.getElementById('btn-pausar-jogo').classList.add('oculto');
+        }
+
+        function atualizarFirebaseState() { return database.ref(`Salas/${salaId}/state`).set(gameState); }
+
+        function ouvirLobbyETabelaRanking() {
+            database.ref(`Salas/${salaId}/jogadores`).on('value', snap => {
+                const painelRanking = document.getElementById('lista-ranking-alunos');
+                painelRanking.innerHTML = '';
+                if (!snap.exists()) {
+                    painelRanking.innerHTML = 'Aguardando conexões...';
+                    return;
+                }
+
+                const jogadoresOrdenados = [];
+                snap.forEach(child => {
+                    const dados = child.val() || {};
+                    const acertos = dados.acertos || 0;
+                    const erros = dados.erros || 0;
+                    const total = acertos + erros;
+                    jogadoresOrdenados.push({
+                        nome: child.key,
+                        online: dados.online === true,
+                        acertos,
+                        erros,
+                        aproveitamento: total > 0 ? Math.round((acertos / total) * 100) : 0
+                    });
+                });
+
+                jogadoresOrdenados.sort((a, b) =>
+                    b.acertos - a.acertos ||
+                    a.erros - b.erros ||
+                    b.aproveitamento - a.aproveitamento ||
+                    a.nome.localeCompare(b.nome, 'pt-BR')
+                );
+
+                jogadoresOrdenados.forEach((jogador, indice) => {
+                    const statusClass = jogador.online ? '' : 'offline';
+                    const statusTxt = jogador.online ? '🟢' : '🔴';
+                    const posicao = indice === 0 ? '🥇' : indice === 1 ? '🥈' : indice === 2 ? '🥉' : `${indice + 1}º`;
+                    painelRanking.innerHTML += `
+                        <div class="ranking-item ${statusClass} ${indice === 0 ? 'ranking-top-1' : indice === 1 ? 'ranking-top-2' : indice === 2 ? 'ranking-top-3' : ''}">
+                            <span>${posicao}</span>
+                            <span>${escaparHtml(jogador.nome)}</span>
+                            <span>${statusTxt}</span>
+                            <span>${jogador.acertos}</span>
+                            <span>${jogador.erros}</span>
+                            <button class="btn-expulsar" onclick="expulsarAluno('${jogador.nome.replace(/'/g, "\'")}')">X</button>
+                        </div>`;
+                });
+
+                document.getElementById('titulo-monitor').innerText = gameState.fase === 'setup'
+                    ? 'Ranking da sala'
+                    : 'Ranking ao vivo';
+            });
+
+            database.ref(`Salas/${salaId}/respostas`).on('value', snap => {
+                if (gameState.fase !== 'respondendo') return;
+                let quantidade = 0;
+                snap.forEach(child => {
+                    const voto = child.val();
+                    if (voto && voto.round === gameState.round) quantidade++;
+                });
+                if (quantidade !== gameState.answersReceived) {
+                    gameState.answersReceived = quantidade;
+                    atualizarFirebaseState();
+                }
+            });
+        }
+
+        function atualizarAlertasVisuais(posicao, tempoRestante = null) {
+            const trilhos = document.querySelectorAll('.trilho');
+            const marcadores = document.querySelectorAll('.marcador');
+            const profAviso = document.getElementById('prof-aviso-final');
+            const alunoAviso = document.getElementById('aluno-aviso-final');
+            const avisos = [profAviso, alunoAviso].filter(Boolean);
+
+            trilhos.forEach(t => t.classList.remove('alerta-perigo', 'alerta-vitoria'));
+            marcadores.forEach(m => m.classList.remove('alerta-pulso'));
+            avisos.forEach(a => { a.className = 'aviso-final oculto'; a.textContent = ''; });
+
+            let tipo = null;
+            let mensagem = '';
+            if (posicao <= 15) {
+                tipo = 'perigo';
+                mensagem = '⚠️ Partida em risco! A máquina está muito perto de vencer!';
+            } else if (posicao >= 85) {
+                tipo = 'vitoria';
+                mensagem = '🔥 Vitória próxima! Continuem empurrando o fogo!';
+            }
+
+            if (tipo) {
+                trilhos.forEach(t => t.classList.add(tipo === 'perigo' ? 'alerta-perigo' : 'alerta-vitoria'));
+                marcadores.forEach(m => m.classList.add('alerta-pulso'));
+                avisos.forEach(a => { a.className = `aviso-final ${tipo}`; a.textContent = mensagem; });
+            }
+
+            const cronometros = document.querySelectorAll('.cronometro');
+            cronometros.forEach(c => c.classList.toggle('alerta-tempo', typeof tempoRestante === 'number' && tempoRestante <= 10));
+        }
+
+        // TELA PROFESSOR (COM GABARITO SUTIL)
+        function renderizarTelaProfessor() {
+            document.getElementById('marcador').style.left = gameState.ropePosition + '%';
+            atualizarAlertasVisuais(gameState.ropePosition, gameState.gameMode === 'time_attack' ? gameState.timeLeft : null);
+            document.getElementById('info-rodada').innerText = "Rodada: " + gameState.round;
+            document.getElementById('prof-quiz-container').classList.remove('oculto');
+            const statusColetivo = document.getElementById('prof-status-coletivo');
+            const resultado = document.getElementById('prof-resultado-coletivo');
+            const total = Object.keys(gameState.participantsRound || {}).length;
+
+            if (gameState.fase === 'leitura') statusColetivo.innerText = `Leitura da questão • ${total} participantes nesta rodada`;
+            if (gameState.fase === 'respondendo') statusColetivo.innerText = `Respostas: ${gameState.answersReceived || 0}/${total} • Tempo: ${Math.ceil(gameState.questionTimeLeft || 0)}s`;
+            if (gameState.fase === 'calculando') statusColetivo.innerText = 'Calculando o resultado coletivo...';
+
+            if (gameState.currentQuestion) {
+                document.getElementById('prof-pergunta-texto').innerText = gameState.currentQuestion.q;
+                const lista = document.getElementById('prof-lista-opcoes');
+                if (lista.dataset.round != gameState.round) {
+                    lista.innerHTML = ''; lista.dataset.round = gameState.round;
+                    resultado.classList.add('oculto');
+                    gameState.currentQuestion.alt.forEach((opt, idx) => {
+                        const sutilClass = (idx === gameState.currentQuestion.correta) ? 'gabarito-prof' : '';
+                        lista.innerHTML += `<button id="prof-opt-${idx}" class="btn-opcao ${sutilClass}">${opt}</button>`;
+                    });
+                }
+                if (gameState.fase === "feedback" && gameState.roundResult) {
+                    document.getElementById(`prof-opt-${gameState.currentQuestion.correta}`).classList.add('correta');
+                    const r = gameState.roundResult;
+                    statusColetivo.innerText = `Rodada encerrada • Aproveitamento: ${r.percentual}%`;
+                    resultado.innerHTML = `<strong>Resultado coletivo</strong><br>✅ ${r.acertos} acertos &nbsp; ❌ ${r.erros} erros<br>Turma: ${r.impulsoTurma >= 0 ? '+' : ''}${r.impulsoTurma} | Máquina: -${r.ataqueMaquina} | Movimento final: ${r.movimentoFinal >= 0 ? '+' : ''}${r.movimentoFinal}`;
+                    resultado.classList.remove('oculto');
+                }
+            }
+        }
+
+        // TELA SINGLEPLAYER (MISTURA DE UI SEM SPOILERS)
+        function renderizarTelaSolo() {
+            document.getElementById('marcador').style.left = gameState.ropePosition + '%';
+            document.getElementById('info-rodada').innerText = "Rodada: " + gameState.round;
+            document.getElementById('prof-quiz-container').classList.remove('oculto');
+            
+            let freezeHtml = `<div id="container-freeze-solo" class="barra-freeze-container"><div id="barra-freeze-solo" class="barra-freeze-fill"></div></div>`;
+            
+            document.getElementById('prof-pergunta-texto').innerHTML = (gameState.fase === "leitura" ? freezeHtml : '') + gameState.currentQuestion.q;
+            const lista = document.getElementById('prof-lista-opcoes');
+            
+            lista.innerHTML = ''; 
+            lista.style.pointerEvents = "auto"; 
+            gameState.currentQuestion.alt.forEach((opt, i) => {
+                lista.innerHTML += `<button id="solo-opt-${i}" class="btn-opcao" disabled onclick="enviarVotoSolo(${i})">${opt}</button>`;
+            });
+            document.body.classList.remove('flash-acerto', 'flash-erro');
+        }
+
+        function enviarVotoSolo(idx) {
+            if (gameState.fase !== "respondendo") return;
+            document.querySelectorAll('#prof-lista-opcoes .btn-opcao').forEach(b => b.disabled = true);
+            
+            let pesos = (gameState.gameMode === "placar") ? configPesos.placar : configPesos[dificuldadeSelecionada];
+            if (idx === gameState.currentQuestion.correta) {
+                gameState.ropePosition = Math.min(100, gameState.ropePosition + pesos.acerto);
+                soloAcertos++;
+                document.getElementById('solo-acertos').innerText = soloAcertos;
+                document.getElementById(`solo-opt-${idx}`).classList.add('correta');
+                document.body.classList.add('flash-acerto');
+                mostrarFeedbackFlutuante(true);
+            } else {
+                gameState.ropePosition = Math.max(0, gameState.ropePosition - pesos.erro);
+                soloErros++;
+                document.getElementById('solo-erros').innerText = soloErros;
+                document.getElementById(`solo-opt-${idx}`).classList.add('errada');
+                document.getElementById(`solo-opt-${gameState.currentQuestion.correta}`).classList.add('correta');
+                document.body.classList.add('flash-erro');
+                mostrarFeedbackFlutuante(false);
+            }
+            
+            if (gameState.ropePosition >= 100) return finalizarJogo('alunos');
+            if (gameState.ropePosition <= 0) return finalizarJogo('maquina');
+            
+            gameState.fase = "feedback";
+            gameState.timers.feedbackRestante = TEMPO_FEEDBACK;
+        }
+
+        // TELA ALUNO (SÍNCRONO - APENAS RECEBE ESTADOS E ENVIA VOTOS)
+        function ouvirEstadoDaSala() {
+            database.ref(`Salas/${salaId}/state`).on('value', snap => {
+                const estado = snap.val(); if (!estado) return;
+                gameState = estado;
+
+                document.getElementById('overlay-pausa').className = estado.paused ? '' : 'oculto';
+                document.getElementById('aluno-marcador').style.left = estado.ropePosition + '%';
+                atualizarAlertasVisuais(estado.ropePosition, estado.gameMode === 'time_attack' ? estado.timeLeft : null);
+                document.getElementById('aluno-info-rodada').innerText = 'Rodada: ' + estado.round;
+
+                const containerQuiz = document.getElementById('container-quiz');
+                const cabecalho = document.getElementById('cabecalho-aluno-gameplay');
+                const trilho = document.getElementById('aluno-trilho-container');
+                const status = document.getElementById('status-aluno');
+                const bFreeze = document.getElementById('container-freeze');
+                const statusColetivo = document.getElementById('aluno-status-coletivo');
+                const resultado = document.getElementById('aluno-resultado-coletivo');
+                const total = Object.keys(estado.participantsRound || {}).length;
+                const alunoTempo = document.getElementById('aluno-tempo');
+                const alunoTempoLabel = document.getElementById('aluno-tempo-label');
+
+                if (estado.fase === 'leitura') {
+                    alunoTempoLabel.innerText = 'Leitura';
+                    alunoTempo.innerText = Math.max(0, Math.ceil((estado.timers?.freezeRestante || 0) / 1000)) + 's';
+                } else if (estado.fase === 'respondendo') {
+                    alunoTempoLabel.innerText = 'Questão';
+                    alunoTempo.innerText = Math.max(0, Math.ceil(estado.questionTimeLeft || 0)) + 's';
+                } else if (estado.gameMode === 'time_attack' && typeof estado.timeLeft === 'number' && estado.fase !== 'setup' && estado.fase !== 'ended') {
+                    alunoTempoLabel.innerText = 'Partida';
+                    alunoTempo.innerText = Math.max(0, Math.ceil(estado.timeLeft)) + 's';
+                } else {
+                    alunoTempoLabel.innerText = 'Tempo';
+                    alunoTempo.innerText = '--';
+                }
+
+                if (estado.fase === "setup") {
+                    document.getElementById('placar-final-aluno').classList.add('oculto');
+                    document.getElementById('placar-final-aluno').innerHTML = '';
+                    status.innerText = "Aguardando o professor iniciar a rodada...";
+                    containerQuiz.classList.add('oculto');
+                    cabecalho.style.visibility = "hidden"; trilho.style.visibility = "hidden";
+                } else if (estado.fase === "leitura" || estado.fase === "respondendo") {
+                    cabecalho.style.visibility = "visible"; trilho.style.visibility = "visible";
+                    containerQuiz.classList.remove('oculto');
+                    statusColetivo.classList.remove('oculto');
+                    resultado.classList.add('oculto');
+
+                    if (document.getElementById('pergunta-texto').innerText !== estado.currentQuestion.q) {
+                        alternativaSelecionadaIndex = null;
+                        document.getElementById('pergunta-texto').innerText = estado.currentQuestion.q;
+                        const lista = document.getElementById('lista-opcoes'); lista.innerHTML = '';
+                        estado.currentQuestion.alt.forEach((opt, i) => {
+                            lista.innerHTML += `<button id="aluno-opt-${i}" class="btn-opcao" onclick="selecionarAlternativa(${i})">${opt}</button>`;
+                        });
+                        document.getElementById('btn-confirmar-puxao').classList.add('oculto');
+                    }
+
+                    if (estado.fase === "leitura") {
+                        status.innerText = "Leia a questão com atenção...";
+                        statusColetivo.innerText = `${total} participantes nesta rodada`;
+                        bFreeze.classList.remove('oculto');
+                        document.getElementById('barra-freeze').style.width = (estado.timers.freezeRestante / TEMPO_FREEZE * 100) + '%';
+                        document.querySelectorAll('#lista-opcoes .btn-opcao').forEach(b => b.disabled = true);
+                    } else {
+                        bFreeze.classList.add('oculto');
+                        statusColetivo.innerText = `Respostas recebidas: ${estado.answersReceived || 0}/${total} • ${Math.ceil(estado.questionTimeLeft || 0)}s`;
+                        if (alternativaSelecionadaIndex === null) {
+                            status.innerText = "Escolha sua resposta e empurre o fogo! 🔥";
+                            document.querySelectorAll('#lista-opcoes .btn-opcao').forEach(b => b.disabled = false);
+                        } else {
+                            status.innerText = "Resposta registrada. Aguardando a turma...";
+                        }
+                    }
+                } else if (estado.fase === "calculando") {
+                    status.innerText = "Calculando o resultado da turma...";
+                    document.getElementById('btn-confirmar-puxao').classList.add('oculto');
+                    document.querySelectorAll('#lista-opcoes .btn-opcao').forEach(b => b.disabled = true);
+                } else if (estado.fase === "feedback") {
+                    status.innerText = "Resultado coletivo da rodada";
+                    document.getElementById('btn-confirmar-puxao').classList.add('oculto');
+                    document.querySelectorAll('#lista-opcoes .btn-opcao').forEach(b => b.disabled = true);
+                    bFreeze.classList.add('oculto');
+                    const btnC = document.getElementById(`aluno-opt-${estado.currentQuestion.correta}`);
+                    if (btnC) btnC.classList.add('correta');
+                    if (alternativaSelecionadaIndex !== null && alternativaSelecionadaIndex !== estado.currentQuestion.correta) {
+                        const btnE = document.getElementById(`aluno-opt-${alternativaSelecionadaIndex}`);
+                        if (btnE) btnE.classList.add('errada');
+                    }
+                    if (alternativaSelecionadaIndex !== null && ultimaRodadaFeedbackAluno !== estado.round) {
+                        mostrarFeedbackFlutuante(alternativaSelecionadaIndex === estado.currentQuestion.correta);
+                        ultimaRodadaFeedbackAluno = estado.round;
+                    }
+                    if (estado.roundResult) {
+                        const r = estado.roundResult;
+                        statusColetivo.innerText = `Aproveitamento da turma: ${r.percentual}%`;
+                        resultado.innerHTML = `✅ ${r.acertos} acertos &nbsp; ❌ ${r.erros} erros<br><strong>Movimento do fogo: ${r.movimentoFinal >= 0 ? '+' : ''}${r.movimentoFinal}</strong>`;
+                        resultado.classList.remove('oculto');
+                    }
+                } else if (estado.fase === "closed") {
+                    status.innerText = estado.closedMessage || "A sala foi encerrada pelo professor.";
+                    containerQuiz.classList.add('oculto');
+                    cabecalho.style.visibility = "hidden";
+                    trilho.style.visibility = "hidden";
+                    const placarFinalAluno = document.getElementById('placar-final-aluno');
+                    if (placarFinalAluno) placarFinalAluno.classList.add('oculto');
+                    alert(estado.closedMessage || "A sala foi encerrada pelo professor.");
+                    location.reload();
+                } else if (estado.fase === "ended") {
+                    status.innerText = estado.vencedor === 'alunos' ? '🎉 Parabéns, a turma venceu!' : estado.vencedor === 'empate' ? '🤝 Partida empatada!' : '🤖 Que pena, a máquina venceu!';
+                    containerQuiz.classList.add('oculto');
+                    cabecalho.style.visibility = "hidden";
+                    trilho.style.visibility = "hidden";
+                    const placarFinalAluno = document.getElementById('placar-final-aluno');
+                    placarFinalAluno.innerHTML = criarHtmlPlacarFinal(estado.finalRanking || [], estado.vencedor, nomeAluno);
+                    placarFinalAluno.classList.remove('oculto');
+                }
+            });
+
+            database.ref(`Salas/${salaId}/jogadores/${nomeAluno}/acertos`).on('value', snap => {
+                document.getElementById('aluno-meus-acertos').innerText = snap.val() || 0;
+            });
+
+            database.ref(`Salas/${salaId}/jogadores/${nomeAluno}/erros`).on('value', snap => {
+                document.getElementById('aluno-meus-erros').innerText = snap.val() || 0;
+            });
+        }
+
+        function selecionarAlternativa(index) {
+            if (gameState.fase !== "respondendo") return;
+            alternativaSelecionadaIndex = index;
+            document.querySelectorAll('#lista-opcoes .btn-opcao').forEach(btn => btn.classList.remove('selecionada'));
+            document.getElementById(`aluno-opt-${index}`).classList.add('selecionada');
+            document.getElementById('btn-confirmar-puxao').classList.remove('oculto');
+        }
+
+        function confirmarEEnviar() {
+            if (alternativaSelecionadaIndex === null || gameState.fase !== 'respondendo') return;
+            document.getElementById('btn-confirmar-puxao').classList.add('oculto');
+            document.querySelectorAll('#lista-opcoes .btn-opcao').forEach(b => b.disabled = true);
+            document.getElementById('status-aluno').innerText = "Resposta registrada. Aguardando a turma...";
+
+            database.ref(`Salas/${salaId}/respostas/${nomeAluno}`).set({
+                nome: nomeAluno,
+                alternativa: alternativaSelecionadaIndex,
+                round: gameState.round,
+                enviadoEm: firebase.database.ServerValue.TIMESTAMP
+            });
+        }
+    </script>
+</body>
+</html>
