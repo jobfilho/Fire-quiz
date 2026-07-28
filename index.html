@@ -197,6 +197,22 @@
         @keyframes pulsarFogo { from{transform:translateX(-50%) scale(1)} to{transform:translateX(-50%) scale(1.18)} }
         @keyframes piscarTempo { from{opacity:1; transform:scale(1)} to{opacity:.55; transform:scale(1.08)} }
 
+
+        /* Modo Placar por rodadas */
+        .placar-rodadas { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin:12px 0 18px; }
+        .placar-rodadas .bloco { min-width:135px; padding:12px 14px; border-radius:12px; font-weight:800; background:#f5f7fb; border:2px solid #dfe5ef; }
+        .placar-rodadas .turma { background:#e8f5e9; border-color:#81c784; color:#1b5e20; }
+        .placar-rodadas .maquina { background:#ffebee; border-color:#ef9a9a; color:#b71c1c; }
+        .placar-rodadas .rodada { background:#fff3e0; border-color:#ffb74d; color:#e65100; }
+        .placar-rodadas .desempate { background:#ede7f6; border-color:#9575cd; color:#4527a0; }
+        .modo-placar-ativo .trilho, .modo-placar-ativo .arena-legenda, .modo-placar-ativo .aviso-final { display:none !important; }
+        .ajuda-dificuldade { display:inline-flex; width:28px; height:28px; border-radius:50%; padding:0; align-items:center; justify-content:center; margin-left:6px; background:#263859; color:white; font-size:16px; vertical-align:middle; }
+        .modal-ajuda { position:fixed; inset:0; background:rgba(12,20,36,.78); z-index:3500; display:flex; align-items:center; justify-content:center; padding:18px; }
+        .modal-ajuda-conteudo { width:min(720px,96vw); max-height:88vh; overflow:auto; background:white; border-radius:18px; text-align:left; box-shadow:0 18px 50px rgba(0,0,0,.35); }
+        .ajuda-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; padding:20px; }
+        .ajuda-card { border:2px solid #e5eaf2; border-radius:12px; padding:14px; background:#fafbfe; }
+        .ajuda-card h3 { margin:0 0 8px; color:#263859; }
+        @media(max-width:650px){ .ajuda-grid{grid-template-columns:1fr;} }
     </style>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -284,7 +300,7 @@
                     <div class="modo-explicacao">
                         <div class="modo-card"><strong>🔥 Sobrevivência</strong><p>A turma e a máquina disputam o fogo rodada após rodada. A turma vence ao empurrá-lo até a máquina.</p></div>
                         <div class="modo-card"><strong>⏱️ Contra o Tempo</strong><p>A turma precisa manter vantagem e avançar antes que o cronômetro geral chegue ao fim.</p></div>
-                        <div class="modo-card"><strong>📊 Placar</strong><p>O fogo responde ao desempenho coletivo. A pressão da máquina depende da dificuldade escolhida.</p></div>
+                        <div class="modo-card"><strong>📊 Placar</strong><p>O professor escolhe 3, 5, 7 ou 9 rodadas. Cada rodada possui 5 perguntas e não utiliza a barra de fogo. Mais de 50% de acertos dão o ponto à turma; menos de 50% dão o ponto à máquina. Se a rodada terminar empatada, entram perguntas extras em morte súbita até surgir um vencedor.</p></div>
                     </div>
                 </section>
 
@@ -297,6 +313,23 @@
                         <div class="modo-card"><strong>☠️ Super Difícil</strong><p>Além da força máxima por rodada, a máquina empurra o fogo continuamente em direção à turma.</p></div>
                     </div>
                 </section>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="modal-dificuldades" class="modal-ajuda oculto" onclick="fecharAjudaDificuldadeAoFundo(event)">
+        <div class="modal-ajuda-conteudo" role="dialog" aria-modal="true" aria-labelledby="titulo-dificuldades">
+            <div class="modal-topo">
+                <h2 id="titulo-dificuldades">Dificuldades da máquina</h2>
+                <button class="modal-fechar" onclick="fecharAjudaDificuldade()" aria-label="Fechar">×</button>
+            </div>
+            <div class="ajuda-grid">
+                <div class="ajuda-card"><h3>🟢 Fácil</h3><p>Resistência de <strong>2 pontos por rodada</strong>. Acertos individuais empurram mais e erros têm punição menor.</p></div>
+                <div class="ajuda-card"><h3>🟡 Médio</h3><p>Resistência de <strong>4 pontos por rodada</strong>. Equilíbrio entre avanço da turma e pressão da máquina.</p></div>
+                <div class="ajuda-card"><h3>🔴 Difícil</h3><p>Resistência de <strong>6 pontos por rodada</strong>. Os erros pesam mais e a turma precisa manter bom aproveitamento.</p></div>
+                <div class="ajuda-card"><h3>☠️ Super Difícil</h3><p>Resistência máxima por rodada e <strong>pressão contínua</strong> da máquina enquanto a partida está em andamento.</p></div>
+                <div class="ajuda-card" style="grid-column:1 / -1;"><h3>📊 No modo Placar</h3><p>A dificuldade não altera a pontuação. Nesse modo, cada pergunta é decidida pela maioria de acertos da turma e as rodadas são vencidas pelo placar.</p></div>
             </div>
         </div>
     </div>
@@ -342,6 +375,13 @@
                         <label><strong>Duração (segundos):</strong></label><br>
                         <input type="number" id="tempo-customizado" value="60" min="5" max="600" style="width: 100px;">
                     </div>
+                    <div id="config-rodadas-placar" class="oculto" style="margin-bottom:15px;">
+                        <label><strong>Número de rodadas:</strong></label><br>
+                        <select id="numero-rodadas-placar" style="width:120px;">
+                            <option value="3">3</option><option value="5">5</option><option value="7">7</option><option value="9">9</option>
+                        </select>
+                        <p style="font-size:12px;color:#666;margin:6px 0 0;">Cada rodada tem 5 perguntas. Em caso de empate, haverá perguntas extras até alguém vencer.</p>
+                    </div>
                     
                     <div style="margin-bottom: 15px;">
                         <label><strong>Tempo para responder cada questão (segundos):</strong></label><br>
@@ -349,7 +389,7 @@
                     </div>
 
                     <div id="config-dificuldade-container">
-                        <label><strong>Força da Máquina por rodada:</strong></label>
+                        <label><strong>Força da Máquina por rodada:</strong></label><button type="button" class="ajuda-dificuldade" onclick="abrirAjudaDificuldade()" aria-label="Entender as dificuldades">?</button>
                         <div class="seletor-grupo">
                             <button class="btn-cfg" id="dif-easy" onclick="mudarDificuldade('easy')">Easy</button>
                             <button class="btn-cfg ativo" id="dif-medium" onclick="mudarDificuldade('medium')">Medium</button>
@@ -373,6 +413,7 @@
                         <span class="placar-certas">✨ Acertos: <span id="solo-acertos">0</span></span>
                         <span class="placar-erradas">❌ Erros: <span id="solo-erros">0</span></span>
                     </div>
+                    <div id="placar-rodadas-prof" class="placar-rodadas oculto"></div>
 
                     <div class="trilho"><div id="marcador" class="marcador">🔥</div></div>
                     <div class="arena-legenda">
@@ -419,6 +460,7 @@
             </div>
         </div>
 
+        <div id="placar-rodadas-aluno" class="placar-rodadas oculto"></div>
         <div id="aluno-trilho-container" style="visibility: hidden; margin-bottom: 15px;">
             <div class="trilho"><div id="aluno-marcador" class="marcador">🔥</div></div>
             <div class="arena-legenda">
@@ -471,8 +513,20 @@
             if (event.target.id === 'modal-como-jogar') fecharComoJogar();
         }
 
+        function abrirAjudaDificuldade() {
+            document.getElementById('modal-dificuldades').classList.remove('oculto');
+            document.body.style.overflow = 'hidden';
+        }
+        function fecharAjudaDificuldade() {
+            document.getElementById('modal-dificuldades').classList.add('oculto');
+            document.body.style.overflow = '';
+        }
+        function fecharAjudaDificuldadeAoFundo(event) {
+            if (event.target.id === 'modal-dificuldades') fecharAjudaDificuldade();
+        }
+
         document.addEventListener('keydown', event => {
-            if (event.key === 'Escape') fecharComoJogar();
+            if (event.key === 'Escape') { fecharComoJogar(); fecharAjudaDificuldade(); }
         });
 
         // ---------------------------------------------------------
@@ -777,7 +831,7 @@
         // VARIÁVEIS GLOBAIS (MULTIPLAYER E SINGLEPLAYER)
         let papel = '', salaId = '', nomeAluno = '', jogadorRef = null, engineInterval = null;
         let perguntasSelecionadas = [], perguntaAtualIndex = 0, alternativaSelecionadaIndex = null;
-        let dificuldadeSelecionada = 'medium', modoSelecionado = 'survivor', tempoSelecionado = 60, tempoQuestaoSelecionado = 15;
+        let dificuldadeSelecionada = 'medium', modoSelecionado = 'survivor', tempoSelecionado = 60, tempoQuestaoSelecionado = 15, numeroRodadasPlacarSelecionado = 3;
         let isSingleplayer = false;
         let soloAcertos = 0, soloErros = 0;
         let feedbackFlutuanteTimer = null;
@@ -791,6 +845,7 @@
             fase: "setup", paused: false, gameMode: "survivor", timeLeft: 0, ropePosition: 50, 
             round: 1, vencedor: null, currentQuestion: null, scoreGlobal: { certas: 0, erradas: 0 },
             questionTimeLeft: 0, participantsRound: {}, answersReceived: 0, roundResult: null, finalRanking: [],
+            placar: { totalRodadas: 3, rodadaAtual: 1, perguntaNaRodada: 1, pontosTurma: 0, pontosMaquina: 0, rodadasTurma: 0, rodadasMaquina: 0, desempate: false },
             timers: { freezeRestante: 0, feedbackRestante: 0 }
         };
 
@@ -841,7 +896,8 @@
             const idModo = modo === 'time_attack' ? 'time' : modo;
             document.getElementById('modo-' + idModo).classList.add('ativo-modo');
             document.getElementById('config-tempo-container').className = (modo === 'time_attack') ? '' : 'oculto';
-            document.getElementById('config-dificuldade-container').className = '';
+            document.getElementById('config-rodadas-placar').className = (modo === 'placar') ? '' : 'oculto';
+            document.getElementById('config-dificuldade-container').className = (modo === 'placar') ? 'oculto' : '';
         }
 
         function mudarDificuldade(nivel) { 
@@ -1001,7 +1057,8 @@
             
             perguntaAtualIndex = 0;
             tempoQuestaoSelecionado = parseInt(document.getElementById('tempo-questao').value) || 15;
-            gameState = { fase: "setup", paused: false, gameMode: modoSelecionado, ropePosition: 50, round: 1, vencedor: null, scoreGlobal: { certas: 0, erradas: 0 }, questionTimeLeft: tempoQuestaoSelecionado, participantsRound: {}, answersReceived: 0, roundResult: null, finalRanking: [], timers: { freezeRestante: 0, feedbackRestante: 0 } };
+            numeroRodadasPlacarSelecionado = parseInt(document.getElementById('numero-rodadas-placar').value) || 3;
+            gameState = { fase: "setup", paused: false, gameMode: modoSelecionado, ropePosition: 50, round: 1, vencedor: null, scoreGlobal: { certas: 0, erradas: 0 }, questionTimeLeft: tempoQuestaoSelecionado, participantsRound: {}, answersReceived: 0, roundResult: null, finalRanking: [], placar: { totalRodadas: numeroRodadasPlacarSelecionado, rodadaAtual: 1, perguntaNaRodada: 1, pontosTurma: 0, pontosMaquina: 0, rodadasTurma: 0, rodadasMaquina: 0, desempate: false }, timers: { freezeRestante: 0, feedbackRestante: 0 } };
             
             if (modoSelecionado === 'time_attack') {
                 gameState.timeLeft = parseInt(document.getElementById('tempo-customizado').value) || 60;
@@ -1016,6 +1073,8 @@
                 document.getElementById('arena-lado-prof').innerText = '🧑 VOCÊ';
                 document.getElementById('arena-objetivo-prof').innerText = 'ACERTE E EMPURRE O FOGO →';
                 document.getElementById('area-jogo-professor').classList.remove('oculto');
+                document.getElementById('area-jogo-professor').classList.toggle('modo-placar-ativo', modoSelecionado === 'placar');
+                document.getElementById('placar-rodadas-prof').classList.toggle('oculto', modoSelecionado !== 'placar');
                 document.getElementById('btn-pausar-jogo').classList.remove('oculto');
                 document.getElementById('btn-pausar-jogo').innerText = '⏸️ Pausar Partida';
                 document.getElementById('btn-encerrar-geral').classList.remove('oculto');
@@ -1061,6 +1120,7 @@
             gameState.answersReceived = 0;
             gameState.roundResult = null;
             alternativaSelecionadaIndex = null;
+            if (gameState.gameMode === 'placar') renderizarPlacarRodadas();
             
             if (!isSingleplayer) {
                 gameState.participantsRound = await obterParticipantesOnline();
@@ -1070,6 +1130,71 @@
             } else {
                 renderizarTelaSolo();
             }
+        }
+
+        function htmlPlacarRodadas() {
+            const p = gameState.placar || {};
+            const pergunta = p.desempate ? 'Desempate' : `Pergunta ${p.perguntaNaRodada || 1}/5`;
+            return `<div class="bloco rodada">Rodada ${p.rodadaAtual || 1}/${p.totalRodadas || 3}<br><small>${pergunta}</small></div>
+                    <div class="bloco turma">Turma<br>${p.pontosTurma || 0} pts • ${p.rodadasTurma || 0} rod.</div>
+                    <div class="bloco maquina">Máquina<br>${p.pontosMaquina || 0} pts • ${p.rodadasMaquina || 0} rod.</div>
+                    ${p.desempate ? '<div class="bloco desempate">⚡ Morte súbita</div>' : ''}`;
+        }
+
+        function renderizarPlacarRodadas() {
+            const html = htmlPlacarRodadas();
+            const prof = document.getElementById('placar-rodadas-prof');
+            const aluno = document.getElementById('placar-rodadas-aluno');
+            if (prof) prof.innerHTML = html;
+            if (aluno) aluno.innerHTML = html;
+        }
+
+        function decidirPontoPlacar(percentual) {
+            if (percentual > 0.5) return 'alunos';
+            if (percentual < 0.5) return 'maquina';
+            return 'empate';
+        }
+
+        function concluirPerguntaPlacar(percentual) {
+            const p = gameState.placar;
+            const vencedorPergunta = decidirPontoPlacar(percentual);
+            if (vencedorPergunta === 'alunos') p.pontosTurma++;
+            if (vencedorPergunta === 'maquina') p.pontosMaquina++;
+
+            if (p.desempate) {
+                if (vencedorPergunta === 'empate') return { encerrouRodada:false, vencedorPergunta };
+                if (vencedorPergunta === 'alunos') p.rodadasTurma++; else p.rodadasMaquina++;
+                return finalizarRodadaPlacar(vencedorPergunta);
+            }
+
+            if (p.perguntaNaRodada < 5) {
+                p.perguntaNaRodada++;
+                return { encerrouRodada:false, vencedorPergunta };
+            }
+
+            if (p.pontosTurma === p.pontosMaquina) {
+                p.desempate = true;
+                return { encerrouRodada:false, vencedorPergunta, iniciouDesempate:true };
+            }
+
+            const vencedorRodada = p.pontosTurma > p.pontosMaquina ? 'alunos' : 'maquina';
+            if (vencedorRodada === 'alunos') p.rodadasTurma++; else p.rodadasMaquina++;
+            return finalizarRodadaPlacar(vencedorRodada);
+        }
+
+        function finalizarRodadaPlacar(vencedorRodada) {
+            const p = gameState.placar;
+            const partidaTerminou = p.rodadaAtual >= p.totalRodadas;
+            if (partidaTerminou) {
+                const vencedorPartida = p.rodadasTurma > p.rodadasMaquina ? 'alunos' : 'maquina';
+                return { encerrouRodada:true, encerrouPartida:true, vencedorRodada, vencedorPartida };
+            }
+            p.rodadaAtual++;
+            p.perguntaNaRodada = 1;
+            p.pontosTurma = 0;
+            p.pontosMaquina = 0;
+            p.desempate = false;
+            return { encerrouRodada:true, encerrouPartida:false, vencedorRodada };
         }
 
         function calcularImpulsoColetivo(percentual) {
@@ -1110,32 +1235,33 @@
             }
 
             const percentual = totalParticipantes > 0 ? acertos / totalParticipantes : 0;
-            const impulsoTurma = calcularImpulsoColetivo(percentual);
-            const ataqueMaquina = gameState.gameMode === 'placar' ? 0 : forcaMaquinaPorRodada[dificuldadeSelecionada];
-
-            // A máquina oferece resistência, mas nunca pode inverter um resultado coletivo positivo.
-            // Com 50% ou mais de acertos, o fogo sempre avança para a direita, em direção à máquina.
-            // Com menos de 50%, o fogo recua para a esquerda, em direção aos estudantes.
-            let movimentoFinal;
-            if (impulsoTurma > 0) {
-                movimentoFinal = gameState.gameMode === 'placar'
-                    ? impulsoTurma
-                    : Math.max(1, impulsoTurma - ataqueMaquina);
-            } else {
-                movimentoFinal = impulsoTurma - ataqueMaquina;
-            }
-
-            gameState.ropePosition = Math.max(0, Math.min(100, gameState.ropePosition + movimentoFinal));
             gameState.scoreGlobal.certas += acertos;
             gameState.scoreGlobal.erradas += erros;
-            gameState.roundResult = {
-                participantes: totalParticipantes, respostas: Object.keys(respostas).length,
-                acertos, erros, percentual: Math.round(percentual * 100),
-                impulsoTurma, ataqueMaquina, movimentoFinal, distribuicao
-            };
 
-            const vencedorPorContato = verificarFimPorContato();
-            if (vencedorPorContato) return finalizarJogo(vencedorPorContato);
+            if (gameState.gameMode === 'placar') {
+                const decisao = concluirPerguntaPlacar(percentual);
+                gameState.roundResult = {
+                    participantes: totalParticipantes, respostas: Object.keys(respostas).length,
+                    acertos, erros, percentual: Math.round(percentual * 100), distribuicao,
+                    vencedorPergunta: decisao.vencedorPergunta,
+                    vencedorRodada: decisao.vencedorRodada || null,
+                    iniciouDesempate: !!decisao.iniciouDesempate
+                };
+                renderizarPlacarRodadas();
+                if (decisao.encerrouPartida) return finalizarJogo(decisao.vencedorPartida);
+            } else {
+                const impulsoTurma = calcularImpulsoColetivo(percentual);
+                const ataqueMaquina = forcaMaquinaPorRodada[dificuldadeSelecionada];
+                let movimentoFinal = impulsoTurma > 0 ? Math.max(1, impulsoTurma - ataqueMaquina) : impulsoTurma - ataqueMaquina;
+                gameState.ropePosition = Math.max(0, Math.min(100, gameState.ropePosition + movimentoFinal));
+                gameState.roundResult = {
+                    participantes: totalParticipantes, respostas: Object.keys(respostas).length,
+                    acertos, erros, percentual: Math.round(percentual * 100),
+                    impulsoTurma, ataqueMaquina, movimentoFinal, distribuicao
+                };
+                const vencedorPorContato = verificarFimPorContato();
+                if (vencedorPorContato) return finalizarJogo(vencedorPorContato);
+            }
 
             gameState.fase = "feedback";
             gameState.timers.feedbackRestante = TEMPO_FEEDBACK;
@@ -1322,6 +1448,7 @@
                 answersReceived: 0,
                 roundResult: null,
                 finalRanking: [],
+                placar: { totalRodadas: numeroRodadasPlacarSelecionado, rodadaAtual: 1, perguntaNaRodada: 1, pontosTurma: 0, pontosMaquina: 0, rodadasTurma: 0, rodadasMaquina: 0, desempate: false },
                 timers: { freezeRestante: 0, feedbackRestante: 0 }
             };
 
@@ -1411,10 +1538,12 @@
             engineInterval = null;
             gameState.fase = "ended";
             gameState.vencedor = vencedor;
-            const limites = limitesDeContato();
-            gameState.ropePosition = vencedor === 'alunos' ? limites.maximo : limites.minimo;
-            document.querySelectorAll('.marcador').forEach(m => m.style.left = gameState.ropePosition + '%');
-            atualizarAlertasVisuais(50, null);
+            if (gameState.gameMode !== 'placar') {
+                const limites = limitesDeContato();
+                gameState.ropePosition = vencedor === 'alunos' ? limites.maximo : limites.minimo;
+                document.querySelectorAll('.marcador').forEach(m => m.style.left = gameState.ropePosition + '%');
+                atualizarAlertasVisuais(50, null);
+            }
             limparResultadoVisual();
             document.body.classList.add(vencedor === 'alunos' ? 'resultado-vitoria' : 'resultado-derrota');
 
@@ -1634,7 +1763,14 @@
                     document.getElementById(`prof-opt-${gameState.currentQuestion.correta}`).classList.add('correta');
                     const r = gameState.roundResult;
                     statusColetivo.innerText = `Rodada encerrada • Aproveitamento: ${r.percentual}%`;
-                    resultado.innerHTML = `<strong>Resultado coletivo</strong><br>✅ ${r.acertos} acertos &nbsp; ❌ ${r.erros} erros<br>Turma: ${r.impulsoTurma >= 0 ? '+' : ''}${r.impulsoTurma} | Máquina: -${r.ataqueMaquina} | Movimento final: ${r.movimentoFinal >= 0 ? '+' : ''}${r.movimentoFinal}`;
+                    if (gameState.gameMode === 'placar') {
+                        const textoPonto = r.vencedorPergunta === 'alunos' ? 'Ponto para a turma' : r.vencedorPergunta === 'maquina' ? 'Ponto para a máquina' : 'Empate na pergunta';
+                        const extra = r.iniciouDesempate ? '<br><strong>⚡ Rodada empatada: iniciaremos o desempate.</strong>' : r.vencedorRodada ? `<br><strong>${r.vencedorRodada === 'alunos' ? '🎉 Turma' : '🤖 Máquina'} venceu a rodada.</strong>` : '';
+                        resultado.innerHTML = `<strong>${textoPonto}</strong><br>✅ ${r.acertos} acertos &nbsp; ❌ ${r.erros} erros${extra}`;
+                        renderizarPlacarRodadas();
+                    } else {
+                        resultado.innerHTML = `<strong>Resultado coletivo</strong><br>✅ ${r.acertos} acertos &nbsp; ❌ ${r.erros} erros<br>Turma: ${r.impulsoTurma >= 0 ? '+' : ''}${r.impulsoTurma} | Máquina: -${r.ataqueMaquina} | Movimento final: ${r.movimentoFinal >= 0 ? '+' : ''}${r.movimentoFinal}`;
+                    }
                     resultado.classList.remove('oculto');
                 }
             }
@@ -1664,7 +1800,29 @@
             if (gameState.fase !== "respondendo") return;
             document.querySelectorAll('#prof-lista-opcoes .btn-opcao').forEach(b => b.disabled = true);
             
-            let pesos = (gameState.gameMode === "placar") ? configPesos.placar : configPesos[dificuldadeSelecionada];
+            let pesos = configPesos[dificuldadeSelecionada];
+            const acertouSolo = idx === gameState.currentQuestion.correta;
+            if (gameState.gameMode === 'placar') {
+                if (acertouSolo) {
+                    soloAcertos++;
+                    document.getElementById('solo-acertos').innerText = soloAcertos;
+                    document.getElementById(`solo-opt-${idx}`).classList.add('correta');
+                    mostrarFeedbackFlutuante(true);
+                } else {
+                    soloErros++;
+                    document.getElementById('solo-erros').innerText = soloErros;
+                    document.getElementById(`solo-opt-${idx}`).classList.add('errada');
+                    document.getElementById(`solo-opt-${gameState.currentQuestion.correta}`).classList.add('correta');
+                    mostrarFeedbackFlutuante(false);
+                }
+                const decisao = concluirPerguntaPlacar(acertouSolo ? 1 : 0);
+                gameState.roundResult = { percentual: acertouSolo ? 100 : 0, vencedorPergunta: decisao.vencedorPergunta, vencedorRodada: decisao.vencedorRodada || null, iniciouDesempate: !!decisao.iniciouDesempate };
+                renderizarPlacarRodadas();
+                if (decisao.encerrouPartida) return finalizarJogo(decisao.vencedorPartida);
+                gameState.fase = 'feedback';
+                gameState.timers.feedbackRestante = TEMPO_FEEDBACK;
+                return;
+            }
             if (idx === gameState.currentQuestion.correta) {
                 gameState.ropePosition = Math.min(100, gameState.ropePosition + pesos.acerto);
                 soloAcertos++;
@@ -1709,6 +1867,10 @@
                 const statusColetivo = document.getElementById('aluno-status-coletivo');
                 const resultado = document.getElementById('aluno-resultado-coletivo');
                 const total = Object.keys(estado.participantsRound || {}).length;
+                const modoPlacar = estado.gameMode === 'placar';
+                document.getElementById('tela-aluno').classList.toggle('modo-placar-ativo', modoPlacar);
+                document.getElementById('placar-rodadas-aluno').classList.toggle('oculto', !modoPlacar);
+                if (modoPlacar) renderizarPlacarRodadas();
                 const alunoTempo = document.getElementById('aluno-tempo');
                 const alunoTempoLabel = document.getElementById('aluno-tempo-label');
 
@@ -1786,7 +1948,13 @@
                     if (estado.roundResult) {
                         const r = estado.roundResult;
                         statusColetivo.innerText = `Aproveitamento da turma: ${r.percentual}%`;
-                        resultado.innerHTML = `✅ ${r.acertos} acertos &nbsp; ❌ ${r.erros} erros<br><strong>Movimento do fogo: ${r.movimentoFinal >= 0 ? '+' : ''}${r.movimentoFinal}</strong>`;
+                        if (estado.gameMode === 'placar') {
+                            const textoPonto = r.vencedorPergunta === 'alunos' ? 'Ponto para a turma' : r.vencedorPergunta === 'maquina' ? 'Ponto para a máquina' : 'Empate na pergunta';
+                            const extra = r.iniciouDesempate ? '<br><strong>⚡ Rodada empatada: vem aí o desempate.</strong>' : r.vencedorRodada ? `<br><strong>${r.vencedorRodada === 'alunos' ? '🎉 A turma' : '🤖 A máquina'} venceu a rodada.</strong>` : '';
+                            resultado.innerHTML = `✅ ${r.acertos} acertos &nbsp; ❌ ${r.erros} erros<br><strong>${textoPonto}</strong>${extra}`;
+                        } else {
+                            resultado.innerHTML = `✅ ${r.acertos} acertos &nbsp; ❌ ${r.erros} erros<br><strong>Movimento do fogo: ${r.movimentoFinal >= 0 ? '+' : ''}${r.movimentoFinal}</strong>`;
+                        }
                         resultado.classList.remove('oculto');
                     }
                 } else if (estado.fase === "closed") {
