@@ -170,9 +170,17 @@
 
 
         /* Alertas visuais de fim de partida */
-        .trilho.alerta-perigo { animation: piscarPerigo .7s infinite alternate; border-color:#c62828; box-shadow:0 0 18px rgba(198,40,40,.8), inset 0 3px 7px rgba(0,0,0,.12); }
-        .trilho.alerta-vitoria { animation: piscarVitoria .7s infinite alternate; border-color:#ff8f00; box-shadow:0 0 18px rgba(255,143,0,.8), inset 0 3px 7px rgba(0,0,0,.12); }
-        .marcador.alerta-pulso { animation:pulsarFogo .55s infinite alternate; }
+        .trilho.alerta-perigo { animation-name:piscarPerigo; animation-iteration-count:infinite; animation-direction:alternate; border-color:#c62828; }
+        .trilho.alerta-vitoria { animation-name:piscarVitoria; animation-iteration-count:infinite; animation-direction:alternate; border-color:#ff8f00; }
+        .marcador.alerta-pulso { animation-name:pulsarFogo; animation-iteration-count:infinite; animation-direction:alternate; }
+        .trilho.alerta-nivel-1 { animation-duration:1.15s; box-shadow:0 0 10px rgba(255,120,0,.45), inset 0 3px 7px rgba(0,0,0,.12); }
+        .trilho.alerta-nivel-2 { animation-duration:.78s; box-shadow:0 0 15px rgba(255,90,0,.62), inset 0 3px 7px rgba(0,0,0,.12); }
+        .trilho.alerta-nivel-3 { animation-duration:.48s; box-shadow:0 0 21px rgba(220,50,20,.78), inset 0 3px 7px rgba(0,0,0,.12); }
+        .marcador.alerta-nivel-1 { animation-duration:.9s; }
+        .marcador.alerta-nivel-2 { animation-duration:.62s; }
+        .marcador.alerta-nivel-3 { animation-duration:.4s; }
+        .btn-jogar-novamente { background:linear-gradient(135deg,#2e7d32,#4caf50); color:white; width:100%; margin-top:18px; padding:15px; font-size:18px; box-shadow:0 5px 12px rgba(46,125,50,.25); }
+        .btn-jogar-novamente:hover { transform:translateY(-1px); box-shadow:0 7px 15px rgba(46,125,50,.34); }
         .cronometro.alerta-tempo { animation:piscarTempo .6s infinite alternate; }
         .aviso-final { margin:10px 0; padding:10px 14px; border-radius:12px; font-weight:900; text-align:center; }
         .aviso-final.perigo { background:#ffebee; color:#b71c1c; border:2px solid #ef5350; }
@@ -1204,6 +1212,7 @@
                 }
             }
             document.getElementById('marcador').style.left = gameState.ropePosition + '%';
+            atualizarAlertasVisuais(gameState.ropePosition, gameState.gameMode === 'time_attack' ? gameState.timeLeft : null);
         }
 
         async function voltarAoInicioDoLobby() {
@@ -1365,6 +1374,7 @@
             engineInterval = null;
             gameState.fase = "ended";
             gameState.vencedor = vencedor;
+            atualizarAlertasVisuais(50, null);
 
             if (!isSingleplayer) {
                 // Aguarda as transações de pontuação concluírem antes de montar o ranking.
@@ -1373,16 +1383,46 @@
                 await atualizarFirebaseState();
                 exibirPlacarFinalProfessor(gameState.finalRanking, vencedor);
             } else {
-                setTimeout(() => alert(vencedor === 'alunos' ? '🎉 Parabéns, você venceu!' : '🤖 Que pena, a máquina venceu!'), 300);
+                exibirResultadoFinalSolo(vencedor);
             }
         }
 
         function exibirPlacarFinalProfessor(ranking, vencedor) {
             const painel = document.getElementById('placar-final-professor');
-            painel.innerHTML = criarHtmlPlacarFinal(ranking || [], vencedor);
+            painel.innerHTML = criarHtmlPlacarFinal(ranking || [], vencedor) +
+                '<button class="btn-jogar-novamente" onclick="jogarNovamente()">🔄 Jogar Novamente</button>';
             painel.classList.remove('oculto');
             document.getElementById('prof-quiz-container').classList.add('oculto');
             document.getElementById('btn-pausar-jogo').classList.add('oculto');
+        }
+
+        function exibirResultadoFinalSolo(vencedor) {
+            const painel = document.getElementById('placar-final-professor');
+            const mensagem = vencedor === 'alunos'
+                ? '🎉 Parabéns, você venceu!'
+                : '🤖 Que pena, a máquina venceu!';
+            const total = soloAcertos + soloErros;
+            const aproveitamento = total > 0 ? Math.round((soloAcertos / total) * 100) : 0;
+            painel.innerHTML = `
+                <h2>FIM DE PARTIDA</h2>
+                <div class="resultado-vencedor">${mensagem}</div>
+                <p class="placar-final-subtitulo">✅ ${soloAcertos} acertos &nbsp; ❌ ${soloErros} erros &nbsp; • &nbsp; ${aproveitamento}% de aproveitamento</p>
+                <button class="btn-jogar-novamente" onclick="jogarNovamente()">🔄 Jogar Novamente</button>`;
+            painel.classList.remove('oculto');
+            document.getElementById('prof-quiz-container').classList.add('oculto');
+            document.getElementById('btn-pausar-jogo').classList.add('oculto');
+        }
+
+        function jogarNovamente() {
+            document.body.classList.remove('flash-acerto', 'flash-erro');
+            atualizarAlertasVisuais(50, null);
+            document.getElementById('placar-final-professor').classList.add('oculto');
+            document.getElementById('placar-final-professor').innerHTML = '';
+            document.getElementById('prof-quiz-container').classList.remove('oculto');
+            document.getElementById('btn-pausar-jogo').classList.remove('oculto');
+            document.getElementById('btn-pausar-jogo').style.display = 'block';
+            document.getElementById('btn-pausar-jogo').innerText = '⏸️ Pausar Partida';
+            iniciarJogo(isSingleplayer);
         }
 
         function atualizarFirebaseState() { return database.ref(`Salas/${salaId}/state`).set(gameState); }
@@ -1458,24 +1498,40 @@
             const profAviso = document.getElementById('prof-aviso-final');
             const alunoAviso = document.getElementById('aluno-aviso-final');
             const avisos = [profAviso, alunoAviso].filter(Boolean);
+            const classesNivel = ['alerta-nivel-1', 'alerta-nivel-2', 'alerta-nivel-3'];
 
-            trilhos.forEach(t => t.classList.remove('alerta-perigo', 'alerta-vitoria'));
-            marcadores.forEach(m => m.classList.remove('alerta-pulso'));
+            trilhos.forEach(t => t.classList.remove('alerta-perigo', 'alerta-vitoria', ...classesNivel));
+            marcadores.forEach(m => m.classList.remove('alerta-pulso', ...classesNivel));
             avisos.forEach(a => { a.className = 'aviso-final oculto'; a.textContent = ''; });
 
             let tipo = null;
+            let nivel = 0;
             let mensagem = '';
-            if (posicao <= 15) {
-                tipo = 'perigo';
-                mensagem = '⚠️ Partida em risco! A máquina está muito perto de vencer!';
-            } else if (posicao >= 85) {
-                tipo = 'vitoria';
-                mensagem = '🔥 Vitória próxima! Continuem empurrando o fogo!';
+            const distanciaDaExtremidade = Math.min(posicao, 100 - posicao);
+
+            if (distanciaDaExtremidade <= 15) {
+                nivel = distanciaDaExtremidade <= 5 ? 3 : distanciaDaExtremidade <= 10 ? 2 : 1;
+                if (posicao <= 15) {
+                    tipo = 'perigo';
+                    mensagem = nivel === 3
+                        ? '🚨 Perigo máximo! A máquina está quase vencendo!'
+                        : nivel === 2
+                            ? '⚠️ Atenção! A máquina está muito próxima!'
+                            : '⚠️ Partida em risco!';
+                } else {
+                    tipo = 'vitoria';
+                    mensagem = nivel === 3
+                        ? '🔥 Só mais um pouco! A vitória está muito próxima!'
+                        : nivel === 2
+                            ? '🔥 A máquina está quase derrotada!'
+                            : '🔥 Vitória próxima!';
+                }
             }
 
             if (tipo) {
-                trilhos.forEach(t => t.classList.add(tipo === 'perigo' ? 'alerta-perigo' : 'alerta-vitoria'));
-                marcadores.forEach(m => m.classList.add('alerta-pulso'));
+                const classeNivel = `alerta-nivel-${nivel}`;
+                trilhos.forEach(t => t.classList.add(tipo === 'perigo' ? 'alerta-perigo' : 'alerta-vitoria', classeNivel));
+                marcadores.forEach(m => m.classList.add('alerta-pulso', classeNivel));
                 avisos.forEach(a => { a.className = `aviso-final ${tipo}`; a.textContent = mensagem; });
             }
 
@@ -1521,6 +1577,7 @@
         // TELA SINGLEPLAYER (MISTURA DE UI SEM SPOILERS)
         function renderizarTelaSolo() {
             document.getElementById('marcador').style.left = gameState.ropePosition + '%';
+            atualizarAlertasVisuais(gameState.ropePosition, gameState.gameMode === 'time_attack' ? gameState.timeLeft : null);
             document.getElementById('info-rodada').innerText = "Rodada: " + gameState.round;
             document.getElementById('prof-quiz-container').classList.remove('oculto');
             
@@ -1559,6 +1616,7 @@
                 mostrarFeedbackFlutuante(false);
             }
             
+            atualizarAlertasVisuais(gameState.ropePosition, gameState.gameMode === 'time_attack' ? gameState.timeLeft : null);
             if (gameState.ropePosition >= 100) return finalizarJogo('alunos');
             if (gameState.ropePosition <= 0) return finalizarJogo('maquina');
             
