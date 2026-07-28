@@ -181,6 +181,13 @@
         .marcador.alerta-nivel-3 { animation-duration:.4s; }
         .btn-jogar-novamente { background:linear-gradient(135deg,#2e7d32,#4caf50); color:white; width:100%; margin-top:18px; padding:15px; font-size:18px; box-shadow:0 5px 12px rgba(46,125,50,.25); }
         .btn-jogar-novamente:hover { transform:translateY(-1px); box-shadow:0 7px 15px rgba(46,125,50,.34); }
+        .acoes-finais { display:grid; gap:10px; margin-top:18px; }
+        .btn-configurar-nova { background:#263859; color:white; width:100%; padding:14px; font-size:17px; }
+        .btn-sair-solo { background:#607d8b; color:white; width:100%; padding:14px; font-size:17px; }
+        body.resultado-vitoria { background:linear-gradient(135deg,#d8f3dc,#b7e4c7,#95d5b2) !important; }
+        body.resultado-derrota { background:linear-gradient(135deg,#ffe5e5,#ffc9c9,#ffa8a8) !important; }
+        body.resultado-vitoria .card { box-shadow:0 16px 42px rgba(46,125,50,.28); border-color:#66bb6a; }
+        body.resultado-derrota .card { box-shadow:0 16px 42px rgba(198,40,40,.28); border-color:#ef5350; }
         .cronometro.alerta-tempo { animation:piscarTempo .6s infinite alternate; }
         .aviso-final { margin:10px 0; padding:10px 14px; border-radius:12px; font-weight:900; text-align:center; }
         .aviso-final.perigo { background:#ffebee; color:#b71c1c; border:2px solid #ef5350; }
@@ -790,6 +797,32 @@
         const forcaMaquinaPorRodada = { easy: 2, medium: 4, hard: 6, super_hard: 8 };
         const configForca = { easy: 0.05, medium: 0.08, hard: 0.12, super_hard: 0.16 };
         const FORCA_CONTINUA_SUPER_DIFICIL = 0.10;
+
+        function limitesDeContato() {
+            const trilho = document.querySelector('#area-jogo-professor .trilho:not(.oculto)') || document.querySelector('.trilho');
+            const marcador = trilho ? trilho.querySelector('.marcador') : null;
+            if (!trilho || !marcador || trilho.clientWidth <= 0) return { minimo: 2.5, maximo: 97.5 };
+            const metadeMarcador = marcador.offsetWidth / 2;
+            const margem = (metadeMarcador / trilho.clientWidth) * 100;
+            return { minimo: margem, maximo: 100 - margem };
+        }
+
+        function verificarFimPorContato() {
+            const { minimo, maximo } = limitesDeContato();
+            if (gameState.ropePosition <= minimo) {
+                gameState.ropePosition = minimo;
+                return 'maquina';
+            }
+            if (gameState.ropePosition >= maximo) {
+                gameState.ropePosition = maximo;
+                return 'alunos';
+            }
+            return null;
+        }
+
+        function limparResultadoVisual() {
+            document.body.classList.remove('resultado-vitoria', 'resultado-derrota');
+        }
         const configPesos = { easy: { acerto: 4, erro: 2 }, medium: { acerto: 3, erro: 2 }, hard: { acerto: 3, erro: 2.5 }, super_hard: { acerto: 3, erro: 3 }, placar: { acerto: 4, erro: 5 } };
 
         function PatternShuffle(array) {
@@ -947,6 +980,7 @@
 
         async function iniciarJogo(modoSolo) {
             if (!prepararBancoPerguntas()) return;
+            limparResultadoVisual();
             
             document.getElementById('configuracoes-professor').classList.add('oculto');
             document.getElementById('placar-final-professor').classList.add('oculto');
@@ -1100,8 +1134,8 @@
                 impulsoTurma, ataqueMaquina, movimentoFinal, distribuicao
             };
 
-            if (gameState.ropePosition >= 100) return finalizarJogo('alunos');
-            if (gameState.ropePosition <= 0) return finalizarJogo('maquina');
+            const vencedorPorContato = verificarFimPorContato();
+            if (vencedorPorContato) return finalizarJogo(vencedorPorContato);
 
             gameState.fase = "feedback";
             gameState.timers.feedbackRestante = TEMPO_FEEDBACK;
@@ -1143,7 +1177,8 @@
                 if (dificuldadeSelecionada === 'super_hard') {
                     gameState.ropePosition = Math.max(0, gameState.ropePosition - FORCA_CONTINUA_SUPER_DIFICIL);
                     database.ref(`Salas/${salaId}/state/ropePosition`).set(gameState.ropePosition);
-                    if (gameState.ropePosition <= 0) return finalizarJogo('maquina');
+                    const vencedorPorContato = verificarFimPorContato();
+                    if (vencedorPorContato) return finalizarJogo(vencedorPorContato);
                 }
 
                 if (gameState.gameMode === "time_attack") {
@@ -1205,10 +1240,12 @@
                 }
                 if (dificuldadeSelecionada === 'super_hard') {
                     gameState.ropePosition -= FORCA_CONTINUA_SUPER_DIFICIL;
-                    if (gameState.ropePosition <= 0) return finalizarJogo('maquina');
+                    const vencedorPorContato = verificarFimPorContato();
+                    if (vencedorPorContato) return finalizarJogo(vencedorPorContato);
                 } else if (gameState.gameMode !== 'placar') {
                     gameState.ropePosition -= configForca[dificuldadeSelecionada];
-                    if (gameState.ropePosition <= 0) return finalizarJogo('maquina');
+                    const vencedorPorContato = verificarFimPorContato();
+                    if (vencedorPorContato) return finalizarJogo(vencedorPorContato);
                 }
             }
             document.getElementById('marcador').style.left = gameState.ropePosition + '%';
@@ -1374,7 +1411,12 @@
             engineInterval = null;
             gameState.fase = "ended";
             gameState.vencedor = vencedor;
+            const limites = limitesDeContato();
+            gameState.ropePosition = vencedor === 'alunos' ? limites.maximo : limites.minimo;
+            document.querySelectorAll('.marcador').forEach(m => m.style.left = gameState.ropePosition + '%');
             atualizarAlertasVisuais(50, null);
+            limparResultadoVisual();
+            document.body.classList.add(vencedor === 'alunos' ? 'resultado-vitoria' : 'resultado-derrota');
 
             if (!isSingleplayer) {
                 // Aguarda as transações de pontuação concluírem antes de montar o ranking.
@@ -1390,7 +1432,7 @@
         function exibirPlacarFinalProfessor(ranking, vencedor) {
             const painel = document.getElementById('placar-final-professor');
             painel.innerHTML = criarHtmlPlacarFinal(ranking || [], vencedor) +
-                '<button class="btn-jogar-novamente" onclick="jogarNovamente()">🔄 Jogar Novamente</button>';
+                '<div class="acoes-finais"><button class="btn-jogar-novamente" onclick="jogarNovamente()">🔄 Jogar Novamente</button></div>';
             painel.classList.remove('oculto');
             document.getElementById('prof-quiz-container').classList.add('oculto');
             document.getElementById('btn-pausar-jogo').classList.add('oculto');
@@ -1407,7 +1449,11 @@
                 <h2>FIM DE PARTIDA</h2>
                 <div class="resultado-vencedor">${mensagem}</div>
                 <p class="placar-final-subtitulo">✅ ${soloAcertos} acertos &nbsp; ❌ ${soloErros} erros &nbsp; • &nbsp; ${aproveitamento}% de aproveitamento</p>
-                <button class="btn-jogar-novamente" onclick="jogarNovamente()">🔄 Jogar Novamente</button>`;
+                <div class="acoes-finais">
+                    <button class="btn-jogar-novamente" onclick="jogarNovamente()">🔄 Jogar Novamente</button>
+                    <button class="btn-configurar-nova" onclick="configurarNovaPartidaSolo()">⚙️ Configurar nova partida</button>
+                    <button class="btn-sair-solo" onclick="location.reload()">🏠 Sair do modo Solo</button>
+                </div>`;
             painel.classList.remove('oculto');
             document.getElementById('prof-quiz-container').classList.add('oculto');
             document.getElementById('btn-pausar-jogo').classList.add('oculto');
@@ -1415,6 +1461,7 @@
 
         function jogarNovamente() {
             document.body.classList.remove('flash-acerto', 'flash-erro');
+            limparResultadoVisual();
             atualizarAlertasVisuais(50, null);
             document.getElementById('placar-final-professor').classList.add('oculto');
             document.getElementById('placar-final-professor').innerHTML = '';
@@ -1423,6 +1470,25 @@
             document.getElementById('btn-pausar-jogo').style.display = 'block';
             document.getElementById('btn-pausar-jogo').innerText = '⏸️ Pausar Partida';
             iniciarJogo(isSingleplayer);
+        }
+
+        function configurarNovaPartidaSolo() {
+            clearInterval(engineInterval);
+            engineInterval = null;
+            limparResultadoVisual();
+            document.body.classList.remove('flash-acerto', 'flash-erro');
+            atualizarAlertasVisuais(50, null);
+            gameState.fase = 'setup';
+            gameState.paused = false;
+            gameState.ropePosition = 50;
+            document.getElementById('placar-final-professor').classList.add('oculto');
+            document.getElementById('placar-final-professor').innerHTML = '';
+            document.getElementById('area-jogo-professor').classList.add('oculto');
+            document.getElementById('configuracoes-professor').classList.remove('oculto');
+            document.getElementById('btn-encerrar-geral').classList.add('oculto');
+            document.getElementById('prof-timer-container').classList.add('oculto');
+            document.getElementById('btn-pausar-jogo').innerText = '⏸️ Pausar Partida';
+            document.getElementById('marcador').style.left = '50%';
         }
 
         function atualizarFirebaseState() { return database.ref(`Salas/${salaId}/state`).set(gameState); }
@@ -1617,8 +1683,8 @@
             }
             
             atualizarAlertasVisuais(gameState.ropePosition, gameState.gameMode === 'time_attack' ? gameState.timeLeft : null);
-            if (gameState.ropePosition >= 100) return finalizarJogo('alunos');
-            if (gameState.ropePosition <= 0) return finalizarJogo('maquina');
+            const vencedorPorContato = verificarFimPorContato();
+            if (vencedorPorContato) return finalizarJogo(vencedorPorContato);
             
             gameState.fase = "feedback";
             gameState.timers.feedbackRestante = TEMPO_FEEDBACK;
