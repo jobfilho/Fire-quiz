@@ -269,8 +269,17 @@
                     <div class="modo-explicacao">
                         <div class="modo-card"><strong>🔥 Sobrevivência</strong><p>A turma e a máquina disputam o fogo rodada após rodada. A turma vence ao empurrá-lo até a máquina.</p></div>
                         <div class="modo-card"><strong>⏱️ Contra o Tempo</strong><p>A turma precisa manter vantagem e avançar antes que o cronômetro geral chegue ao fim.</p></div>
-                        <div class="modo-card"><strong>📊 Placar</strong><p>O fogo responde apenas ao desempenho coletivo, sem contra-ataque automático da máquina.</p></div>
-                        <div class="modo-card"><strong>☠️ Super Difícil</strong><p>A máquina empurra o fogo continuamente em direção à turma enquanto todos respondem.</p></div>
+                        <div class="modo-card"><strong>📊 Placar</strong><p>O fogo responde ao desempenho coletivo. A pressão da máquina depende da dificuldade escolhida.</p></div>
+                    </div>
+                </section>
+
+                <section class="como-bloco como-modos">
+                    <h3>🎯 Níveis de dificuldade</h3>
+                    <div class="modo-explicacao">
+                        <div class="modo-card"><strong>🟢 Fácil</strong><p>A máquina oferece pouca resistência.</p></div>
+                        <div class="modo-card"><strong>🟡 Médio</strong><p>A máquina apresenta resistência equilibrada.</p></div>
+                        <div class="modo-card"><strong>🔴 Difícil</strong><p>A máquina exerce maior pressão sobre a turma.</p></div>
+                        <div class="modo-card"><strong>☠️ Super Difícil</strong><p>Além da força máxima por rodada, a máquina empurra o fogo continuamente em direção à turma.</p></div>
                     </div>
                 </section>
             </div>
@@ -312,7 +321,6 @@
                         <button class="btn-cfg ativo-modo" id="modo-survivor" onclick="mudarModo('survivor')">🔥 Sobrevivência</button>
                         <button class="btn-cfg" id="modo-time" onclick="mudarModo('time_attack')">⏱️ Contra o Tempo</button>
                         <button class="btn-cfg" id="modo-placar" onclick="mudarModo('placar')">📊 Placar</button>
-                        <button class="btn-cfg" id="modo-super-hard" onclick="mudarModo('super_hard')">☠️ Super Difícil</button>
                     </div>
                     
                     <div id="config-tempo-container" class="oculto" style="margin-bottom: 15px;">
@@ -331,6 +339,7 @@
                             <button class="btn-cfg" id="dif-easy" onclick="mudarDificuldade('easy')">Easy</button>
                             <button class="btn-cfg ativo" id="dif-medium" onclick="mudarDificuldade('medium')">Medium</button>
                             <button class="btn-cfg" id="dif-hard" onclick="mudarDificuldade('hard')">Hard</button>
+                            <button class="btn-cfg" id="dif-super-hard" onclick="mudarDificuldade('super_hard')">☠️ Super Difícil</button>
                         </div>
                     </div>
                     
@@ -770,10 +779,10 @@
             timers: { freezeRestante: 0, feedbackRestante: 0 }
         };
 
-        const forcaMaquinaPorRodada = { easy: 2, medium: 4, hard: 6 };
-        const configForca = { easy: 0.05, medium: 0.08, hard: 0.12 };
+        const forcaMaquinaPorRodada = { easy: 2, medium: 4, hard: 6, super_hard: 8 };
+        const configForca = { easy: 0.05, medium: 0.08, hard: 0.12, super_hard: 0.16 };
         const FORCA_CONTINUA_SUPER_DIFICIL = 0.10;
-        const configPesos = { easy: { acerto: 4, erro: 2 }, medium: { acerto: 3, erro: 2 }, hard: { acerto: 3, erro: 2.5 }, placar: { acerto: 4, erro: 5 } };
+        const configPesos = { easy: { acerto: 4, erro: 2 }, medium: { acerto: 3, erro: 2 }, hard: { acerto: 3, erro: 2.5 }, super_hard: { acerto: 3, erro: 3 }, placar: { acerto: 4, erro: 5 } };
 
         function PatternShuffle(array) {
             let m = array.length, t, i;
@@ -788,10 +797,10 @@
         function mudarModo(modo) { 
             modoSelecionado = modo; 
             document.querySelectorAll('.seletor-grupo .btn-cfg').forEach(b => b.classList.remove('ativo-modo'));
-            const idModo = modo === 'time_attack' ? 'time' : modo === 'super_hard' ? 'super-hard' : modo;
+            const idModo = modo === 'time_attack' ? 'time' : modo;
             document.getElementById('modo-' + idModo).classList.add('ativo-modo');
             document.getElementById('config-tempo-container').className = (modo === 'time_attack') ? '' : 'oculto';
-            document.getElementById('config-dificuldade-container').className = (modo === 'placar' || modo === 'super_hard') ? 'oculto' : '';
+            document.getElementById('config-dificuldade-container').className = '';
         }
 
         function mudarDificuldade(nivel) { 
@@ -1060,7 +1069,7 @@
 
             const percentual = totalParticipantes > 0 ? acertos / totalParticipantes : 0;
             const impulsoTurma = calcularImpulsoColetivo(percentual);
-            const ataqueMaquina = (gameState.gameMode === 'placar' || gameState.gameMode === 'super_hard') ? 0 : forcaMaquinaPorRodada[dificuldadeSelecionada];
+            const ataqueMaquina = gameState.gameMode === 'placar' ? 0 : forcaMaquinaPorRodada[dificuldadeSelecionada];
 
             // A máquina oferece resistência, mas nunca pode inverter um resultado coletivo positivo.
             // Com 50% ou mais de acertos, o fogo sempre avança para a direita, em direção à máquina.
@@ -1123,7 +1132,7 @@
             } else if (gameState.fase === "respondendo") {
                 gameState.questionTimeLeft = Math.max(0, gameState.questionTimeLeft - 0.1);
 
-                if (gameState.gameMode === 'super_hard') {
+                if (dificuldadeSelecionada === 'super_hard') {
                     gameState.ropePosition = Math.max(0, gameState.ropePosition - FORCA_CONTINUA_SUPER_DIFICIL);
                     database.ref(`Salas/${salaId}/state/ropePosition`).set(gameState.ropePosition);
                     if (gameState.ropePosition <= 0) return finalizarJogo('maquina');
@@ -1186,7 +1195,7 @@
                     document.getElementById('prof-tempo').innerText = Math.ceil(gameState.timeLeft) + "s";
                     if (gameState.timeLeft <= 0) return finalizarJogo(gameState.ropePosition > 50 ? 'alunos' : 'maquina');
                 }
-                if (gameState.gameMode === 'super_hard') {
+                if (dificuldadeSelecionada === 'super_hard') {
                     gameState.ropePosition -= FORCA_CONTINUA_SUPER_DIFICIL;
                     if (gameState.ropePosition <= 0) return finalizarJogo('maquina');
                 } else if (gameState.gameMode !== 'placar') {
