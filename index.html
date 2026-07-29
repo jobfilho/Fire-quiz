@@ -108,6 +108,10 @@
         .arena-objetivo { color:#e65100; font-size:13px; flex:1; text-align:center; background:#fff3e0; border-radius:12px; padding:8px; border:1px dashed #ff9800; }
         @media(max-width:600px){ .arena-legenda{grid-template-columns:1fr 1fr}.arena-objetivo{grid-column:1 / -1; grid-row:1}.arena-lado{font-size:12px;} }
         .status-coletivo { background:#e3f2fd; border:2px solid #2196f3; border-radius:8px; padding:10px; margin:12px 0; font-weight:bold; }
+        .acoes-partida-inferior { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:20px; }
+        .acoes-partida-inferior .btn-encerrar { margin-top:0; width:100%; }
+        .btn-configurar-durante-solo { background:#607d8b; color:white; padding:12px 18px; width:100%; font-size:16px; }
+        @media(max-width:560px){ .acoes-partida-inferior{grid-template-columns:1fr;} }
         .resultado-coletivo { background:#f8f9fa; border-left:6px solid #ff9800; border-radius:8px; padding:12px; margin:12px 0; text-align:left; }
 
         /* Placar final */
@@ -198,14 +202,48 @@
         @keyframes piscarTempo { from{opacity:1; transform:scale(1)} to{opacity:.55; transform:scale(1.08)} }
 
 
-        /* Modo Placar por rodadas */
-        .placar-rodadas { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin:12px 0 18px; }
-        .placar-rodadas .bloco { min-width:135px; padding:12px 14px; border-radius:12px; font-weight:800; background:#f5f7fb; border:2px solid #dfe5ef; }
-        .placar-rodadas .turma { background:#e8f5e9; border-color:#81c784; color:#1b5e20; }
-        .placar-rodadas .maquina { background:#ffebee; border-color:#ef9a9a; color:#b71c1c; }
-        .placar-rodadas .rodada { background:#fff3e0; border-color:#ffb74d; color:#e65100; }
-        .placar-rodadas .desempate { background:#ede7f6; border-color:#9575cd; color:#4527a0; }
+        /* Modo Placar — identidade própria dentro do tema atual */
+        .placar-rodadas { margin:12px 0 18px; }
+        .placar-arena { background:linear-gradient(180deg,#ffffff,#f7f9fd); border:2px solid #dfe5ef; border-radius:16px; padding:16px; box-shadow:0 7px 18px rgba(28,42,70,.08); }
+        .placar-partida-titulo { color:#263859; font-size:12px; font-weight:900; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:8px; }
+        .placar-partida { display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:10px; }
+        .placar-lado { border-radius:12px; padding:12px; font-weight:900; }
+        .placar-lado.turma { background:#e8f5e9; border:2px solid #81c784; color:#1b5e20; }
+        .placar-lado.maquina { background:#ffebee; border:2px solid #ef9a9a; color:#b71c1c; }
+        .placar-lado .numero { display:block; font-size:30px; line-height:1; margin-top:4px; }
+        .placar-versus { color:#ff6d00; font-weight:900; font-size:22px; }
+        .faixa-rodadas { display:grid; grid-template-columns:repeat(var(--total-rodadas,3),minmax(70px,1fr)); gap:7px; margin:14px 0; }
+        .rodada-chip { border-radius:10px; padding:8px 5px; background:#eef1f6; border:2px solid #d9e0ea; color:#667085; font-size:12px; font-weight:800; }
+        .rodada-chip.atual { background:#fff3e0; border-color:#ff9800; color:#e65100; box-shadow:0 3px 9px rgba(255,152,0,.18); }
+        .rodada-chip.turma { background:#e8f5e9; border-color:#66bb6a; color:#1b5e20; }
+        .rodada-chip.maquina { background:#ffebee; border-color:#ef5350; color:#b71c1c; }
+        .rodada-chip small { display:block; margin-top:2px; font-size:10px; }
+        .painel-rodada-atual { background:#fff7ed; border:2px solid #ffcc80; border-radius:14px; padding:14px; }
+        .linha-contexto-placar { display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; }
+        .linha-contexto-placar strong { color:#263859; font-size:20px; }
+        .pergunta-indicador { color:#e65100; background:white; border:1px solid #ffcc80; border-radius:999px; padding:6px 11px; font-weight:900; }
+        .pontuacao-rodada { display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:8px; margin:12px 0; }
+        .ponto-box { background:white; border-radius:10px; padding:9px; font-weight:900; border:1px solid #e3e7ee; }
+        .ponto-box.turma { color:#1b5e20; }
+        .ponto-box.maquina { color:#b71c1c; }
+        .ponto-box span { display:block; font-size:24px; }
+        .marcadores-perguntas { display:grid; grid-template-columns:repeat(5,1fr); gap:8px; margin-top:10px; }
+        .marcador-pergunta { height:38px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-weight:900; background:#fff; border:2px solid #dfe5ef; color:#7b8494; }
+        .marcador-pergunta.turma { background:#e8f5e9; border-color:#66bb6a; color:#1b5e20; }
+        .marcador-pergunta.maquina { background:#ffebee; border-color:#ef5350; color:#b71c1c; }
+        .marcador-pergunta.empate { background:#fff8e1; border-color:#ffca28; color:#8d6e00; }
+        .marcador-pergunta.atual { outline:3px solid rgba(255,152,0,.25); border-color:#ff9800; }
+        .placar-desempate { margin-top:10px; background:#ede7f6; border:2px solid #9575cd; color:#4527a0; border-radius:10px; padding:9px; font-weight:900; }
+        .btn-proxima-rodada { width:100%; margin:12px 0 0; padding:14px; background:linear-gradient(135deg,#263859,#40557d); color:white; font-size:17px; }
         .modo-placar-ativo .trilho, .modo-placar-ativo .arena-legenda, .modo-placar-ativo .aviso-final { display:none !important; }
+        .modo-placar-ativo #placar-solo, .modo-placar-ativo .placar .placar-certas, .modo-placar-ativo .placar .placar-erradas { display:none !important; }
+        .modo-placar-ativo #prof-status-coletivo { display:none !important; }
+        .resultado-rodada-banner { margin-top:12px; padding:13px 14px; border-radius:12px; font-weight:900; font-size:17px; text-align:center; }
+        .resultado-rodada-banner.turma { background:#e8f5e9; border:2px solid #66bb6a; color:#1b5e20; }
+        .resultado-rodada-banner.maquina { background:#ffebee; border:2px solid #ef5350; color:#b71c1c; }
+        @media(max-width:600px){
+            .placar-arena{padding:11px}.faixa-rodadas{gap:4px}.rodada-chip{font-size:10px;padding:7px 2px}.linha-contexto-placar strong{font-size:17px}.placar-lado .numero{font-size:25px}
+        }
         .ajuda-dificuldade { display:inline-flex; width:28px; height:28px; border-radius:50%; padding:0; align-items:center; justify-content:center; margin-left:6px; background:#263859; color:white; font-size:16px; vertical-align:middle; }
         .modal-ajuda { position:fixed; inset:0; background:rgba(12,20,36,.78); z-index:3500; display:flex; align-items:center; justify-content:center; padding:18px; }
         .modal-ajuda-conteudo { width:min(720px,96vw); max-height:88vh; overflow:auto; background:white; border-radius:18px; text-align:left; box-shadow:0 18px 50px rgba(0,0,0,.35); }
@@ -414,6 +452,7 @@
                         <span class="placar-erradas">❌ Erros: <span id="solo-erros">0</span></span>
                     </div>
                     <div id="placar-rodadas-prof" class="placar-rodadas oculto"></div>
+                    <button id="btn-proxima-rodada-placar" class="btn-proxima-rodada oculto" onclick="iniciarProximaRodadaPlacar()">▶️ Iniciar próxima rodada</button>
 
                     <div class="trilho"><div id="marcador" class="marcador">🔥</div></div>
                     <div class="arena-legenda">
@@ -431,7 +470,10 @@
                     </div>
                 </div>
                 <div id="placar-final-professor" class="placar-final oculto"></div>
-                <button class="btn-encerrar oculto" id="btn-encerrar-geral" onclick="forcarEncerramento()">❌ Encerrar Partida</button>
+                <div id="acoes-partida-inferior" class="acoes-partida-inferior oculto">
+                    <button id="btn-configurar-durante-solo" class="btn-configurar-durante-solo oculto" onclick="configurarNovaPartidaSolo()">⚙️ Configurar nova partida</button>
+                    <button class="btn-encerrar" id="btn-encerrar-geral" onclick="forcarEncerramento()">❌ Encerrar Partida</button>
+                </div>
             </div>
             
             <div class="ranking-container">
@@ -845,7 +887,7 @@
             fase: "setup", paused: false, gameMode: "survivor", timeLeft: 0, ropePosition: 50, 
             round: 1, vencedor: null, currentQuestion: null, scoreGlobal: { certas: 0, erradas: 0 },
             questionTimeLeft: 0, participantsRound: {}, answersReceived: 0, roundResult: null, finalRanking: [],
-            placar: { totalRodadas: 3, rodadaAtual: 1, perguntaNaRodada: 1, pontosTurma: 0, pontosMaquina: 0, rodadasTurma: 0, rodadasMaquina: 0, desempate: false },
+            placar: { totalRodadas: 3, rodadaAtual: 1, perguntaNaRodada: 1, pontosTurma: 0, pontosMaquina: 0, rodadasTurma: 0, rodadasMaquina: 0, desempate: false, resultadosPerguntas: [], resultadosRodadas: [], aguardandoProxima: false },
             timers: { freezeRestante: 0, feedbackRestante: 0 }
         };
 
@@ -1058,7 +1100,7 @@
             perguntaAtualIndex = 0;
             tempoQuestaoSelecionado = parseInt(document.getElementById('tempo-questao').value) || 15;
             numeroRodadasPlacarSelecionado = parseInt(document.getElementById('numero-rodadas-placar').value) || 3;
-            gameState = { fase: "setup", paused: false, gameMode: modoSelecionado, ropePosition: 50, round: 1, vencedor: null, scoreGlobal: { certas: 0, erradas: 0 }, questionTimeLeft: tempoQuestaoSelecionado, participantsRound: {}, answersReceived: 0, roundResult: null, finalRanking: [], placar: { totalRodadas: numeroRodadasPlacarSelecionado, rodadaAtual: 1, perguntaNaRodada: 1, pontosTurma: 0, pontosMaquina: 0, rodadasTurma: 0, rodadasMaquina: 0, desempate: false }, timers: { freezeRestante: 0, feedbackRestante: 0 } };
+            gameState = { fase: "setup", paused: false, gameMode: modoSelecionado, ropePosition: 50, round: 1, vencedor: null, scoreGlobal: { certas: 0, erradas: 0 }, questionTimeLeft: tempoQuestaoSelecionado, participantsRound: {}, answersReceived: 0, roundResult: null, finalRanking: [], placar: { totalRodadas: numeroRodadasPlacarSelecionado, rodadaAtual: 1, perguntaNaRodada: 1, pontosTurma: 0, pontosMaquina: 0, rodadasTurma: 0, rodadasMaquina: 0, desempate: false, resultadosPerguntas: [], resultadosRodadas: [], aguardandoProxima: false }, timers: { freezeRestante: 0, feedbackRestante: 0 } };
             
             if (modoSelecionado === 'time_attack') {
                 gameState.timeLeft = parseInt(document.getElementById('tempo-customizado').value) || 60;
@@ -1069,7 +1111,7 @@
                 soloErros = 0;
                 document.getElementById('solo-acertos').innerText = '0';
                 document.getElementById('solo-erros').innerText = '0';
-                document.getElementById('placar-solo').classList.remove('oculto');
+                document.getElementById('placar-solo').classList.toggle('oculto', modoSelecionado === 'placar');
                 document.getElementById('arena-lado-prof').innerText = '🧑 VOCÊ';
                 document.getElementById('arena-objetivo-prof').innerText = 'ACERTE E EMPURRE O FOGO →';
                 document.getElementById('area-jogo-professor').classList.remove('oculto');
@@ -1077,7 +1119,8 @@
                 document.getElementById('placar-rodadas-prof').classList.toggle('oculto', modoSelecionado !== 'placar');
                 document.getElementById('btn-pausar-jogo').classList.remove('oculto');
                 document.getElementById('btn-pausar-jogo').innerText = '⏸️ Pausar Partida';
-                document.getElementById('btn-encerrar-geral').classList.remove('oculto');
+                document.getElementById('acoes-partida-inferior').classList.remove('oculto');
+                document.getElementById('btn-configurar-durante-solo').classList.remove('oculto');
                 document.getElementById('btn-encerrar-geral').innerText = "❌ Sair do Modo Solo";
                 if (modoSelecionado === 'time_attack') document.getElementById('prof-timer-container').classList.remove('oculto');
                 
@@ -1092,7 +1135,9 @@
                 document.getElementById('btn-pausar-jogo').classList.remove('oculto');
                 document.getElementById('btn-pausar-jogo').style.display = 'block';
                 document.getElementById('btn-pausar-jogo').innerText = '⏸️ Pausar Partida';
-                document.getElementById('btn-encerrar-geral').classList.remove('oculto');
+                document.getElementById('acoes-partida-inferior').classList.remove('oculto');
+                document.getElementById('btn-configurar-durante-solo').classList.add('oculto');
+                document.getElementById('btn-encerrar-geral').innerText = "❌ Encerrar Partida";
                 document.getElementById('titulo-monitor').innerText = "Ranking ao vivo";
                 if (modoSelecionado === 'time_attack') document.getElementById('prof-timer-container').classList.remove('oculto');
                 
@@ -1134,11 +1179,48 @@
 
         function htmlPlacarRodadas() {
             const p = gameState.placar || {};
-            const pergunta = p.desempate ? 'Desempate' : `Pergunta ${p.perguntaNaRodada || 1}/5`;
-            return `<div class="bloco rodada">Rodada ${p.rodadaAtual || 1}/${p.totalRodadas || 3}<br><small>${pergunta}</small></div>
-                    <div class="bloco turma">Turma<br>${p.pontosTurma || 0} pts • ${p.rodadasTurma || 0} rod.</div>
-                    <div class="bloco maquina">Máquina<br>${p.pontosMaquina || 0} pts • ${p.rodadasMaquina || 0} rod.</div>
-                    ${p.desempate ? '<div class="bloco desempate">⚡ Morte súbita</div>' : ''}`;
+            const totalRodadas = p.totalRodadas || 3;
+            const rodadaAtual = p.rodadaAtual || 1;
+            const resultadosRodadas = p.resultadosRodadas || [];
+            const resultadosPerguntas = p.resultadosPerguntas || [];
+            const chips = Array.from({length: totalRodadas}, (_, i) => {
+                const numero = i + 1;
+                const resultado = resultadosRodadas[i];
+                const classe = resultado || (numero === rodadaAtual ? 'atual' : '');
+                const subtitulo = resultado === 'turma' ? 'Turma' : resultado === 'maquina' ? 'Máquina' : numero === rodadaAtual ? 'Atual' : 'Pendente';
+                return `<div class="rodada-chip ${classe}">Rodada ${numero}<small>${subtitulo}</small></div>`;
+            }).join('');
+            const marcadores = Array.from({length:5}, (_, i) => {
+                const resultado = resultadosPerguntas[i];
+                const atual = !p.desempate && i + 1 === (p.perguntaNaRodada || 1) && !resultado ? ' atual' : '';
+                const simbolo = resultado === 'turma' ? '✓' : resultado === 'maquina' ? '✕' : resultado === 'empate' ? '=' : i + 1;
+                return `<div class="marcador-pergunta ${resultado || ''}${atual}">${simbolo}</div>`;
+            }).join('');
+            const indicadorPergunta = p.desempate ? 'Pergunta de desempate' : `Pergunta ${p.perguntaNaRodada || 1} de 5`;
+            const resultadoRodadaAtual = resultadosRodadas[rodadaAtual - 1];
+            const bannerRodada = gameState.fase === 'intervalo_rodada' && resultadoRodadaAtual
+                ? `<div class="resultado-rodada-banner ${resultadoRodadaAtual}">${resultadoRodadaAtual === 'turma' ? `🎉 A turma venceu a Rodada ${rodadaAtual}!` : `🤖 A máquina venceu a Rodada ${rodadaAtual}!`}</div>`
+                : '';
+            return `<div class="placar-arena" style="--total-rodadas:${totalRodadas}">
+                <div class="placar-partida-titulo">Placar da partida — rodadas vencidas</div>
+                <div class="placar-partida">
+                    <div class="placar-lado turma">TURMA<span class="numero">${p.rodadasTurma || 0}</span></div>
+                    <div class="placar-versus">×</div>
+                    <div class="placar-lado maquina">MÁQUINA<span class="numero">${p.rodadasMaquina || 0}</span></div>
+                </div>
+                <div class="faixa-rodadas">${chips}</div>
+                <div class="painel-rodada-atual">
+                    <div class="linha-contexto-placar"><strong>Rodada ${rodadaAtual}</strong><span class="pergunta-indicador">${indicadorPergunta}</span></div>
+                    <div class="pontuacao-rodada">
+                        <div class="ponto-box turma">Turma<span>${p.pontosTurma || 0}</span></div>
+                        <strong>×</strong>
+                        <div class="ponto-box maquina">Máquina<span>${p.pontosMaquina || 0}</span></div>
+                    </div>
+                    <div class="marcadores-perguntas">${marcadores}</div>
+                    ${p.desempate ? '<div class="placar-desempate">⚡ Morte súbita — quem pontuar vence a rodada.</div>' : ''}
+                    ${bannerRodada}
+                </div>
+            </div>`;
         }
 
         function renderizarPlacarRodadas() {
@@ -1147,6 +1229,8 @@
             const aluno = document.getElementById('placar-rodadas-aluno');
             if (prof) prof.innerHTML = html;
             if (aluno) aluno.innerHTML = html;
+            const botao = document.getElementById('btn-proxima-rodada-placar');
+            if (botao) botao.classList.toggle('oculto', !(gameState.gameMode === 'placar' && gameState.fase === 'intervalo_rodada'));
         }
 
         function decidirPontoPlacar(percentual) {
@@ -1157,14 +1241,20 @@
 
         function concluirPerguntaPlacar(percentual) {
             const p = gameState.placar;
+            p.resultadosPerguntas = p.resultadosPerguntas || [];
+            p.resultadosRodadas = p.resultadosRodadas || [];
             const vencedorPergunta = decidirPontoPlacar(percentual);
+            if (!p.desempate && p.resultadosPerguntas.length < 5) {
+                p.resultadosPerguntas.push(vencedorPergunta === 'alunos' ? 'turma' : vencedorPergunta);
+            }
             if (vencedorPergunta === 'alunos') p.pontosTurma++;
             if (vencedorPergunta === 'maquina') p.pontosMaquina++;
 
             if (p.desempate) {
                 if (vencedorPergunta === 'empate') return { encerrouRodada:false, vencedorPergunta };
-                if (vencedorPergunta === 'alunos') p.rodadasTurma++; else p.rodadasMaquina++;
-                return finalizarRodadaPlacar(vencedorPergunta);
+                const vencedorRodada = vencedorPergunta;
+                if (vencedorRodada === 'alunos') p.rodadasTurma++; else p.rodadasMaquina++;
+                return finalizarRodadaPlacar(vencedorRodada);
             }
 
             if (p.perguntaNaRodada < 5) {
@@ -1184,17 +1274,30 @@
 
         function finalizarRodadaPlacar(vencedorRodada) {
             const p = gameState.placar;
+            p.resultadosRodadas = p.resultadosRodadas || [];
+            p.resultadosRodadas[p.rodadaAtual - 1] = vencedorRodada === 'alunos' ? 'turma' : 'maquina';
             const partidaTerminou = p.rodadaAtual >= p.totalRodadas;
+            p.aguardandoProxima = !partidaTerminou;
             if (partidaTerminou) {
                 const vencedorPartida = p.rodadasTurma > p.rodadasMaquina ? 'alunos' : 'maquina';
                 return { encerrouRodada:true, encerrouPartida:true, vencedorRodada, vencedorPartida };
             }
+            return { encerrouRodada:true, encerrouPartida:false, vencedorRodada };
+        }
+
+        async function iniciarProximaRodadaPlacar() {
+            if (gameState.gameMode !== 'placar' || gameState.fase !== 'intervalo_rodada') return;
+            const p = gameState.placar;
             p.rodadaAtual++;
             p.perguntaNaRodada = 1;
             p.pontosTurma = 0;
             p.pontosMaquina = 0;
             p.desempate = false;
-            return { encerrouRodada:true, encerrouPartida:false, vencedorRodada };
+            p.resultadosPerguntas = [];
+            p.aguardandoProxima = false;
+            perguntaAtualIndex = (perguntaAtualIndex + 1) % perguntasSelecionadas.length;
+            gameState.round++;
+            await iniciarRodada();
         }
 
         function calcularImpulsoColetivo(percentual) {
@@ -1245,10 +1348,11 @@
                     acertos, erros, percentual: Math.round(percentual * 100), distribuicao,
                     vencedorPergunta: decisao.vencedorPergunta,
                     vencedorRodada: decisao.vencedorRodada || null,
-                    iniciouDesempate: !!decisao.iniciouDesempate
+                    iniciouDesempate: !!decisao.iniciouDesempate,
+                    encerrouPartida: !!decisao.encerrouPartida,
+                    vencedorPartida: decisao.vencedorPartida || null
                 };
                 renderizarPlacarRodadas();
-                if (decisao.encerrouPartida) return finalizarJogo(decisao.vencedorPartida);
             } else {
                 const impulsoTurma = calcularImpulsoColetivo(percentual);
                 const ataqueMaquina = forcaMaquinaPorRodada[dificuldadeSelecionada];
@@ -1327,6 +1431,16 @@
             } else if (gameState.fase === "feedback") {
                 gameState.timers.feedbackRestante -= 100;
                 if (gameState.timers.feedbackRestante <= 0) {
+                    if (gameState.gameMode === 'placar' && gameState.roundResult?.encerrouPartida) {
+                        finalizarJogo(gameState.roundResult.vencedorPartida);
+                        return;
+                    }
+                    if (gameState.gameMode === 'placar' && gameState.roundResult?.vencedorRodada) {
+                        gameState.fase = 'intervalo_rodada';
+                        atualizarFirebaseState();
+                        renderizarTelaProfessor();
+                        return;
+                    }
                     perguntaAtualIndex = (perguntaAtualIndex + 1) % perguntasSelecionadas.length;
                     gameState.round++;
                     iniciarRodada();
@@ -1352,6 +1466,16 @@
             else if (gameState.fase === "feedback") {
                 gameState.timers.feedbackRestante -= 100;
                 if (gameState.timers.feedbackRestante <= 0) {
+                    if (gameState.gameMode === 'placar' && gameState.roundResult?.encerrouPartida) {
+                        finalizarJogo(gameState.roundResult.vencedorPartida);
+                        return;
+                    }
+                    if (gameState.gameMode === 'placar' && gameState.roundResult?.vencedorRodada) {
+                        gameState.fase = 'intervalo_rodada';
+                        renderizarPlacarRodadas();
+                        renderizarTelaProfessor();
+                        return;
+                    }
                     perguntaAtualIndex = (perguntaAtualIndex + 1) % perguntasSelecionadas.length;
                     gameState.round++;
                     iniciarRodada();
@@ -1448,7 +1572,7 @@
                 answersReceived: 0,
                 roundResult: null,
                 finalRanking: [],
-                placar: { totalRodadas: numeroRodadasPlacarSelecionado, rodadaAtual: 1, perguntaNaRodada: 1, pontosTurma: 0, pontosMaquina: 0, rodadasTurma: 0, rodadasMaquina: 0, desempate: false },
+                placar: { totalRodadas: numeroRodadasPlacarSelecionado, rodadaAtual: 1, perguntaNaRodada: 1, pontosTurma: 0, pontosMaquina: 0, rodadasTurma: 0, rodadasMaquina: 0, desempate: false, resultadosPerguntas: [], resultadosRodadas: [], aguardandoProxima: false },
                 timers: { freezeRestante: 0, feedbackRestante: 0 }
             };
 
@@ -1457,7 +1581,7 @@
 
             document.getElementById('area-jogo-professor').classList.add('oculto');
             document.getElementById('configuracoes-professor').classList.remove('oculto');
-            document.getElementById('btn-encerrar-geral').classList.add('oculto');
+            document.getElementById('acoes-partida-inferior').classList.add('oculto');
             document.getElementById('prof-timer-container').classList.add('oculto');
             document.getElementById('btn-pausar-jogo').innerText = "⏸️ Pausar Partida";
             document.getElementById('titulo-monitor').innerText = "Estudantes no Lobby";
@@ -1614,7 +1738,7 @@
             document.getElementById('placar-final-professor').innerHTML = '';
             document.getElementById('area-jogo-professor').classList.add('oculto');
             document.getElementById('configuracoes-professor').classList.remove('oculto');
-            document.getElementById('btn-encerrar-geral').classList.add('oculto');
+            document.getElementById('acoes-partida-inferior').classList.add('oculto');
             document.getElementById('prof-timer-container').classList.add('oculto');
             document.getElementById('btn-pausar-jogo').innerText = '⏸️ Pausar Partida';
             document.getElementById('marcador').style.left = '50%';
@@ -1738,7 +1862,7 @@
         function renderizarTelaProfessor() {
             document.getElementById('marcador').style.left = gameState.ropePosition + '%';
             atualizarAlertasVisuais(gameState.ropePosition, gameState.gameMode === 'time_attack' ? gameState.timeLeft : null);
-            document.getElementById('info-rodada').innerText = "Rodada: " + gameState.round;
+            document.getElementById('info-rodada').innerText = gameState.gameMode === 'placar' ? `Rodada ${gameState.placar?.rodadaAtual || 1} • Pergunta ${gameState.placar?.desempate ? 'de desempate' : (gameState.placar?.perguntaNaRodada || 1) + ' de 5'}` : "Rodada: " + gameState.round;
             document.getElementById('prof-quiz-container').classList.remove('oculto');
             const statusColetivo = document.getElementById('prof-status-coletivo');
             const resultado = document.getElementById('prof-resultado-coletivo');
@@ -1747,6 +1871,9 @@
             if (gameState.fase === 'leitura') statusColetivo.innerText = `Leitura da questão • ${total} participantes nesta rodada`;
             if (gameState.fase === 'respondendo') statusColetivo.innerText = `Respostas: ${gameState.answersReceived || 0}/${total} • Tempo: ${Math.ceil(gameState.questionTimeLeft || 0)}s`;
             if (gameState.fase === 'calculando') statusColetivo.innerText = 'Calculando o resultado coletivo...';
+            if (gameState.fase === 'intervalo_rodada') { statusColetivo.classList.add('oculto'); resultado.classList.add('oculto'); }
+            else { statusColetivo.classList.remove('oculto'); }
+            if (gameState.gameMode === 'placar') renderizarPlacarRodadas();
 
             if (gameState.currentQuestion) {
                 document.getElementById('prof-pergunta-texto').innerText = gameState.currentQuestion.q;
@@ -1780,7 +1907,7 @@
         function renderizarTelaSolo() {
             document.getElementById('marcador').style.left = gameState.ropePosition + '%';
             atualizarAlertasVisuais(gameState.ropePosition, gameState.gameMode === 'time_attack' ? gameState.timeLeft : null);
-            document.getElementById('info-rodada').innerText = "Rodada: " + gameState.round;
+            document.getElementById('info-rodada').innerText = gameState.gameMode === 'placar' ? `Rodada ${gameState.placar?.rodadaAtual || 1} • Pergunta ${gameState.placar?.desempate ? 'de desempate' : (gameState.placar?.perguntaNaRodada || 1) + ' de 5'}` : "Rodada: " + gameState.round;
             document.getElementById('prof-quiz-container').classList.remove('oculto');
             
             let freezeHtml = `<div id="container-freeze-solo" class="barra-freeze-container"><div id="barra-freeze-solo" class="barra-freeze-fill"></div></div>`;
@@ -1816,9 +1943,8 @@
                     mostrarFeedbackFlutuante(false);
                 }
                 const decisao = concluirPerguntaPlacar(acertouSolo ? 1 : 0);
-                gameState.roundResult = { percentual: acertouSolo ? 100 : 0, vencedorPergunta: decisao.vencedorPergunta, vencedorRodada: decisao.vencedorRodada || null, iniciouDesempate: !!decisao.iniciouDesempate };
+                gameState.roundResult = { percentual: acertouSolo ? 100 : 0, vencedorPergunta: decisao.vencedorPergunta, vencedorRodada: decisao.vencedorRodada || null, iniciouDesempate: !!decisao.iniciouDesempate, encerrouPartida: !!decisao.encerrouPartida, vencedorPartida: decisao.vencedorPartida || null };
                 renderizarPlacarRodadas();
-                if (decisao.encerrouPartida) return finalizarJogo(decisao.vencedorPartida);
                 gameState.fase = 'feedback';
                 gameState.timers.feedbackRestante = TEMPO_FEEDBACK;
                 return;
@@ -1920,7 +2046,7 @@
                         bFreeze.classList.add('oculto');
                         statusColetivo.innerText = `Respostas recebidas: ${estado.answersReceived || 0}/${total} • ${Math.ceil(estado.questionTimeLeft || 0)}s`;
                         if (alternativaSelecionadaIndex === null) {
-                            status.innerText = "Escolha sua resposta e empurre o fogo! 🔥";
+                            status.innerText = modoPlacar ? "Escolha sua resposta e ajude a turma a pontuar!" : "Escolha sua resposta e empurre o fogo! 🔥";
                             document.querySelectorAll('#lista-opcoes .btn-opcao').forEach(b => b.disabled = false);
                         } else {
                             status.innerText = "Resposta registrada. Aguardando a turma...";
@@ -1957,6 +2083,14 @@
                         }
                         resultado.classList.remove('oculto');
                     }
+                } else if (estado.fase === "intervalo_rodada") {
+                    status.innerText = "";
+                    containerQuiz.classList.add('oculto');
+                    cabecalho.style.visibility = "visible";
+                    trilho.style.visibility = "hidden";
+                    statusColetivo.classList.add('oculto');
+                    resultado.classList.add('oculto');
+                    renderizarPlacarRodadas();
                 } else if (estado.fase === "closed") {
                     status.innerText = estado.closedMessage || "A sala foi encerrada pelo professor.";
                     containerQuiz.classList.add('oculto');
