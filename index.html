@@ -247,6 +247,15 @@
         .ajuda-dificuldade { display:inline-flex; width:28px; height:28px; border-radius:50%; padding:0; align-items:center; justify-content:center; margin-left:6px; background:#263859; color:white; font-size:16px; vertical-align:middle; }
         .modal-ajuda { position:fixed; inset:0; background:rgba(12,20,36,.78); z-index:3500; display:flex; align-items:center; justify-content:center; padding:18px; }
         .modal-ajuda-conteudo { width:min(720px,96vw); max-height:88vh; overflow:auto; background:white; border-radius:18px; text-align:left; box-shadow:0 18px 50px rgba(0,0,0,.35); }
+        .modal-confirmacao { position:fixed; inset:0; background:rgba(12,20,36,.78); z-index:4000; display:flex; align-items:center; justify-content:center; padding:18px; }
+        .confirmacao-conteudo { width:min(460px,94vw); background:white; border-radius:18px; padding:26px; text-align:center; box-shadow:0 18px 50px rgba(0,0,0,.35); border:2px solid #ffcc80; }
+        .confirmacao-icone { font-size:46px; margin-bottom:8px; }
+        .confirmacao-conteudo h3 { margin:0 0 10px; color:#263859; font-size:24px; }
+        .confirmacao-conteudo p { margin:0 0 20px; color:#5d6575; line-height:1.45; }
+        .confirmacao-acoes { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+        .btn-confirmar-retorno { background:linear-gradient(135deg,#ff6d00,#ff9800); color:white; }
+        .btn-cancelar-retorno { background:#e9ecef; color:#263859; border:2px solid #cfd6df; }
+        @media(max-width:480px){ .confirmacao-acoes{grid-template-columns:1fr;} }
         .ajuda-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; padding:20px; }
         .ajuda-card { border:2px solid #e5eaf2; border-radius:12px; padding:14px; background:#fafbfe; }
         .ajuda-card h3 { margin:0 0 8px; color:#263859; }
@@ -471,7 +480,7 @@
                 </div>
                 <div id="placar-final-professor" class="placar-final oculto"></div>
                 <div id="acoes-partida-inferior" class="acoes-partida-inferior oculto">
-                    <button id="btn-configurar-durante-solo" class="btn-configurar-durante-solo oculto" onclick="configurarNovaPartidaSolo()">⚙️ Configurar nova partida</button>
+                    <button id="btn-configurar-durante-solo" class="btn-configurar-durante-solo oculto" onclick="abrirConfirmacaoConfigSolo()">⚙️ Configurar nova partida</button>
                     <button class="btn-encerrar" id="btn-encerrar-geral" onclick="forcarEncerramento()">❌ Encerrar Partida</button>
                 </div>
             </div>
@@ -526,6 +535,18 @@
             <h3 id="pergunta-texto"></h3>
             <div class="opcoes" id="lista-opcoes"></div>
             <button id="btn-confirmar-puxao" class="btn-confirmar oculto" onclick="confirmarEEnviar()">Empurrar Fogo 🔥</button>
+        </div>
+    </div>
+
+    <div id="modal-confirmar-config-solo" class="modal-confirmacao oculto" onclick="fecharConfirmacaoConfigSoloAoFundo(event)">
+        <div class="confirmacao-conteudo" role="dialog" aria-modal="true" aria-labelledby="titulo-confirmar-config-solo">
+            <div class="confirmacao-icone">⚙️</div>
+            <h3 id="titulo-confirmar-config-solo">Retornar às configurações?</h3>
+            <p>A partida atual será interrompida e você voltará à tela para escolher banco, modo, dificuldade e tempos.</p>
+            <div class="confirmacao-acoes">
+                <button class="btn-cancelar-retorno" onclick="fecharConfirmacaoConfigSolo()">Cancelar</button>
+                <button class="btn-confirmar-retorno" onclick="confirmarConfigurarNovaPartidaSolo()">Sim, retornar</button>
+            </div>
         </div>
     </div>
 
@@ -1704,7 +1725,7 @@
                 <p class="placar-final-subtitulo">✅ ${soloAcertos} acertos &nbsp; ❌ ${soloErros} erros &nbsp; • &nbsp; ${aproveitamento}% de aproveitamento</p>
                 <div class="acoes-finais">
                     <button class="btn-jogar-novamente" onclick="jogarNovamente()">🔄 Jogar Novamente</button>
-                    <button class="btn-configurar-nova" onclick="configurarNovaPartidaSolo()">⚙️ Configurar nova partida</button>
+                    <button class="btn-configurar-nova" onclick="abrirConfirmacaoConfigSolo()">⚙️ Configurar nova partida</button>
                     <button class="btn-sair-solo" onclick="location.reload()">🏠 Sair do modo Solo</button>
                 </div>`;
             painel.classList.remove('oculto');
@@ -1723,6 +1744,23 @@
             document.getElementById('btn-pausar-jogo').style.display = 'block';
             document.getElementById('btn-pausar-jogo').innerText = '⏸️ Pausar Partida';
             iniciarJogo(isSingleplayer);
+        }
+
+        function abrirConfirmacaoConfigSolo() {
+            document.getElementById('modal-confirmar-config-solo').classList.remove('oculto');
+        }
+
+        function fecharConfirmacaoConfigSolo() {
+            document.getElementById('modal-confirmar-config-solo').classList.add('oculto');
+        }
+
+        function fecharConfirmacaoConfigSoloAoFundo(event) {
+            if (event.target.id === 'modal-confirmar-config-solo') fecharConfirmacaoConfigSolo();
+        }
+
+        function confirmarConfigurarNovaPartidaSolo() {
+            fecharConfirmacaoConfigSolo();
+            configurarNovaPartidaSolo();
         }
 
         function configurarNovaPartidaSolo() {
