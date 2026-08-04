@@ -569,7 +569,7 @@
     <div id="feedback-flutuante" class="feedback-flutuante" aria-live="assertive"></div>
 
     <footer style="text-align: center; padding: 20px; color: #666; font-weight: bold; font-size: 14px; margin-top: 20px; line-height: 1.6;">
-        <div>Versão atual: 08.1</div>
+        <div>Versão atual: 08.2</div>
         <div>Desenvolvido pelo Prof. Job Inácio</div>
     </footer>
 
@@ -1791,25 +1791,30 @@
             })[caractere]);
         }
 
-        function criarHtmlPlacarFinal(ranking, vencedor, nomeDestaque = '') {
-            const tituloResultado = vencedor === 'alunos'
+        function tituloResultadoFinal(vencedor) {
+            return vencedor === 'alunos'
                 ? '🎉 Parabéns, a turma venceu!'
                 : vencedor === 'empate'
                     ? '🤝 EMPATE!'
                     : '🤖 Que pena, a máquina venceu!';
+        }
+
+        function criarHtmlPodio(ranking) {
             const medalhas = ['🥇', '🥈', '🥉'];
-            const podio = ranking.slice(0, 3).map((jogador, indice) => `
+            return ranking.slice(0, 3).map((jogador, indice) => `
                 <div class="podio-item pos-${indice + 1}">
                     <span class="podio-medalha">${medalhas[indice]}</span>
                     <span class="podio-nome">${escaparHtml(jogador.nome)}</span>
                     <span class="podio-pontos">${jogador.acertos} acertos</span><br>
                     <small>${jogador.aproveitamento}%</small>
                 </div>`).join('');
+        }
 
+        function criarHtmlPlacarFinalProfessor(ranking, vencedor) {
             const linhas = ranking.map((jogador, indice) => `
-                <div class="linha-final ${jogador.nome === nomeDestaque ? 'eu' : ''}">
+                <div class="linha-final">
                     <span>${indice + 1}º</span>
-                    <span>${escaparHtml(jogador.nome)}${jogador.nome === nomeDestaque ? ' 👤' : ''}</span>
+                    <span>${escaparHtml(jogador.nome)}</span>
                     <span>✅ ${jogador.acertos}</span>
                     <span>❌ ${jogador.erros}</span>
                     <span>${jogador.aproveitamento}%</span>
@@ -1817,13 +1822,34 @@
 
             return `
                 <h2>PLACAR FINAL</h2>
-                <div class="resultado-vencedor">${tituloResultado}</div>
-                <p class="placar-final-subtitulo">Classificação individual da partida</p>
-                <div class="podio-final">${podio || '<strong>Nenhum participante pontuou.</strong>'}</div>
+                <div class="resultado-vencedor">${tituloResultadoFinal(vencedor)}</div>
+                <p class="placar-final-subtitulo">Classificação completa da partida</p>
+                <div class="podio-final">${criarHtmlPodio(ranking) || '<strong>Nenhum participante pontuou.</strong>'}</div>
                 <div class="tabela-final">
                     <div class="linha-final cabecalho"><span>#</span><span>Aluno</span><span>Acertos</span><span>Erros</span><span>Aprov.</span></div>
                     ${linhas || '<p>Nenhum jogador registrado.</p>'}
                 </div>`;
+        }
+
+        function criarHtmlPlacarFinalAluno(ranking, vencedor, nomeDestaque) {
+            const indiceAluno = ranking.findIndex(jogador => jogador.nome === nomeDestaque);
+            const jogador = indiceAluno >= 0 ? ranking[indiceAluno] : null;
+            const foraDoPodio = indiceAluno >= 3;
+            const posicaoAluno = foraDoPodio && jogador ? `
+                <div class="linha-final eu" style="max-width:680px;margin:18px auto 0;">
+                    <span>${indiceAluno + 1}º</span>
+                    <span>${escaparHtml(jogador.nome)} 👤</span>
+                    <span>✅ ${jogador.acertos}</span>
+                    <span>❌ ${jogador.erros}</span>
+                    <span>${jogador.aproveitamento}%</span>
+                </div>` : '';
+
+            return `
+                <h2>PLACAR FINAL</h2>
+                <div class="resultado-vencedor">${tituloResultadoFinal(vencedor)}</div>
+                <p class="placar-final-subtitulo">Pódio da partida</p>
+                <div class="podio-final">${criarHtmlPodio(ranking) || '<strong>Nenhum participante pontuou.</strong>'}</div>
+                ${foraDoPodio ? '<p class="placar-final-subtitulo" style="margin-top:18px;">Sua posição</p>' + posicaoAluno : ''}`;
         }
 
         async function montarRankingFinal() {
@@ -1877,7 +1903,7 @@
 
         function exibirPlacarFinalProfessor(ranking, vencedor) {
             const painel = document.getElementById('placar-final-professor');
-            painel.innerHTML = criarHtmlPlacarFinal(ranking || [], vencedor) +
+            painel.innerHTML = criarHtmlPlacarFinalProfessor(ranking || [], vencedor) +
                 '<div class="acoes-finais"><button class="btn-jogar-novamente" onclick="jogarNovamente()">🔄 Jogar Novamente</button></div>';
             painel.classList.remove('oculto');
             document.getElementById('prof-quiz-container').classList.add('oculto');
@@ -1909,6 +1935,11 @@
             document.body.classList.remove('flash-acerto', 'flash-erro');
             limparResultadoVisual();
             atualizarAlertasVisuais(50, null);
+            const placarAluno = document.getElementById('placar-final-aluno');
+            if (placarAluno) {
+                placarAluno.classList.add('oculto');
+                placarAluno.innerHTML = '';
+            }
             document.getElementById('placar-final-professor').classList.add('oculto');
             document.getElementById('placar-final-professor').innerHTML = '';
             document.getElementById('prof-quiz-container').classList.remove('oculto');
@@ -2316,7 +2347,7 @@
                     cabecalho.style.visibility = "hidden";
                     trilho.style.visibility = "hidden";
                     const placarFinalAluno = document.getElementById('placar-final-aluno');
-                    placarFinalAluno.innerHTML = criarHtmlPlacarFinal(estado.finalRanking || [], estado.vencedor, nomeAluno);
+                    placarFinalAluno.innerHTML = criarHtmlPlacarFinalAluno(estado.finalRanking || [], estado.vencedor, nomeAluno);
                     placarFinalAluno.classList.remove('oculto');
                 }
             });
