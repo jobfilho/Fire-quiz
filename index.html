@@ -568,8 +568,9 @@
 
     <div id="feedback-flutuante" class="feedback-flutuante" aria-live="assertive"></div>
 
-    <footer style="text-align: center; padding: 20px; color: #666; font-weight: bold; font-size: 14px; margin-top: 20px;">
-        Desenvolvido por Prof. Job Inácio
+    <footer style="text-align: center; padding: 20px; color: #666; font-weight: bold; font-size: 14px; margin-top: 20px; line-height: 1.6;">
+        <div>Versão atual: 08.1</div>
+        <div>Desenvolvido pelo Prof. Job Inácio</div>
     </footer>
 
     <script>
@@ -973,6 +974,10 @@
         };
         // VARIÁVEIS GLOBAIS (MULTIPLAYER E SINGLEPLAYER)
         let papel = '', salaId = '', nomeAluno = '', jogadorRef = null, engineInterval = null;
+        let presencaInterval = null;
+        let presencaConexaoRef = null;
+        const INTERVALO_PRESENCA_MS = 15000;
+        const LIMITE_PRESENCA_ATIVA_MS = 45000;
         let perguntasSelecionadas = [], perguntaAtualIndex = 0, alternativaSelecionadaIndex = null;
         let dificuldadeSelecionada = 'medium', modoSelecionado = 'survivor', tempoSelecionado = 60, tempoQuestaoSelecionado = 15, numeroRodadasPlacarSelecionado = 3;
         let isSingleplayer = false;
@@ -1105,40 +1110,104 @@
             if (confirmou) database.ref(`Salas/${salaId}/jogadores/${nome}`).remove();
         }
 
+        function pararPresencaAluno() {
+            if (presencaInterval) {
+                clearInterval(presencaInterval);
+                presencaInterval = null;
+            }
+            if (presencaConexaoRef) {
+                presencaConexaoRef.off();
+                presencaConexaoRef = null;
+            }
+        }
+
+        function atualizarPresencaAluno() {
+            if (!jogadorRef || papel !== 'aluno' || isSingleplayer) return;
+            jogadorRef.update({
+                online: true,
+                lastSeen: firebase.database.ServerValue.TIMESTAMP
+            }).catch(erro => console.warn('Não foi possível atualizar a presença:', erro));
+        }
+
+        function iniciarPresencaAluno() {
+            pararPresencaAluno();
+            if (!jogadorRef || papel !== 'aluno' || isSingleplayer) return;
+
+            presencaConexaoRef = database.ref('.info/connected');
+            presencaConexaoRef.on('value', snap => {
+                if (snap.val() !== true || !jogadorRef) return;
+
+                jogadorRef.onDisconnect().update({
+                    online: false,
+                    lastSeen: firebase.database.ServerValue.TIMESTAMP
+                });
+                atualizarPresencaAluno();
+            });
+
+            presencaInterval = setInterval(atualizarPresencaAluno, INTERVALO_PRESENCA_MS);
+
+            document.addEventListener('visibilitychange', () => {
+                if (document.visibilityState === 'visible') atualizarPresencaAluno();
+            });
+            window.addEventListener('focus', atualizarPresencaAluno);
+            window.addEventListener('pageshow', atualizarPresencaAluno);
+            window.addEventListener('online', atualizarPresencaAluno);
+        }
+
+        function jogadorEstaAtivo(dados) {
+            if (!dados || dados.online !== true) return false;
+            const ultimoSinal = Number(dados.lastSeen || 0);
+            return ultimoSinal > 0 && (Date.now() - ultimoSinal) <= LIMITE_PRESENCA_ATIVA_MS;
+        }
+
         function entrarSalaAluno() {
             nomeAluno = document.getElementById('input-aluno-nome').value.trim().toUpperCase();
             salaId = document.getElementById('input-sala-id').value.trim();
             if (!nomeAluno || !salaId) return mostrarAlerta('Preencha seu nome e o código da sala.', 'Campos incompletos', '✍️');
-            
+
             papel = 'aluno'; isSingleplayer = false;
             const salaRef = database.ref(`Salas/${salaId}`);
 
             salaRef.once('value').then(snapSala => {
                 if (!snapSala.exists()) return mostrarAlerta('Código de sala inválido. Verifique o número e tente novamente.', 'Sala não encontrada', '🔎');
-                
+
                 jogadorRef = database.ref(`Salas/${salaId}/jogadores/${nomeAluno}`);
-                jogadorRef.once('value').then(snapJog => {
-                    if (snapJog.exists() && snapJog.val().online === true) {
-                        mostrarAlerta('Esse nome já está em uso por outro jogador ativo. Adicione um apelido ou número.', 'Nome já utilizado', '👥');
+                jogadorRef.once('value').then(async snapJog => {
+                    const dadosExistentes = snapJog.val() || {};
+                    if (snapJog.exists() && jogadorEstaAtivo(dadosExistentes)) {
+                        await mostrarAlerta('Esse nome já está em uso por outro jogador ativo. Adicione um apelido ou número.', 'Nome já utilizado', '👥');
                         document.getElementById('input-aluno-nome').value = '';
+                        jogadorRef = null;
                         return;
                     }
-                    if (snapJog.exists()) jogadorRef.update({ online: true });
-                    else jogadorRef.set({ acertos: 0, erros: 0, online: true });
-                    
+
+                    const dadosEntrada = {
+                        online: true,
+                        lastSeen: firebase.database.ServerValue.TIMESTAMP
+                    };
+                    if (!snapJog.exists()) {
+                        dadosEntrada.acertos = 0;
+                        dadosEntrada.erros = 0;
+                    }
+                    await jogadorRef.update(dadosEntrada);
+
                     document.getElementById('tela-selecao').classList.add('oculto');
                     document.getElementById('tela-aluno').classList.remove('oculto');
-                    
-                    jogadorRef.child('online').onDisconnect().set(false);
-                    
+
+                    iniciarPresencaAluno();
+
                     jogadorRef.on('value', monitor => {
-                        if (!monitor.exists() && gameState.fase !== "setup") {
-                            mostrarAlerta('Você foi removido desta partida pelo professor.', 'Participação encerrada', '🚪').then(() => location.reload());
-                            location.reload();
+                        if (!monitor.exists() && gameState.fase !== 'setup') {
+                            pararPresencaAluno();
+                            mostrarAlerta('Você foi removido desta partida pelo professor.', 'Participação encerrada', '🚪')
+                                .then(() => location.reload());
                         }
                     });
                     ouvirEstadoDaSala();
                 });
+            }).catch(erro => {
+                console.error('Erro ao entrar na sala:', erro);
+                mostrarAlerta('Não foi possível conectar à sala. Verifique sua internet e tente novamente.', 'Erro de conexão', '📡');
             });
         }
 
@@ -1904,7 +1973,7 @@
                     const total = acertos + erros;
                     jogadoresOrdenados.push({
                         nome: child.key,
-                        online: dados.online === true,
+                        online: jogadorEstaAtivo(dados),
                         acertos,
                         erros,
                         aproveitamento: total > 0 ? Math.round((acertos / total) * 100) : 0
