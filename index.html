@@ -108,10 +108,6 @@
         .arena-objetivo { color:#e65100; font-size:13px; flex:1; text-align:center; background:#fff3e0; border-radius:12px; padding:8px; border:1px dashed #ff9800; }
         @media(max-width:600px){ .arena-legenda{grid-template-columns:1fr 1fr}.arena-objetivo{grid-column:1 / -1; grid-row:1}.arena-lado{font-size:12px;} }
         .status-coletivo { background:#e3f2fd; border:2px solid #2196f3; border-radius:8px; padding:10px; margin:12px 0; font-weight:bold; }
-        .acoes-partida-inferior { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:20px; }
-        .acoes-partida-inferior .btn-encerrar { margin-top:0; width:100%; }
-        .btn-configurar-durante-solo { background:#607d8b; color:white; padding:12px 18px; width:100%; font-size:16px; }
-        @media(max-width:560px){ .acoes-partida-inferior{grid-template-columns:1fr;} }
         .resultado-coletivo { background:#f8f9fa; border-left:6px solid #ff9800; border-radius:8px; padding:12px; margin:12px 0; text-align:left; }
 
         /* Placar final */
@@ -185,13 +181,6 @@
         .marcador.alerta-nivel-3 { animation-duration:.4s; }
         .btn-jogar-novamente { background:linear-gradient(135deg,#2e7d32,#4caf50); color:white; width:100%; margin-top:18px; padding:15px; font-size:18px; box-shadow:0 5px 12px rgba(46,125,50,.25); }
         .btn-jogar-novamente:hover { transform:translateY(-1px); box-shadow:0 7px 15px rgba(46,125,50,.34); }
-        .acoes-finais { display:grid; gap:10px; margin-top:18px; }
-        .btn-configurar-nova { background:#263859; color:white; width:100%; padding:14px; font-size:17px; }
-        .btn-sair-solo { background:#607d8b; color:white; width:100%; padding:14px; font-size:17px; }
-        body.resultado-vitoria { background:linear-gradient(135deg,#d8f3dc,#b7e4c7,#95d5b2) !important; }
-        body.resultado-derrota { background:linear-gradient(135deg,#ffe5e5,#ffc9c9,#ffa8a8) !important; }
-        body.resultado-vitoria .card { box-shadow:0 16px 42px rgba(46,125,50,.28); border-color:#66bb6a; }
-        body.resultado-derrota .card { box-shadow:0 16px 42px rgba(198,40,40,.28); border-color:#ef5350; }
         .cronometro.alerta-tempo { animation:piscarTempo .6s infinite alternate; }
         .aviso-final { margin:10px 0; padding:10px 14px; border-radius:12px; font-weight:900; text-align:center; }
         .aviso-final.perigo { background:#ffebee; color:#b71c1c; border:2px solid #ef5350; }
@@ -201,68 +190,6 @@
         @keyframes pulsarFogo { from{transform:translateX(-50%) scale(1)} to{transform:translateX(-50%) scale(1.18)} }
         @keyframes piscarTempo { from{opacity:1; transform:scale(1)} to{opacity:.55; transform:scale(1.08)} }
 
-
-        /* Modo Placar — identidade própria dentro do tema atual */
-        .placar-rodadas { margin:12px 0 18px; }
-        .placar-arena { background:linear-gradient(180deg,#ffffff,#f7f9fd); border:2px solid #dfe5ef; border-radius:16px; padding:16px; box-shadow:0 7px 18px rgba(28,42,70,.08); }
-        .placar-partida-titulo { color:#263859; font-size:12px; font-weight:900; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:8px; }
-        .placar-partida { display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:10px; }
-        .placar-lado { border-radius:12px; padding:12px; font-weight:900; }
-        .placar-lado.turma { background:#e8f5e9; border:2px solid #81c784; color:#1b5e20; }
-        .placar-lado.maquina { background:#ffebee; border:2px solid #ef9a9a; color:#b71c1c; }
-        .placar-lado .numero { display:block; font-size:30px; line-height:1; margin-top:4px; }
-        .placar-versus { color:#ff6d00; font-weight:900; font-size:22px; }
-        .faixa-rodadas { display:grid; grid-template-columns:repeat(var(--total-rodadas,3),minmax(70px,1fr)); gap:7px; margin:14px 0; }
-        .rodada-chip { border-radius:10px; padding:8px 5px; background:#eef1f6; border:2px solid #d9e0ea; color:#667085; font-size:12px; font-weight:800; }
-        .rodada-chip.atual { background:#fff3e0; border-color:#ff9800; color:#e65100; box-shadow:0 3px 9px rgba(255,152,0,.18); }
-        .rodada-chip.turma { background:#e8f5e9; border-color:#66bb6a; color:#1b5e20; }
-        .rodada-chip.maquina { background:#ffebee; border-color:#ef5350; color:#b71c1c; }
-        .rodada-chip small { display:block; margin-top:2px; font-size:10px; }
-        .painel-rodada-atual { background:#fff7ed; border:2px solid #ffcc80; border-radius:14px; padding:14px; }
-        .linha-contexto-placar { display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; }
-        .linha-contexto-placar strong { color:#263859; font-size:20px; }
-        .pergunta-indicador { color:#e65100; background:white; border:1px solid #ffcc80; border-radius:999px; padding:6px 11px; font-weight:900; }
-        .pontuacao-rodada { display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:8px; margin:12px 0; }
-        .ponto-box { background:white; border-radius:10px; padding:9px; font-weight:900; border:1px solid #e3e7ee; }
-        .ponto-box.turma { color:#1b5e20; }
-        .ponto-box.maquina { color:#b71c1c; }
-        .ponto-box span { display:block; font-size:24px; }
-        .marcadores-perguntas { display:grid; grid-template-columns:repeat(5,1fr); gap:8px; margin-top:10px; }
-        .marcador-pergunta { height:38px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-weight:900; background:#fff; border:2px solid #dfe5ef; color:#7b8494; }
-        .marcador-pergunta.turma { background:#e8f5e9; border-color:#66bb6a; color:#1b5e20; }
-        .marcador-pergunta.maquina { background:#ffebee; border-color:#ef5350; color:#b71c1c; }
-        .marcador-pergunta.empate { background:#fff8e1; border-color:#ffca28; color:#8d6e00; }
-        .marcador-pergunta.atual { outline:3px solid rgba(255,152,0,.25); border-color:#ff9800; }
-        .placar-desempate { margin-top:10px; background:#ede7f6; border:2px solid #9575cd; color:#4527a0; border-radius:10px; padding:9px; font-weight:900; }
-        .btn-proxima-rodada { width:100%; margin:12px 0 0; padding:14px; background:linear-gradient(135deg,#263859,#40557d); color:white; font-size:17px; }
-        .modo-placar-ativo .trilho, .modo-placar-ativo .arena-legenda, .modo-placar-ativo .aviso-final { display:none !important; }
-        .modo-placar-ativo #placar-solo, .modo-placar-ativo .placar .placar-certas, .modo-placar-ativo .placar .placar-erradas { display:none !important; }
-        .modo-placar-ativo #prof-status-coletivo { display:none !important; }
-        .resultado-rodada-banner { margin-top:12px; padding:13px 14px; border-radius:12px; font-weight:900; font-size:17px; text-align:center; }
-        .resultado-rodada-banner.turma { background:#e8f5e9; border:2px solid #66bb6a; color:#1b5e20; }
-        .resultado-rodada-banner.maquina { background:#ffebee; border:2px solid #ef5350; color:#b71c1c; }
-        @media(max-width:600px){
-            .placar-arena{padding:11px}.faixa-rodadas{gap:4px}.rodada-chip{font-size:10px;padding:7px 2px}.linha-contexto-placar strong{font-size:17px}.placar-lado .numero{font-size:25px}
-        }
-        .ajuda-dificuldade { display:inline-flex; width:28px; height:28px; border-radius:50%; padding:0; align-items:center; justify-content:center; margin-left:6px; background:#263859; color:white; font-size:16px; vertical-align:middle; }
-        .modal-ajuda { position:fixed; inset:0; background:rgba(12,20,36,.78); z-index:3500; display:flex; align-items:center; justify-content:center; padding:18px; }
-        .modal-ajuda-conteudo { width:min(720px,96vw); max-height:88vh; overflow:auto; background:white; border-radius:18px; text-align:left; box-shadow:0 18px 50px rgba(0,0,0,.35); }
-        .modal-confirmacao { position:fixed; inset:0; background:rgba(12,20,36,.78); z-index:4000; display:flex; align-items:center; justify-content:center; padding:18px; }
-        .confirmacao-conteudo { width:min(460px,94vw); background:white; border-radius:18px; padding:26px; text-align:center; box-shadow:0 18px 50px rgba(0,0,0,.35); border:2px solid #ffcc80; }
-        .confirmacao-icone { font-size:46px; margin-bottom:8px; }
-        .confirmacao-conteudo h3 { margin:0 0 10px; color:#263859; font-size:24px; }
-        .confirmacao-conteudo p { margin:0 0 20px; color:#5d6575; line-height:1.45; }
-        .confirmacao-acoes { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-        .btn-confirmar-retorno { background:linear-gradient(135deg,#ff6d00,#ff9800); color:white; }
-        .btn-cancelar-retorno { background:#e9ecef; color:#263859; border:2px solid #cfd6df; }
-        .confirmacao-input { width:100%; margin:0 0 18px; padding:13px 14px; border:2px solid #cfd6df; border-radius:10px; font-size:16px; box-sizing:border-box; text-align:center; }
-        .confirmacao-input:focus { outline:none; border-color:#ff9800; box-shadow:0 0 0 3px rgba(255,152,0,.15); }
-        .confirmacao-acoes.um-botao { grid-template-columns:1fr; }
-        @media(max-width:480px){ .confirmacao-acoes{grid-template-columns:1fr;} }
-        .ajuda-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; padding:20px; }
-        .ajuda-card { border:2px solid #e5eaf2; border-radius:12px; padding:14px; background:#fafbfe; }
-        .ajuda-card h3 { margin:0 0 8px; color:#263859; }
-        @media(max-width:650px){ .ajuda-grid{grid-template-columns:1fr;} }
     </style>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -350,7 +277,7 @@
                     <div class="modo-explicacao">
                         <div class="modo-card"><strong>🔥 Sobrevivência</strong><p>A turma e a máquina disputam o fogo rodada após rodada. A turma vence ao empurrá-lo até a máquina.</p></div>
                         <div class="modo-card"><strong>⏱️ Contra o Tempo</strong><p>A turma precisa manter vantagem e avançar antes que o cronômetro geral chegue ao fim.</p></div>
-                        <div class="modo-card"><strong>📊 Placar</strong><p>O professor escolhe 3, 5, 7 ou 9 rodadas. Cada rodada possui 5 perguntas e não utiliza a barra de fogo. Mais de 50% de acertos dão o ponto à turma; menos de 50% dão o ponto à máquina. Se a rodada terminar empatada, entram perguntas extras em morte súbita até surgir um vencedor.</p></div>
+                        <div class="modo-card"><strong>📊 Placar</strong><p>O fogo responde ao desempenho coletivo. A pressão da máquina depende da dificuldade escolhida.</p></div>
                     </div>
                 </section>
 
@@ -363,23 +290,6 @@
                         <div class="modo-card"><strong>☠️ Super Difícil</strong><p>Além da força máxima por rodada, a máquina empurra o fogo continuamente em direção à turma.</p></div>
                     </div>
                 </section>
-            </div>
-        </div>
-    </div>
-
-
-    <div id="modal-dificuldades" class="modal-ajuda oculto" onclick="fecharAjudaDificuldadeAoFundo(event)">
-        <div class="modal-ajuda-conteudo" role="dialog" aria-modal="true" aria-labelledby="titulo-dificuldades">
-            <div class="modal-topo">
-                <h2 id="titulo-dificuldades">Dificuldades da máquina</h2>
-                <button class="modal-fechar" onclick="fecharAjudaDificuldade()" aria-label="Fechar">×</button>
-            </div>
-            <div class="ajuda-grid">
-                <div class="ajuda-card"><h3>🟢 Fácil</h3><p>Resistência de <strong>2 pontos por rodada</strong>. Acertos individuais empurram mais e erros têm punição menor.</p></div>
-                <div class="ajuda-card"><h3>🟡 Médio</h3><p>Resistência de <strong>4 pontos por rodada</strong>. Equilíbrio entre avanço da turma e pressão da máquina.</p></div>
-                <div class="ajuda-card"><h3>🔴 Difícil</h3><p>Resistência de <strong>6 pontos por rodada</strong>. Os erros pesam mais e a turma precisa manter bom aproveitamento.</p></div>
-                <div class="ajuda-card"><h3>☠️ Super Difícil</h3><p>Resistência máxima por rodada e <strong>pressão contínua</strong> da máquina enquanto a partida está em andamento.</p></div>
-                <div class="ajuda-card" style="grid-column:1 / -1;"><h3>📊 No modo Placar</h3><p>A dificuldade não altera a pontuação. Nesse modo, cada pergunta é decidida pela maioria de acertos da turma e as rodadas são vencidas pelo placar.</p></div>
             </div>
         </div>
     </div>
@@ -425,13 +335,6 @@
                         <label><strong>Duração (segundos):</strong></label><br>
                         <input type="number" id="tempo-customizado" value="60" min="5" max="600" style="width: 100px;">
                     </div>
-                    <div id="config-rodadas-placar" class="oculto" style="margin-bottom:15px;">
-                        <label><strong>Número de rodadas:</strong></label><br>
-                        <select id="numero-rodadas-placar" style="width:120px;">
-                            <option value="3">3</option><option value="5">5</option><option value="7">7</option><option value="9">9</option>
-                        </select>
-                        <p style="font-size:12px;color:#666;margin:6px 0 0;">Cada rodada tem 5 perguntas. Em caso de empate, haverá perguntas extras até alguém vencer.</p>
-                    </div>
                     
                     <div style="margin-bottom: 15px;">
                         <label><strong>Tempo para responder cada questão (segundos):</strong></label><br>
@@ -439,7 +342,7 @@
                     </div>
 
                     <div id="config-dificuldade-container">
-                        <label><strong>Força da Máquina por rodada:</strong></label><button type="button" class="ajuda-dificuldade" onclick="abrirAjudaDificuldade()" aria-label="Entender as dificuldades">?</button>
+                        <label><strong>Força da Máquina por rodada:</strong></label>
                         <div class="seletor-grupo">
                             <button class="btn-cfg" id="dif-easy" onclick="mudarDificuldade('easy')">Easy</button>
                             <button class="btn-cfg ativo" id="dif-medium" onclick="mudarDificuldade('medium')">Medium</button>
@@ -463,8 +366,6 @@
                         <span class="placar-certas">✨ Acertos: <span id="solo-acertos">0</span></span>
                         <span class="placar-erradas">❌ Erros: <span id="solo-erros">0</span></span>
                     </div>
-                    <div id="placar-rodadas-prof" class="placar-rodadas oculto"></div>
-                    <button id="btn-proxima-rodada-placar" class="btn-proxima-rodada oculto" onclick="iniciarProximaRodadaPlacar()">▶️ Iniciar próxima rodada</button>
 
                     <div class="trilho"><div id="marcador" class="marcador">🔥</div></div>
                     <div class="arena-legenda">
@@ -482,10 +383,7 @@
                     </div>
                 </div>
                 <div id="placar-final-professor" class="placar-final oculto"></div>
-                <div id="acoes-partida-inferior" class="acoes-partida-inferior oculto">
-                    <button id="btn-configurar-durante-solo" class="btn-configurar-durante-solo oculto" onclick="abrirConfirmacaoConfigSolo()">⚙️ Configurar nova partida</button>
-                    <button class="btn-encerrar" id="btn-encerrar-geral" onclick="forcarEncerramento()">❌ Encerrar Partida</button>
-                </div>
+                <button class="btn-encerrar oculto" id="btn-encerrar-geral" onclick="forcarEncerramento()">❌ Encerrar Partida</button>
             </div>
             
             <div class="ranking-container">
@@ -514,7 +412,6 @@
             </div>
         </div>
 
-        <div id="placar-rodadas-aluno" class="placar-rodadas oculto"></div>
         <div id="aluno-trilho-container" style="visibility: hidden; margin-bottom: 15px;">
             <div class="trilho"><div id="aluno-marcador" class="marcador">🔥</div></div>
             <div class="arena-legenda">
@@ -541,31 +438,6 @@
         </div>
     </div>
 
-    <div id="modal-confirmar-config-solo" class="modal-confirmacao oculto" onclick="fecharConfirmacaoConfigSoloAoFundo(event)">
-        <div class="confirmacao-conteudo" role="dialog" aria-modal="true" aria-labelledby="titulo-confirmar-config-solo">
-            <div class="confirmacao-icone">⚙️</div>
-            <h3 id="titulo-confirmar-config-solo">Retornar às configurações?</h3>
-            <p>A partida atual será interrompida e você voltará à tela para escolher banco, modo, dificuldade e tempos.</p>
-            <div class="confirmacao-acoes">
-                <button class="btn-cancelar-retorno" onclick="fecharConfirmacaoConfigSolo()">Cancelar</button>
-                <button class="btn-confirmar-retorno" onclick="confirmarConfigurarNovaPartidaSolo()">Sim, retornar</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="modal-dialogo-geral" class="modal-confirmacao oculto" onclick="fecharDialogoGeralAoFundo(event)">
-        <div class="confirmacao-conteudo" role="dialog" aria-modal="true" aria-labelledby="dialogo-geral-titulo">
-            <div id="dialogo-geral-icone" class="confirmacao-icone">⚠️</div>
-            <h3 id="dialogo-geral-titulo">Atenção</h3>
-            <p id="dialogo-geral-mensagem"></p>
-            <input id="dialogo-geral-input" class="confirmacao-input oculto" type="text" autocomplete="off">
-            <div id="dialogo-geral-acoes" class="confirmacao-acoes">
-                <button id="dialogo-geral-cancelar" class="btn-cancelar-retorno">Cancelar</button>
-                <button id="dialogo-geral-confirmar" class="btn-confirmar-retorno">Confirmar</button>
-            </div>
-        </div>
-    </div>
-
     <div id="feedback-flutuante" class="feedback-flutuante" aria-live="assertive"></div>
 
     <footer style="text-align: center; padding: 20px; color: #666; font-weight: bold; font-size: 14px; margin-top: 20px;">
@@ -577,70 +449,6 @@
         const firebaseConfig = { databaseURL: "https://cabo-de-guerra-coop-default-rtdb.firebaseio.com/" };
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
-
-        let resolverDialogoGeral = null;
-
-        function abrirDialogoGeral({
-            titulo = 'Atenção',
-            mensagem = '',
-            icone = '⚠️',
-            textoConfirmar = 'Confirmar',
-            textoCancelar = 'Cancelar',
-            mostrarCancelar = true,
-            tipoInput = null,
-            placeholder = ''
-        } = {}) {
-            const modal = document.getElementById('modal-dialogo-geral');
-            const input = document.getElementById('dialogo-geral-input');
-            const acoes = document.getElementById('dialogo-geral-acoes');
-            const cancelar = document.getElementById('dialogo-geral-cancelar');
-            const confirmar = document.getElementById('dialogo-geral-confirmar');
-
-            document.getElementById('dialogo-geral-icone').textContent = icone;
-            document.getElementById('dialogo-geral-titulo').textContent = titulo;
-            document.getElementById('dialogo-geral-mensagem').textContent = mensagem;
-            confirmar.textContent = textoConfirmar;
-            cancelar.textContent = textoCancelar;
-            cancelar.classList.toggle('oculto', !mostrarCancelar);
-            acoes.classList.toggle('um-botao', !mostrarCancelar);
-
-            input.classList.toggle('oculto', !tipoInput);
-            input.type = tipoInput || 'text';
-            input.value = '';
-            input.placeholder = placeholder;
-
-            modal.classList.remove('oculto');
-            if (tipoInput) setTimeout(() => input.focus(), 50);
-
-            return new Promise(resolve => {
-                resolverDialogoGeral = resolve;
-                confirmar.onclick = () => concluirDialogoGeral(tipoInput ? input.value : true);
-                cancelar.onclick = () => concluirDialogoGeral(tipoInput ? null : false);
-            });
-        }
-
-        function concluirDialogoGeral(resultado) {
-            document.getElementById('modal-dialogo-geral').classList.add('oculto');
-            const resolver = resolverDialogoGeral;
-            resolverDialogoGeral = null;
-            if (resolver) resolver(resultado);
-        }
-
-        function fecharDialogoGeralAoFundo(event) {
-            if (event.target.id === 'modal-dialogo-geral') concluirDialogoGeral(false);
-        }
-
-        function mostrarAlerta(mensagem, titulo = 'Atenção', icone = '⚠️') {
-            return abrirDialogoGeral({ titulo, mensagem, icone, textoConfirmar: 'Entendi', mostrarCancelar: false });
-        }
-
-        function pedirConfirmacao(mensagem, { titulo = 'Confirmar ação', icone = '❓', textoConfirmar = 'Sim, continuar', textoCancelar = 'Cancelar' } = {}) {
-            return abrirDialogoGeral({ titulo, mensagem, icone, textoConfirmar, textoCancelar, mostrarCancelar: true });
-        }
-
-        function pedirTexto(mensagem, { titulo = 'Digite a informação', icone = '🔐', placeholder = '', tipo = 'text', textoConfirmar = 'Confirmar' } = {}) {
-            return abrirDialogoGeral({ titulo, mensagem, icone, textoConfirmar, textoCancelar: 'Cancelar', mostrarCancelar: true, tipoInput: tipo, placeholder });
-        }
 
         function abrirComoJogar() {
             document.getElementById('modal-como-jogar').classList.remove('oculto');
@@ -656,20 +464,8 @@
             if (event.target.id === 'modal-como-jogar') fecharComoJogar();
         }
 
-        function abrirAjudaDificuldade() {
-            document.getElementById('modal-dificuldades').classList.remove('oculto');
-            document.body.style.overflow = 'hidden';
-        }
-        function fecharAjudaDificuldade() {
-            document.getElementById('modal-dificuldades').classList.add('oculto');
-            document.body.style.overflow = '';
-        }
-        function fecharAjudaDificuldadeAoFundo(event) {
-            if (event.target.id === 'modal-dificuldades') fecharAjudaDificuldade();
-        }
-
         document.addEventListener('keydown', event => {
-            if (event.key === 'Escape') { fecharComoJogar(); fecharAjudaDificuldade(); }
+            if (event.key === 'Escape') fecharComoJogar();
         });
 
         // ---------------------------------------------------------
@@ -974,7 +770,7 @@
         // VARIÁVEIS GLOBAIS (MULTIPLAYER E SINGLEPLAYER)
         let papel = '', salaId = '', nomeAluno = '', jogadorRef = null, engineInterval = null;
         let perguntasSelecionadas = [], perguntaAtualIndex = 0, alternativaSelecionadaIndex = null;
-        let dificuldadeSelecionada = 'medium', modoSelecionado = 'survivor', tempoSelecionado = 60, tempoQuestaoSelecionado = 15, numeroRodadasPlacarSelecionado = 3;
+        let dificuldadeSelecionada = 'medium', modoSelecionado = 'survivor', tempoSelecionado = 60, tempoQuestaoSelecionado = 15;
         let isSingleplayer = false;
         let soloAcertos = 0, soloErros = 0;
         let feedbackFlutuanteTimer = null;
@@ -988,39 +784,12 @@
             fase: "setup", paused: false, gameMode: "survivor", timeLeft: 0, ropePosition: 50, 
             round: 1, vencedor: null, currentQuestion: null, scoreGlobal: { certas: 0, erradas: 0 },
             questionTimeLeft: 0, participantsRound: {}, answersReceived: 0, roundResult: null, finalRanking: [],
-            placar: { totalRodadas: 3, rodadaAtual: 1, perguntaNaRodada: 1, pontosTurma: 0, pontosMaquina: 0, rodadasTurma: 0, rodadasMaquina: 0, desempate: false, resultadosPerguntas: [], resultadosRodadas: [], aguardandoProxima: false },
             timers: { freezeRestante: 0, feedbackRestante: 0 }
         };
 
         const forcaMaquinaPorRodada = { easy: 2, medium: 4, hard: 6, super_hard: 8 };
         const configForca = { easy: 0.05, medium: 0.08, hard: 0.12, super_hard: 0.16 };
         const FORCA_CONTINUA_SUPER_DIFICIL = 0.10;
-
-        function limitesDeContato() {
-            const trilho = document.querySelector('#area-jogo-professor .trilho:not(.oculto)') || document.querySelector('.trilho');
-            const marcador = trilho ? trilho.querySelector('.marcador') : null;
-            if (!trilho || !marcador || trilho.clientWidth <= 0) return { minimo: 2.5, maximo: 97.5 };
-            const metadeMarcador = marcador.offsetWidth / 2;
-            const margem = (metadeMarcador / trilho.clientWidth) * 100;
-            return { minimo: margem, maximo: 100 - margem };
-        }
-
-        function verificarFimPorContato() {
-            const { minimo, maximo } = limitesDeContato();
-            if (gameState.ropePosition <= minimo) {
-                gameState.ropePosition = minimo;
-                return 'maquina';
-            }
-            if (gameState.ropePosition >= maximo) {
-                gameState.ropePosition = maximo;
-                return 'alunos';
-            }
-            return null;
-        }
-
-        function limparResultadoVisual() {
-            document.body.classList.remove('resultado-vitoria', 'resultado-derrota');
-        }
         const configPesos = { easy: { acerto: 4, erro: 2 }, medium: { acerto: 3, erro: 2 }, hard: { acerto: 3, erro: 2.5 }, super_hard: { acerto: 3, erro: 3 }, placar: { acerto: 4, erro: 5 } };
 
         function PatternShuffle(array) {
@@ -1039,8 +808,7 @@
             const idModo = modo === 'time_attack' ? 'time' : modo;
             document.getElementById('modo-' + idModo).classList.add('ativo-modo');
             document.getElementById('config-tempo-container').className = (modo === 'time_attack') ? '' : 'oculto';
-            document.getElementById('config-rodadas-placar').className = (modo === 'placar') ? '' : 'oculto';
-            document.getElementById('config-dificuldade-container').className = (modo === 'placar') ? 'oculto' : '';
+            document.getElementById('config-dificuldade-container').className = '';
         }
 
         function mudarDificuldade(nivel) { 
@@ -1071,19 +839,9 @@
         // ---------------------------------------------------------
         // PROFESSOR E ALUNO (MULTI-SALAS)
         // ---------------------------------------------------------
-        async function iniciarSalaProfessor() {
-            const senha = await pedirTexto('Digite a senha de administrador para criar uma sala.', {
-                titulo: 'Acesso do professor',
-                icone: '🔐',
-                placeholder: 'Senha de administrador',
-                tipo: 'password',
-                textoConfirmar: 'Entrar'
-            });
-            if (senha === null) return;
-            if (senha !== 'mestre123') {
-                await mostrarAlerta('A senha informada está incorreta.', 'Acesso negado', '🔒');
-                return;
-            }
+        function iniciarSalaProfessor() {
+            const senha = prompt("Digite a senha de administrador:");
+            if (senha !== "mestre123") return alert("Senha incorreta.");
             
             salaId = Math.floor(1000 + Math.random() * 9000).toString();
             papel = 'professor'; isSingleplayer = false;
@@ -1096,30 +854,27 @@
             ouvirLobbyETabelaRanking();
         }
 
-        async function expulsarAluno(nome) {
-            const confirmou = await pedirConfirmacao(`Deseja remover ${nome} desta partida?`, {
-                titulo: 'Remover estudante?',
-                icone: '👤',
-                textoConfirmar: 'Sim, remover'
-            });
-            if (confirmou) database.ref(`Salas/${salaId}/jogadores/${nome}`).remove();
+        function expulsarAluno(nome) {
+            if (confirm(`Tem a certeza que deseja expulsar o aluno(a) ${nome}?`)) {
+                database.ref(`Salas/${salaId}/jogadores/${nome}`).remove();
+            }
         }
 
         function entrarSalaAluno() {
             nomeAluno = document.getElementById('input-aluno-nome').value.trim().toUpperCase();
             salaId = document.getElementById('input-sala-id').value.trim();
-            if (!nomeAluno || !salaId) return mostrarAlerta('Preencha seu nome e o código da sala.', 'Campos incompletos', '✍️');
+            if (!nomeAluno || !salaId) return alert("Preencha todos os campos!");
             
             papel = 'aluno'; isSingleplayer = false;
             const salaRef = database.ref(`Salas/${salaId}`);
 
             salaRef.once('value').then(snapSala => {
-                if (!snapSala.exists()) return mostrarAlerta('Código de sala inválido. Verifique o número e tente novamente.', 'Sala não encontrada', '🔎');
+                if (!snapSala.exists()) return alert("⚠️ Código de sala inválido! Verifique o número e tente novamente.");
                 
                 jogadorRef = database.ref(`Salas/${salaId}/jogadores/${nomeAluno}`);
                 jogadorRef.once('value').then(snapJog => {
                     if (snapJog.exists() && snapJog.val().online === true) {
-                        mostrarAlerta('Esse nome já está em uso por outro jogador ativo. Adicione um apelido ou número.', 'Nome já utilizado', '👥');
+                        alert("⚠️ Esse nome já está em uso por outro jogador ativo. Adicione o seu apelido ou número!");
                         document.getElementById('input-aluno-nome').value = '';
                         return;
                     }
@@ -1133,7 +888,7 @@
                     
                     jogadorRef.on('value', monitor => {
                         if (!monitor.exists() && gameState.fase !== "setup") {
-                            mostrarAlerta('Você foi removido desta partida pelo professor.', 'Participação encerrada', '🚪').then(() => location.reload());
+                            alert("⚠️ Foi removido desta partida pelo professor.");
                             location.reload();
                         }
                     });
@@ -1151,7 +906,7 @@
             
             if (escolhaBanco === 'personalizado') {
                 const texto = document.getElementById('campo-perguntas').value.trim();
-                if (texto === "") { mostrarAlerta('Insira suas questões personalizadas antes de iniciar.', 'Banco personalizado vazio', '📝'); return false; }
+                if (texto === "") { alert("⚠️ Insira as suas questões customizadas."); return false; }
                 texto.split("\n").forEach(linha => {
                     const partes = linha.trim().split(";");
                     if (partes.length === 6) tempPerguntas.push({ q: partes[0].trim(), alt: [partes[1].trim(), partes[2].trim(), partes[3].trim(), partes[4].trim()], correta: parseInt(partes[5].trim()) });
@@ -1162,11 +917,11 @@
                     if(bancosNativos[mat]) tempPerguntas = tempPerguntas.concat(PatternShuffle(JSON.parse(JSON.stringify(bancosNativos[mat]))).slice(0, 10));
                 });
             } else {
-                if(!bancosNativos[escolhaBanco]) { mostrarAlerta('O banco selecionado está vazio ou não foi encontrado.', 'Banco indisponível', '📚'); return false;}
+                if(!bancosNativos[escolhaBanco]) { alert("Banco vazio ou não encontrado. Cole as perguntas no script."); return false;}
                 tempPerguntas = JSON.parse(JSON.stringify(bancosNativos[escolhaBanco]));
             }
 
-            if (tempPerguntas.length === 0) { mostrarAlerta('Nenhuma questão válida foi encontrada.', 'Banco vazio', '📭'); return false; }
+            if (tempPerguntas.length === 0) { alert("⚠️ Banco de dados vazio."); return false; }
             
             // Cada pergunta recebe um identificador antes do embaralhamento.
             tempPerguntas.forEach((item, indice) => item._shuffleId = `${indice}-${item.q}`);
@@ -1192,7 +947,6 @@
 
         async function iniciarJogo(modoSolo) {
             if (!prepararBancoPerguntas()) return;
-            limparResultadoVisual();
             
             document.getElementById('configuracoes-professor').classList.add('oculto');
             document.getElementById('placar-final-professor').classList.add('oculto');
@@ -1213,8 +967,7 @@
             
             perguntaAtualIndex = 0;
             tempoQuestaoSelecionado = parseInt(document.getElementById('tempo-questao').value) || 15;
-            numeroRodadasPlacarSelecionado = parseInt(document.getElementById('numero-rodadas-placar').value) || 3;
-            gameState = { fase: "setup", paused: false, gameMode: modoSelecionado, ropePosition: 50, round: 1, vencedor: null, scoreGlobal: { certas: 0, erradas: 0 }, questionTimeLeft: tempoQuestaoSelecionado, participantsRound: {}, answersReceived: 0, roundResult: null, finalRanking: [], placar: { totalRodadas: numeroRodadasPlacarSelecionado, rodadaAtual: 1, perguntaNaRodada: 1, pontosTurma: 0, pontosMaquina: 0, rodadasTurma: 0, rodadasMaquina: 0, desempate: false, resultadosPerguntas: [], resultadosRodadas: [], aguardandoProxima: false }, timers: { freezeRestante: 0, feedbackRestante: 0 } };
+            gameState = { fase: "setup", paused: false, gameMode: modoSelecionado, ropePosition: 50, round: 1, vencedor: null, scoreGlobal: { certas: 0, erradas: 0 }, questionTimeLeft: tempoQuestaoSelecionado, participantsRound: {}, answersReceived: 0, roundResult: null, finalRanking: [], timers: { freezeRestante: 0, feedbackRestante: 0 } };
             
             if (modoSelecionado === 'time_attack') {
                 gameState.timeLeft = parseInt(document.getElementById('tempo-customizado').value) || 60;
@@ -1225,16 +978,13 @@
                 soloErros = 0;
                 document.getElementById('solo-acertos').innerText = '0';
                 document.getElementById('solo-erros').innerText = '0';
-                document.getElementById('placar-solo').classList.toggle('oculto', modoSelecionado === 'placar');
+                document.getElementById('placar-solo').classList.remove('oculto');
                 document.getElementById('arena-lado-prof').innerText = '🧑 VOCÊ';
                 document.getElementById('arena-objetivo-prof').innerText = 'ACERTE E EMPURRE O FOGO →';
                 document.getElementById('area-jogo-professor').classList.remove('oculto');
-                document.getElementById('area-jogo-professor').classList.toggle('modo-placar-ativo', modoSelecionado === 'placar');
-                document.getElementById('placar-rodadas-prof').classList.toggle('oculto', modoSelecionado !== 'placar');
                 document.getElementById('btn-pausar-jogo').classList.remove('oculto');
                 document.getElementById('btn-pausar-jogo').innerText = '⏸️ Pausar Partida';
-                document.getElementById('acoes-partida-inferior').classList.remove('oculto');
-                document.getElementById('btn-configurar-durante-solo').classList.remove('oculto');
+                document.getElementById('btn-encerrar-geral').classList.remove('oculto');
                 document.getElementById('btn-encerrar-geral').innerText = "❌ Sair do Modo Solo";
                 if (modoSelecionado === 'time_attack') document.getElementById('prof-timer-container').classList.remove('oculto');
                 
@@ -1249,9 +999,7 @@
                 document.getElementById('btn-pausar-jogo').classList.remove('oculto');
                 document.getElementById('btn-pausar-jogo').style.display = 'block';
                 document.getElementById('btn-pausar-jogo').innerText = '⏸️ Pausar Partida';
-                document.getElementById('acoes-partida-inferior').classList.remove('oculto');
-                document.getElementById('btn-configurar-durante-solo').classList.add('oculto');
-                document.getElementById('btn-encerrar-geral').innerText = "❌ Encerrar Partida";
+                document.getElementById('btn-encerrar-geral').classList.remove('oculto');
                 document.getElementById('titulo-monitor').innerText = "Ranking ao vivo";
                 if (modoSelecionado === 'time_attack') document.getElementById('prof-timer-container').classList.remove('oculto');
                 
@@ -1279,7 +1027,6 @@
             gameState.answersReceived = 0;
             gameState.roundResult = null;
             alternativaSelecionadaIndex = null;
-            if (gameState.gameMode === 'placar') renderizarPlacarRodadas();
             
             if (!isSingleplayer) {
                 gameState.participantsRound = await obterParticipantesOnline();
@@ -1289,129 +1036,6 @@
             } else {
                 renderizarTelaSolo();
             }
-        }
-
-        function htmlPlacarRodadas() {
-            const p = gameState.placar || {};
-            const totalRodadas = p.totalRodadas || 3;
-            const rodadaAtual = p.rodadaAtual || 1;
-            const resultadosRodadas = p.resultadosRodadas || [];
-            const resultadosPerguntas = p.resultadosPerguntas || [];
-            const chips = Array.from({length: totalRodadas}, (_, i) => {
-                const numero = i + 1;
-                const resultado = resultadosRodadas[i];
-                const classe = resultado || (numero === rodadaAtual ? 'atual' : '');
-                const subtitulo = resultado === 'turma' ? 'Turma' : resultado === 'maquina' ? 'Máquina' : numero === rodadaAtual ? 'Atual' : 'Pendente';
-                return `<div class="rodada-chip ${classe}">Rodada ${numero}<small>${subtitulo}</small></div>`;
-            }).join('');
-            const marcadores = Array.from({length:5}, (_, i) => {
-                const resultado = resultadosPerguntas[i];
-                const atual = !p.desempate && i + 1 === (p.perguntaNaRodada || 1) && !resultado ? ' atual' : '';
-                const simbolo = resultado === 'turma' ? '✓' : resultado === 'maquina' ? '✕' : resultado === 'empate' ? '=' : i + 1;
-                return `<div class="marcador-pergunta ${resultado || ''}${atual}">${simbolo}</div>`;
-            }).join('');
-            const indicadorPergunta = p.desempate ? 'Pergunta de desempate' : `Pergunta ${p.perguntaNaRodada || 1} de 5`;
-            const resultadoRodadaAtual = resultadosRodadas[rodadaAtual - 1];
-            const bannerRodada = gameState.fase === 'intervalo_rodada' && resultadoRodadaAtual
-                ? `<div class="resultado-rodada-banner ${resultadoRodadaAtual}">${resultadoRodadaAtual === 'turma' ? `🎉 A turma venceu a Rodada ${rodadaAtual}!` : `🤖 A máquina venceu a Rodada ${rodadaAtual}!`}</div>`
-                : '';
-            return `<div class="placar-arena" style="--total-rodadas:${totalRodadas}">
-                <div class="placar-partida-titulo">Placar da partida — rodadas vencidas</div>
-                <div class="placar-partida">
-                    <div class="placar-lado turma">TURMA<span class="numero">${p.rodadasTurma || 0}</span></div>
-                    <div class="placar-versus">×</div>
-                    <div class="placar-lado maquina">MÁQUINA<span class="numero">${p.rodadasMaquina || 0}</span></div>
-                </div>
-                <div class="faixa-rodadas">${chips}</div>
-                <div class="painel-rodada-atual">
-                    <div class="linha-contexto-placar"><strong>Rodada ${rodadaAtual}</strong><span class="pergunta-indicador">${indicadorPergunta}</span></div>
-                    <div class="pontuacao-rodada">
-                        <div class="ponto-box turma">Turma<span>${p.pontosTurma || 0}</span></div>
-                        <strong>×</strong>
-                        <div class="ponto-box maquina">Máquina<span>${p.pontosMaquina || 0}</span></div>
-                    </div>
-                    <div class="marcadores-perguntas">${marcadores}</div>
-                    ${p.desempate ? '<div class="placar-desempate">⚡ Morte súbita — quem pontuar vence a rodada.</div>' : ''}
-                    ${bannerRodada}
-                </div>
-            </div>`;
-        }
-
-        function renderizarPlacarRodadas() {
-            const html = htmlPlacarRodadas();
-            const prof = document.getElementById('placar-rodadas-prof');
-            const aluno = document.getElementById('placar-rodadas-aluno');
-            if (prof) prof.innerHTML = html;
-            if (aluno) aluno.innerHTML = html;
-            const botao = document.getElementById('btn-proxima-rodada-placar');
-            if (botao) botao.classList.toggle('oculto', !(gameState.gameMode === 'placar' && gameState.fase === 'intervalo_rodada'));
-        }
-
-        function decidirPontoPlacar(percentual) {
-            if (percentual > 0.5) return 'alunos';
-            if (percentual < 0.5) return 'maquina';
-            return 'empate';
-        }
-
-        function concluirPerguntaPlacar(percentual) {
-            const p = gameState.placar;
-            p.resultadosPerguntas = p.resultadosPerguntas || [];
-            p.resultadosRodadas = p.resultadosRodadas || [];
-            const vencedorPergunta = decidirPontoPlacar(percentual);
-            if (!p.desempate && p.resultadosPerguntas.length < 5) {
-                p.resultadosPerguntas.push(vencedorPergunta === 'alunos' ? 'turma' : vencedorPergunta);
-            }
-            if (vencedorPergunta === 'alunos') p.pontosTurma++;
-            if (vencedorPergunta === 'maquina') p.pontosMaquina++;
-
-            if (p.desempate) {
-                if (vencedorPergunta === 'empate') return { encerrouRodada:false, vencedorPergunta };
-                const vencedorRodada = vencedorPergunta;
-                if (vencedorRodada === 'alunos') p.rodadasTurma++; else p.rodadasMaquina++;
-                return finalizarRodadaPlacar(vencedorRodada);
-            }
-
-            if (p.perguntaNaRodada < 5) {
-                p.perguntaNaRodada++;
-                return { encerrouRodada:false, vencedorPergunta };
-            }
-
-            if (p.pontosTurma === p.pontosMaquina) {
-                p.desempate = true;
-                return { encerrouRodada:false, vencedorPergunta, iniciouDesempate:true };
-            }
-
-            const vencedorRodada = p.pontosTurma > p.pontosMaquina ? 'alunos' : 'maquina';
-            if (vencedorRodada === 'alunos') p.rodadasTurma++; else p.rodadasMaquina++;
-            return finalizarRodadaPlacar(vencedorRodada);
-        }
-
-        function finalizarRodadaPlacar(vencedorRodada) {
-            const p = gameState.placar;
-            p.resultadosRodadas = p.resultadosRodadas || [];
-            p.resultadosRodadas[p.rodadaAtual - 1] = vencedorRodada === 'alunos' ? 'turma' : 'maquina';
-            const partidaTerminou = p.rodadaAtual >= p.totalRodadas;
-            p.aguardandoProxima = !partidaTerminou;
-            if (partidaTerminou) {
-                const vencedorPartida = p.rodadasTurma > p.rodadasMaquina ? 'alunos' : 'maquina';
-                return { encerrouRodada:true, encerrouPartida:true, vencedorRodada, vencedorPartida };
-            }
-            return { encerrouRodada:true, encerrouPartida:false, vencedorRodada };
-        }
-
-        async function iniciarProximaRodadaPlacar() {
-            if (gameState.gameMode !== 'placar' || gameState.fase !== 'intervalo_rodada') return;
-            const p = gameState.placar;
-            p.rodadaAtual++;
-            p.perguntaNaRodada = 1;
-            p.pontosTurma = 0;
-            p.pontosMaquina = 0;
-            p.desempate = false;
-            p.resultadosPerguntas = [];
-            p.aguardandoProxima = false;
-            perguntaAtualIndex = (perguntaAtualIndex + 1) % perguntasSelecionadas.length;
-            gameState.round++;
-            await iniciarRodada();
         }
 
         function calcularImpulsoColetivo(percentual) {
@@ -1452,34 +1076,32 @@
             }
 
             const percentual = totalParticipantes > 0 ? acertos / totalParticipantes : 0;
+            const impulsoTurma = calcularImpulsoColetivo(percentual);
+            const ataqueMaquina = gameState.gameMode === 'placar' ? 0 : forcaMaquinaPorRodada[dificuldadeSelecionada];
+
+            // A máquina oferece resistência, mas nunca pode inverter um resultado coletivo positivo.
+            // Com 50% ou mais de acertos, o fogo sempre avança para a direita, em direção à máquina.
+            // Com menos de 50%, o fogo recua para a esquerda, em direção aos estudantes.
+            let movimentoFinal;
+            if (impulsoTurma > 0) {
+                movimentoFinal = gameState.gameMode === 'placar'
+                    ? impulsoTurma
+                    : Math.max(1, impulsoTurma - ataqueMaquina);
+            } else {
+                movimentoFinal = impulsoTurma - ataqueMaquina;
+            }
+
+            gameState.ropePosition = Math.max(0, Math.min(100, gameState.ropePosition + movimentoFinal));
             gameState.scoreGlobal.certas += acertos;
             gameState.scoreGlobal.erradas += erros;
+            gameState.roundResult = {
+                participantes: totalParticipantes, respostas: Object.keys(respostas).length,
+                acertos, erros, percentual: Math.round(percentual * 100),
+                impulsoTurma, ataqueMaquina, movimentoFinal, distribuicao
+            };
 
-            if (gameState.gameMode === 'placar') {
-                const decisao = concluirPerguntaPlacar(percentual);
-                gameState.roundResult = {
-                    participantes: totalParticipantes, respostas: Object.keys(respostas).length,
-                    acertos, erros, percentual: Math.round(percentual * 100), distribuicao,
-                    vencedorPergunta: decisao.vencedorPergunta,
-                    vencedorRodada: decisao.vencedorRodada || null,
-                    iniciouDesempate: !!decisao.iniciouDesempate,
-                    encerrouPartida: !!decisao.encerrouPartida,
-                    vencedorPartida: decisao.vencedorPartida || null
-                };
-                renderizarPlacarRodadas();
-            } else {
-                const impulsoTurma = calcularImpulsoColetivo(percentual);
-                const ataqueMaquina = forcaMaquinaPorRodada[dificuldadeSelecionada];
-                let movimentoFinal = impulsoTurma > 0 ? Math.max(1, impulsoTurma - ataqueMaquina) : impulsoTurma - ataqueMaquina;
-                gameState.ropePosition = Math.max(0, Math.min(100, gameState.ropePosition + movimentoFinal));
-                gameState.roundResult = {
-                    participantes: totalParticipantes, respostas: Object.keys(respostas).length,
-                    acertos, erros, percentual: Math.round(percentual * 100),
-                    impulsoTurma, ataqueMaquina, movimentoFinal, distribuicao
-                };
-                const vencedorPorContato = verificarFimPorContato();
-                if (vencedorPorContato) return finalizarJogo(vencedorPorContato);
-            }
+            if (gameState.ropePosition >= 100) return finalizarJogo('alunos');
+            if (gameState.ropePosition <= 0) return finalizarJogo('maquina');
 
             gameState.fase = "feedback";
             gameState.timers.feedbackRestante = TEMPO_FEEDBACK;
@@ -1521,8 +1143,7 @@
                 if (dificuldadeSelecionada === 'super_hard') {
                     gameState.ropePosition = Math.max(0, gameState.ropePosition - FORCA_CONTINUA_SUPER_DIFICIL);
                     database.ref(`Salas/${salaId}/state/ropePosition`).set(gameState.ropePosition);
-                    const vencedorPorContato = verificarFimPorContato();
-                    if (vencedorPorContato) return finalizarJogo(vencedorPorContato);
+                    if (gameState.ropePosition <= 0) return finalizarJogo('maquina');
                 }
 
                 if (gameState.gameMode === "time_attack") {
@@ -1545,16 +1166,6 @@
             } else if (gameState.fase === "feedback") {
                 gameState.timers.feedbackRestante -= 100;
                 if (gameState.timers.feedbackRestante <= 0) {
-                    if (gameState.gameMode === 'placar' && gameState.roundResult?.encerrouPartida) {
-                        finalizarJogo(gameState.roundResult.vencedorPartida);
-                        return;
-                    }
-                    if (gameState.gameMode === 'placar' && gameState.roundResult?.vencedorRodada) {
-                        gameState.fase = 'intervalo_rodada';
-                        atualizarFirebaseState();
-                        renderizarTelaProfessor();
-                        return;
-                    }
                     perguntaAtualIndex = (perguntaAtualIndex + 1) % perguntasSelecionadas.length;
                     gameState.round++;
                     iniciarRodada();
@@ -1580,16 +1191,6 @@
             else if (gameState.fase === "feedback") {
                 gameState.timers.feedbackRestante -= 100;
                 if (gameState.timers.feedbackRestante <= 0) {
-                    if (gameState.gameMode === 'placar' && gameState.roundResult?.encerrouPartida) {
-                        finalizarJogo(gameState.roundResult.vencedorPartida);
-                        return;
-                    }
-                    if (gameState.gameMode === 'placar' && gameState.roundResult?.vencedorRodada) {
-                        gameState.fase = 'intervalo_rodada';
-                        renderizarPlacarRodadas();
-                        renderizarTelaProfessor();
-                        return;
-                    }
                     perguntaAtualIndex = (perguntaAtualIndex + 1) % perguntasSelecionadas.length;
                     gameState.round++;
                     iniciarRodada();
@@ -1604,12 +1205,10 @@
                 }
                 if (dificuldadeSelecionada === 'super_hard') {
                     gameState.ropePosition -= FORCA_CONTINUA_SUPER_DIFICIL;
-                    const vencedorPorContato = verificarFimPorContato();
-                    if (vencedorPorContato) return finalizarJogo(vencedorPorContato);
+                    if (gameState.ropePosition <= 0) return finalizarJogo('maquina');
                 } else if (gameState.gameMode !== 'placar') {
                     gameState.ropePosition -= configForca[dificuldadeSelecionada];
-                    const vencedorPorContato = verificarFimPorContato();
-                    if (vencedorPorContato) return finalizarJogo(vencedorPorContato);
+                    if (gameState.ropePosition <= 0) return finalizarJogo('maquina');
                 }
             }
             document.getElementById('marcador').style.left = gameState.ropePosition + '%';
@@ -1621,12 +1220,7 @@
                 ? "Deseja voltar à Arena do Conhecimento?"
                 : "Deseja fechar esta sala e voltar à Arena do Conhecimento? Os alunos também retornarão ao início.";
 
-            const confirmou = await pedirConfirmacao(mensagem, {
-                titulo: isSingleplayer ? 'Voltar à Arena?' : 'Fechar esta sala?',
-                icone: '🏠',
-                textoConfirmar: isSingleplayer ? 'Sim, voltar' : 'Sim, fechar sala'
-            });
-            if (!confirmou) return;
+            if (!confirm(mensagem)) return;
 
             clearInterval(engineInterval);
             engineInterval = null;
@@ -1656,7 +1250,7 @@
                 }, 700);
             } catch (erro) {
                 console.error("Erro ao fechar a sala:", erro);
-                await mostrarAlerta('Não foi possível fechar a sala no Firebase. A página será reiniciada.', 'Erro ao fechar sala', '⚠️');
+                alert("Não foi possível fechar a sala no Firebase. A página será reiniciada.");
                 location.reload();
             }
         }
@@ -1666,12 +1260,7 @@
                 ? "Deseja sair do modo individual e voltar à tela inicial?"
                 : "Deseja encerrar a partida e voltar ao lobby desta mesma sala?";
 
-            const confirmou = await pedirConfirmacao(mensagem, {
-                titulo: isSingleplayer ? 'Sair do modo solo?' : 'Encerrar partida?',
-                icone: isSingleplayer ? '🕹️' : '⛔',
-                textoConfirmar: isSingleplayer ? 'Sim, sair' : 'Sim, encerrar'
-            });
-            if (!confirmou) return;
+            if (!confirm(mensagem)) return;
 
             clearInterval(engineInterval);
             engineInterval = null;
@@ -1696,7 +1285,6 @@
                 answersReceived: 0,
                 roundResult: null,
                 finalRanking: [],
-                placar: { totalRodadas: numeroRodadasPlacarSelecionado, rodadaAtual: 1, perguntaNaRodada: 1, pontosTurma: 0, pontosMaquina: 0, rodadasTurma: 0, rodadasMaquina: 0, desempate: false, resultadosPerguntas: [], resultadosRodadas: [], aguardandoProxima: false },
                 timers: { freezeRestante: 0, feedbackRestante: 0 }
             };
 
@@ -1705,7 +1293,7 @@
 
             document.getElementById('area-jogo-professor').classList.add('oculto');
             document.getElementById('configuracoes-professor').classList.remove('oculto');
-            document.getElementById('acoes-partida-inferior').classList.add('oculto');
+            document.getElementById('btn-encerrar-geral').classList.add('oculto');
             document.getElementById('prof-timer-container').classList.add('oculto');
             document.getElementById('btn-pausar-jogo').innerText = "⏸️ Pausar Partida";
             document.getElementById('titulo-monitor').innerText = "Estudantes no Lobby";
@@ -1786,14 +1374,7 @@
             engineInterval = null;
             gameState.fase = "ended";
             gameState.vencedor = vencedor;
-            if (gameState.gameMode !== 'placar') {
-                const limites = limitesDeContato();
-                gameState.ropePosition = vencedor === 'alunos' ? limites.maximo : limites.minimo;
-                document.querySelectorAll('.marcador').forEach(m => m.style.left = gameState.ropePosition + '%');
-                atualizarAlertasVisuais(50, null);
-            }
-            limparResultadoVisual();
-            document.body.classList.add(vencedor === 'alunos' ? 'resultado-vitoria' : 'resultado-derrota');
+            atualizarAlertasVisuais(50, null);
 
             if (!isSingleplayer) {
                 // Aguarda as transações de pontuação concluírem antes de montar o ranking.
@@ -1809,7 +1390,7 @@
         function exibirPlacarFinalProfessor(ranking, vencedor) {
             const painel = document.getElementById('placar-final-professor');
             painel.innerHTML = criarHtmlPlacarFinal(ranking || [], vencedor) +
-                '<div class="acoes-finais"><button class="btn-jogar-novamente" onclick="jogarNovamente()">🔄 Jogar Novamente</button></div>';
+                '<button class="btn-jogar-novamente" onclick="jogarNovamente()">🔄 Jogar Novamente</button>';
             painel.classList.remove('oculto');
             document.getElementById('prof-quiz-container').classList.add('oculto');
             document.getElementById('btn-pausar-jogo').classList.add('oculto');
@@ -1826,11 +1407,7 @@
                 <h2>FIM DE PARTIDA</h2>
                 <div class="resultado-vencedor">${mensagem}</div>
                 <p class="placar-final-subtitulo">✅ ${soloAcertos} acertos &nbsp; ❌ ${soloErros} erros &nbsp; • &nbsp; ${aproveitamento}% de aproveitamento</p>
-                <div class="acoes-finais">
-                    <button class="btn-jogar-novamente" onclick="jogarNovamente()">🔄 Jogar Novamente</button>
-                    <button class="btn-configurar-nova" onclick="abrirConfirmacaoConfigSolo()">⚙️ Configurar nova partida</button>
-                    <button class="btn-sair-solo" onclick="location.reload()">🏠 Sair do modo Solo</button>
-                </div>`;
+                <button class="btn-jogar-novamente" onclick="jogarNovamente()">🔄 Jogar Novamente</button>`;
             painel.classList.remove('oculto');
             document.getElementById('prof-quiz-container').classList.add('oculto');
             document.getElementById('btn-pausar-jogo').classList.add('oculto');
@@ -1838,7 +1415,6 @@
 
         function jogarNovamente() {
             document.body.classList.remove('flash-acerto', 'flash-erro');
-            limparResultadoVisual();
             atualizarAlertasVisuais(50, null);
             document.getElementById('placar-final-professor').classList.add('oculto');
             document.getElementById('placar-final-professor').innerHTML = '';
@@ -1847,42 +1423,6 @@
             document.getElementById('btn-pausar-jogo').style.display = 'block';
             document.getElementById('btn-pausar-jogo').innerText = '⏸️ Pausar Partida';
             iniciarJogo(isSingleplayer);
-        }
-
-        function abrirConfirmacaoConfigSolo() {
-            document.getElementById('modal-confirmar-config-solo').classList.remove('oculto');
-        }
-
-        function fecharConfirmacaoConfigSolo() {
-            document.getElementById('modal-confirmar-config-solo').classList.add('oculto');
-        }
-
-        function fecharConfirmacaoConfigSoloAoFundo(event) {
-            if (event.target.id === 'modal-confirmar-config-solo') fecharConfirmacaoConfigSolo();
-        }
-
-        function confirmarConfigurarNovaPartidaSolo() {
-            fecharConfirmacaoConfigSolo();
-            configurarNovaPartidaSolo();
-        }
-
-        function configurarNovaPartidaSolo() {
-            clearInterval(engineInterval);
-            engineInterval = null;
-            limparResultadoVisual();
-            document.body.classList.remove('flash-acerto', 'flash-erro');
-            atualizarAlertasVisuais(50, null);
-            gameState.fase = 'setup';
-            gameState.paused = false;
-            gameState.ropePosition = 50;
-            document.getElementById('placar-final-professor').classList.add('oculto');
-            document.getElementById('placar-final-professor').innerHTML = '';
-            document.getElementById('area-jogo-professor').classList.add('oculto');
-            document.getElementById('configuracoes-professor').classList.remove('oculto');
-            document.getElementById('acoes-partida-inferior').classList.add('oculto');
-            document.getElementById('prof-timer-container').classList.add('oculto');
-            document.getElementById('btn-pausar-jogo').innerText = '⏸️ Pausar Partida';
-            document.getElementById('marcador').style.left = '50%';
         }
 
         function atualizarFirebaseState() { return database.ref(`Salas/${salaId}/state`).set(gameState); }
@@ -2003,7 +1543,7 @@
         function renderizarTelaProfessor() {
             document.getElementById('marcador').style.left = gameState.ropePosition + '%';
             atualizarAlertasVisuais(gameState.ropePosition, gameState.gameMode === 'time_attack' ? gameState.timeLeft : null);
-            document.getElementById('info-rodada').innerText = gameState.gameMode === 'placar' ? `Rodada ${gameState.placar?.rodadaAtual || 1} • Pergunta ${gameState.placar?.desempate ? 'de desempate' : (gameState.placar?.perguntaNaRodada || 1) + ' de 5'}` : "Rodada: " + gameState.round;
+            document.getElementById('info-rodada').innerText = "Rodada: " + gameState.round;
             document.getElementById('prof-quiz-container').classList.remove('oculto');
             const statusColetivo = document.getElementById('prof-status-coletivo');
             const resultado = document.getElementById('prof-resultado-coletivo');
@@ -2012,9 +1552,6 @@
             if (gameState.fase === 'leitura') statusColetivo.innerText = `Leitura da questão • ${total} participantes nesta rodada`;
             if (gameState.fase === 'respondendo') statusColetivo.innerText = `Respostas: ${gameState.answersReceived || 0}/${total} • Tempo: ${Math.ceil(gameState.questionTimeLeft || 0)}s`;
             if (gameState.fase === 'calculando') statusColetivo.innerText = 'Calculando o resultado coletivo...';
-            if (gameState.fase === 'intervalo_rodada') { statusColetivo.classList.add('oculto'); resultado.classList.add('oculto'); }
-            else { statusColetivo.classList.remove('oculto'); }
-            if (gameState.gameMode === 'placar') renderizarPlacarRodadas();
 
             if (gameState.currentQuestion) {
                 document.getElementById('prof-pergunta-texto').innerText = gameState.currentQuestion.q;
@@ -2031,14 +1568,7 @@
                     document.getElementById(`prof-opt-${gameState.currentQuestion.correta}`).classList.add('correta');
                     const r = gameState.roundResult;
                     statusColetivo.innerText = `Rodada encerrada • Aproveitamento: ${r.percentual}%`;
-                    if (gameState.gameMode === 'placar') {
-                        const textoPonto = r.vencedorPergunta === 'alunos' ? 'Ponto para a turma' : r.vencedorPergunta === 'maquina' ? 'Ponto para a máquina' : 'Empate na pergunta';
-                        const extra = r.iniciouDesempate ? '<br><strong>⚡ Rodada empatada: iniciaremos o desempate.</strong>' : r.vencedorRodada ? `<br><strong>${r.vencedorRodada === 'alunos' ? '🎉 Turma' : '🤖 Máquina'} venceu a rodada.</strong>` : '';
-                        resultado.innerHTML = `<strong>${textoPonto}</strong><br>✅ ${r.acertos} acertos &nbsp; ❌ ${r.erros} erros${extra}`;
-                        renderizarPlacarRodadas();
-                    } else {
-                        resultado.innerHTML = `<strong>Resultado coletivo</strong><br>✅ ${r.acertos} acertos &nbsp; ❌ ${r.erros} erros<br>Turma: ${r.impulsoTurma >= 0 ? '+' : ''}${r.impulsoTurma} | Máquina: -${r.ataqueMaquina} | Movimento final: ${r.movimentoFinal >= 0 ? '+' : ''}${r.movimentoFinal}`;
-                    }
+                    resultado.innerHTML = `<strong>Resultado coletivo</strong><br>✅ ${r.acertos} acertos &nbsp; ❌ ${r.erros} erros<br>Turma: ${r.impulsoTurma >= 0 ? '+' : ''}${r.impulsoTurma} | Máquina: -${r.ataqueMaquina} | Movimento final: ${r.movimentoFinal >= 0 ? '+' : ''}${r.movimentoFinal}`;
                     resultado.classList.remove('oculto');
                 }
             }
@@ -2048,7 +1578,7 @@
         function renderizarTelaSolo() {
             document.getElementById('marcador').style.left = gameState.ropePosition + '%';
             atualizarAlertasVisuais(gameState.ropePosition, gameState.gameMode === 'time_attack' ? gameState.timeLeft : null);
-            document.getElementById('info-rodada').innerText = gameState.gameMode === 'placar' ? `Rodada ${gameState.placar?.rodadaAtual || 1} • Pergunta ${gameState.placar?.desempate ? 'de desempate' : (gameState.placar?.perguntaNaRodada || 1) + ' de 5'}` : "Rodada: " + gameState.round;
+            document.getElementById('info-rodada').innerText = "Rodada: " + gameState.round;
             document.getElementById('prof-quiz-container').classList.remove('oculto');
             
             let freezeHtml = `<div id="container-freeze-solo" class="barra-freeze-container"><div id="barra-freeze-solo" class="barra-freeze-fill"></div></div>`;
@@ -2068,28 +1598,7 @@
             if (gameState.fase !== "respondendo") return;
             document.querySelectorAll('#prof-lista-opcoes .btn-opcao').forEach(b => b.disabled = true);
             
-            let pesos = configPesos[dificuldadeSelecionada];
-            const acertouSolo = idx === gameState.currentQuestion.correta;
-            if (gameState.gameMode === 'placar') {
-                if (acertouSolo) {
-                    soloAcertos++;
-                    document.getElementById('solo-acertos').innerText = soloAcertos;
-                    document.getElementById(`solo-opt-${idx}`).classList.add('correta');
-                    mostrarFeedbackFlutuante(true);
-                } else {
-                    soloErros++;
-                    document.getElementById('solo-erros').innerText = soloErros;
-                    document.getElementById(`solo-opt-${idx}`).classList.add('errada');
-                    document.getElementById(`solo-opt-${gameState.currentQuestion.correta}`).classList.add('correta');
-                    mostrarFeedbackFlutuante(false);
-                }
-                const decisao = concluirPerguntaPlacar(acertouSolo ? 1 : 0);
-                gameState.roundResult = { percentual: acertouSolo ? 100 : 0, vencedorPergunta: decisao.vencedorPergunta, vencedorRodada: decisao.vencedorRodada || null, iniciouDesempate: !!decisao.iniciouDesempate, encerrouPartida: !!decisao.encerrouPartida, vencedorPartida: decisao.vencedorPartida || null };
-                renderizarPlacarRodadas();
-                gameState.fase = 'feedback';
-                gameState.timers.feedbackRestante = TEMPO_FEEDBACK;
-                return;
-            }
+            let pesos = (gameState.gameMode === "placar") ? configPesos.placar : configPesos[dificuldadeSelecionada];
             if (idx === gameState.currentQuestion.correta) {
                 gameState.ropePosition = Math.min(100, gameState.ropePosition + pesos.acerto);
                 soloAcertos++;
@@ -2108,8 +1617,8 @@
             }
             
             atualizarAlertasVisuais(gameState.ropePosition, gameState.gameMode === 'time_attack' ? gameState.timeLeft : null);
-            const vencedorPorContato = verificarFimPorContato();
-            if (vencedorPorContato) return finalizarJogo(vencedorPorContato);
+            if (gameState.ropePosition >= 100) return finalizarJogo('alunos');
+            if (gameState.ropePosition <= 0) return finalizarJogo('maquina');
             
             gameState.fase = "feedback";
             gameState.timers.feedbackRestante = TEMPO_FEEDBACK;
@@ -2134,10 +1643,6 @@
                 const statusColetivo = document.getElementById('aluno-status-coletivo');
                 const resultado = document.getElementById('aluno-resultado-coletivo');
                 const total = Object.keys(estado.participantsRound || {}).length;
-                const modoPlacar = estado.gameMode === 'placar';
-                document.getElementById('tela-aluno').classList.toggle('modo-placar-ativo', modoPlacar);
-                document.getElementById('placar-rodadas-aluno').classList.toggle('oculto', !modoPlacar);
-                if (modoPlacar) renderizarPlacarRodadas();
                 const alunoTempo = document.getElementById('aluno-tempo');
                 const alunoTempoLabel = document.getElementById('aluno-tempo-label');
 
@@ -2187,7 +1692,7 @@
                         bFreeze.classList.add('oculto');
                         statusColetivo.innerText = `Respostas recebidas: ${estado.answersReceived || 0}/${total} • ${Math.ceil(estado.questionTimeLeft || 0)}s`;
                         if (alternativaSelecionadaIndex === null) {
-                            status.innerText = modoPlacar ? "Escolha sua resposta e ajude a turma a pontuar!" : "Escolha sua resposta e empurre o fogo! 🔥";
+                            status.innerText = "Escolha sua resposta e empurre o fogo! 🔥";
                             document.querySelectorAll('#lista-opcoes .btn-opcao').forEach(b => b.disabled = false);
                         } else {
                             status.innerText = "Resposta registrada. Aguardando a turma...";
@@ -2215,23 +1720,9 @@
                     if (estado.roundResult) {
                         const r = estado.roundResult;
                         statusColetivo.innerText = `Aproveitamento da turma: ${r.percentual}%`;
-                        if (estado.gameMode === 'placar') {
-                            const textoPonto = r.vencedorPergunta === 'alunos' ? 'Ponto para a turma' : r.vencedorPergunta === 'maquina' ? 'Ponto para a máquina' : 'Empate na pergunta';
-                            const extra = r.iniciouDesempate ? '<br><strong>⚡ Rodada empatada: vem aí o desempate.</strong>' : r.vencedorRodada ? `<br><strong>${r.vencedorRodada === 'alunos' ? '🎉 A turma' : '🤖 A máquina'} venceu a rodada.</strong>` : '';
-                            resultado.innerHTML = `✅ ${r.acertos} acertos &nbsp; ❌ ${r.erros} erros<br><strong>${textoPonto}</strong>${extra}`;
-                        } else {
-                            resultado.innerHTML = `✅ ${r.acertos} acertos &nbsp; ❌ ${r.erros} erros<br><strong>Movimento do fogo: ${r.movimentoFinal >= 0 ? '+' : ''}${r.movimentoFinal}</strong>`;
-                        }
+                        resultado.innerHTML = `✅ ${r.acertos} acertos &nbsp; ❌ ${r.erros} erros<br><strong>Movimento do fogo: ${r.movimentoFinal >= 0 ? '+' : ''}${r.movimentoFinal}</strong>`;
                         resultado.classList.remove('oculto');
                     }
-                } else if (estado.fase === "intervalo_rodada") {
-                    status.innerText = "";
-                    containerQuiz.classList.add('oculto');
-                    cabecalho.style.visibility = "visible";
-                    trilho.style.visibility = "hidden";
-                    statusColetivo.classList.add('oculto');
-                    resultado.classList.add('oculto');
-                    renderizarPlacarRodadas();
                 } else if (estado.fase === "closed") {
                     status.innerText = estado.closedMessage || "A sala foi encerrada pelo professor.";
                     containerQuiz.classList.add('oculto');
@@ -2239,8 +1730,8 @@
                     trilho.style.visibility = "hidden";
                     const placarFinalAluno = document.getElementById('placar-final-aluno');
                     if (placarFinalAluno) placarFinalAluno.classList.add('oculto');
-                    mostrarAlerta(estado.closedMessage || 'A sala foi encerrada pelo professor.', 'Sala encerrada', '🏁')
-                        .then(() => location.reload());
+                    alert(estado.closedMessage || "A sala foi encerrada pelo professor.");
+                    location.reload();
                 } else if (estado.fase === "ended") {
                     status.innerText = estado.vencedor === 'alunos' ? '🎉 Parabéns, a turma venceu!' : estado.vencedor === 'empate' ? '🤝 Partida empatada!' : '🤖 Que pena, a máquina venceu!';
                     containerQuiz.classList.add('oculto');
