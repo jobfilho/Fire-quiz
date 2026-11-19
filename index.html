@@ -263,6 +263,92 @@
         .ajuda-card { border:2px solid #e5eaf2; border-radius:12px; padding:14px; background:#fafbfe; }
         .ajuda-card h3 { margin:0 0 8px; color:#263859; }
         @media(max-width:650px){ .ajuda-grid{grid-template-columns:1fr;} }
+    
+        /* Fire Quiz 08.4 — duas visualizações independentes para o professor */
+        .seletor-visao-professor {
+            display:flex; gap:10px; align-items:center; justify-content:center;
+            flex-wrap:wrap; margin:12px 0 24px; padding:12px;
+            background:#f3f6fc; border:1px solid #d8e2ef; border-radius:14px;
+        }
+        .seletor-visao-professor .rotulo-visao { color:#374967; font-weight:800; font-size:14px; }
+        .btn-visao-professor {
+            background:#fff; color:#374967; border:2px solid #d5dfec;
+            font-size:14px; padding:10px 17px; border-radius:10px;
+        }
+        .btn-visao-professor[aria-pressed="true"] {
+            color:#fff; background:#263859; border-color:#263859;
+            box-shadow:0 4px 12px rgba(38,56,89,.23);
+        }
+        .tela-apresentacao-professor {
+            position:fixed; inset:0; z-index:5000; width:100%; min-height:100vh;
+            min-height:100dvh; overflow:auto; background:linear-gradient(150deg,#fffaf2 0%,#f2f6fd 62%,#e8eff9 100%);
+            color:#192d4b; padding:clamp(20px,3.5vw,58px); box-sizing:border-box;
+            display:flex; align-items:center; justify-content:center;
+        }
+        .conteudo-apresentacao-professor {
+            width:min(1320px,100%); margin:auto; display:flex; flex-direction:column;
+            justify-content:center; gap:clamp(18px,2.7vh,33px);
+        }
+        .apresentacao-indicador {
+            color:#c25513; letter-spacing:.17em; font-weight:900;
+            font-size:clamp(13px,1.3vw,19px); text-align:center;
+        }
+        #apresentacao-pergunta {
+            font-size:clamp(27px,3.45vw,58px); line-height:1.23;
+            font-weight:900; max-width:1200px; margin:0 auto; text-wrap:balance;
+            overflow-wrap:anywhere; text-align:center;
+        }
+        .apresentacao-alternativas {
+            display:grid; grid-template-columns:repeat(2,minmax(0,1fr));
+            gap:clamp(13px,1.9vw,26px); width:100%;
+        }
+        .apresentacao-alternativa {
+            min-height:clamp(112px,16vh,178px); display:flex; align-items:center;
+            gap:clamp(14px,1.6vw,26px); background:#fff; color:#1f314e;
+            text-align:left; padding:clamp(17px,1.9vw,32px); box-sizing:border-box;
+            border:2px solid #d9e3ef; border-radius:clamp(13px,1.25vw,20px);
+            box-shadow:0 7px 22px rgba(24,47,78,.08);
+        }
+        .apresentacao-letra {
+            width:clamp(44px,4.3vw,64px); height:clamp(44px,4.3vw,64px);
+            display:flex; align-items:center; justify-content:center;
+            flex:0 0 auto; border-radius:15px; background:#e9eff8; color:#30476e;
+            font-size:clamp(21px,2vw,30px); font-weight:900;
+        }
+        .apresentacao-texto {
+            font-size:clamp(20px,2.1vw,34px); font-weight:750;
+            line-height:1.28; overflow-wrap:anywhere;
+        }
+        .apresentacao-voltar {
+            position:fixed; top:15px; right:17px; z-index:1;
+            color:#2f405e; background:rgba(255,255,255,.85); border:1px solid #dce3ee;
+            font-size:13px; padding:8px 12px; border-radius:10px;
+            opacity:.46; transition:opacity .16s ease;
+        }
+        .apresentacao-voltar:hover,.apresentacao-voltar:focus-visible { opacity:1; }
+        .apresentacao-encerrada {text-align:center; font-size:clamp(30px,5vw,70px); font-weight:900;}
+        @media(max-width:740px) {
+            .apresentacao-alternativas {grid-template-columns:1fr;}
+            .apresentacao-alternativa {min-height:80px;}
+            .tela-apresentacao-professor {padding:64px 18px 20px;}
+            #apresentacao-pergunta {font-size:clamp(24px,6vw,36px);}
+            .apresentacao-texto {font-size:clamp(18px,4.6vw,24px);}
+        }
+        @media (prefers-reduced-motion:reduce) {
+            .apresentacao-voltar {transition:none;}
+        }
+
+        /* Fire Quiz 08.4 — confirmação real das respostas e estado de rede */
+        .estado-conexao {display:inline-block; margin:6px auto 12px; border-radius:9px;
+            padding:7px 13px; background:#fff3cd; border:1px solid #e8ca73; color:#704b06;
+            font-size:14px; font-weight:700;}
+        .estado-conexao.conectado {background:#e6f7ed; border-color:#82c69b; color:#165b33;}
+        .estado-conexao.desconectado {background:#fff1e7; border-color:#e8ab83; color:#8c3b16;}
+        .estado-envio {margin-top:12px; border-radius:10px; padding:13px 16px;
+            background:#eaf2ff; border:1px solid #95b8eb; color:#1e467c;
+            font-size:16px; font-weight:700;}
+        .estado-envio.sucesso {background:#e7f7ed; border-color:#85c39d; color:#155c35;}
+        .estado-envio.erro {background:#ffeded; border-color:#eba5a5; color:#8f1a1a;}
     </style>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -386,6 +472,12 @@
 
     <div id="painel-professor" class="card oculto">
         <h2>Fire Quiz — Todos contra a Máquina 🔥 | Sala: <span id="display-sala-id" style="color: #ff9800;"></span></h2>
+        <div id="seletor-visao-professor" class="seletor-visao-professor oculto" role="group" aria-label="Visualização do professor">
+            <span class="rotulo-visao">Visualização do professor:</span>
+            <button id="btn-visao-monitoramento" class="btn-visao-professor" type="button" aria-pressed="true" onclick="selecionarVisaoProfessor('monitoramento')">📊 Monitoramento</button>
+            <button id="btn-visao-apresentacao" class="btn-visao-professor" type="button" aria-pressed="false" onclick="selecionarVisaoProfessor('apresentacao')">🖥️ Apresentação</button>
+        </div>
+
         
         <div class="painel-grid">
             <div>
@@ -498,6 +590,17 @@
         </div>
     </div>
 
+
+    <!-- Tela independente do professor: não contém gabarito, respostas, ranking nem pontuação. -->
+    <section id="tela-apresentacao-professor" class="tela-apresentacao-professor oculto" aria-label="Apresentação das questões" aria-hidden="true">
+        <button class="apresentacao-voltar" type="button" onclick="selecionarVisaoProfessor('monitoramento')" title="Voltar ao monitoramento (Esc)">← Monitoramento (Esc)</button>
+        <div class="conteudo-apresentacao-professor">
+            <div id="apresentacao-indicador" class="apresentacao-indicador"></div>
+            <h2 id="apresentacao-pergunta"></h2>
+            <div id="apresentacao-alternativas" class="apresentacao-alternativas" aria-label="Alternativas da questão"></div>
+        </div>
+    </section>
+
     <div id="tela-aluno" class="card oculto">
         <div id="overlay-pausa" class="oculto">
             <h1 style="font-size: 50px; margin: 10px;">⏸️</h1>
@@ -525,6 +628,7 @@
             <div id="aluno-aviso-final" class="aviso-final oculto"></div>
         </div>
         
+        <p id="estado-conexao-aluno" class="estado-conexao" role="status" aria-live="polite">Conectando ao servidor...</p>
         <h2 id="status-aluno">Aguardando o professor...</h2>
         <div id="placar-final-aluno" class="placar-final oculto"></div>
         
@@ -538,6 +642,7 @@
             <h3 id="pergunta-texto"></h3>
             <div class="opcoes" id="lista-opcoes"></div>
             <button id="btn-confirmar-puxao" class="btn-confirmar oculto" onclick="confirmarEEnviar()">Empurrar Fogo 🔥</button>
+            <div id="estado-envio-aluno" class="estado-envio oculto" role="status" aria-live="polite"></div>
         </div>
     </div>
 
@@ -569,7 +674,7 @@
     <div id="feedback-flutuante" class="feedback-flutuante" aria-live="assertive"></div>
 
     <footer style="text-align: center; padding: 20px; color: #666; font-weight: bold; font-size: 14px; margin-top: 20px; line-height: 1.6;">
-        <div>Versão atual: 08.2</div>
+        <div>Versão atual: 08.4</div>
         <div>Desenvolvido pelo Prof. Job Inácio</div>
     </footer>
 
@@ -974,12 +1079,15 @@
         };
         // VARIÁVEIS GLOBAIS (MULTIPLAYER E SINGLEPLAYER)
         let papel = '', salaId = '', nomeAluno = '', jogadorRef = null, engineInterval = null;
-        let presencaInterval = null;
-        let presencaConexaoRef = null;
-        const INTERVALO_PRESENCA_MS = 15000;
-        const LIMITE_PRESENCA_ATIVA_MS = 45000;
+        let presencaConexaoRef = null, presencaSessaoRef = null, presencaListener = null;
+        let conexaoFirebaseAtiva = false, tokenAluno = null;
+        let salaJogadores = {}, salaPresencas = {}, respostasRodada = {};
+        let respostasRodadaRef = null, respostasRodadaListener = null;
+        let ultimoIdQuestaoAluno = null, envioRespostaAluno = null;
+        const MARGEM_ENTREGA_RESPOSTAS_MS = 850;
         let perguntasSelecionadas = [], perguntaAtualIndex = 0, alternativaSelecionadaIndex = null;
         let dificuldadeSelecionada = 'medium', modoSelecionado = 'survivor', tempoSelecionado = 60, tempoQuestaoSelecionado = 15, numeroRodadasPlacarSelecionado = 3;
+        let visaoProfessor = 'monitoramento'; // Controle visual local, sem alterar o estado dos alunos.
         let isSingleplayer = false;
         let soloAcertos = 0, soloErros = 0;
         let feedbackFlutuanteTimer = null;
@@ -992,7 +1100,7 @@
         let gameState = {
             fase: "setup", paused: false, gameMode: "survivor", timeLeft: 0, ropePosition: 50, 
             round: 1, vencedor: null, currentQuestion: null, scoreGlobal: { certas: 0, erradas: 0 },
-            questionTimeLeft: 0, participantsRound: {}, answersReceived: 0, roundResult: null, finalRanking: [],
+            questionTimeLeft: 0, partidaId: null, participantsRound: {}, answersReceived: 0, roundResult: null, finalRanking: [],
             placar: { totalRodadas: 3, rodadaAtual: 1, perguntaNaRodada: 1, pontosTurma: 0, pontosMaquina: 0, rodadasTurma: 0, rodadasMaquina: 0, desempate: false, resultadosPerguntas: [], resultadosRodadas: [], aguardandoProxima: false },
             timers: { freezeRestante: 0, feedbackRestante: 0 }
         };
@@ -1054,6 +1162,79 @@
             document.getElementById('dif-' + nivel).classList.add('ativo');
         }
 
+
+        // VISUALIZAÇÃO DO PROFESSOR — independente do modo de jogo.
+        // O modo Apresentação não lê nem renderiza a propriedade "correta".
+        function selecionarVisaoProfessor(modo) {
+            if (papel !== 'professor' || isSingleplayer) return;
+            if (modo !== 'monitoramento' && modo !== 'apresentacao') return;
+            visaoProfessor = modo;
+            atualizarVisaoProfessor();
+        }
+
+        function atualizarVisaoProfessor() {
+            const tela = document.getElementById('tela-apresentacao-professor');
+            const botaoMonitor = document.getElementById('btn-visao-monitoramento');
+            const botaoApresentar = document.getElementById('btn-visao-apresentacao');
+            if (!tela || !botaoMonitor || !botaoApresentar) return;
+
+            botaoMonitor.setAttribute('aria-pressed', String(visaoProfessor === 'monitoramento'));
+            botaoApresentar.setAttribute('aria-pressed', String(visaoProfessor === 'apresentacao'));
+            const ehProfessor = papel === 'professor' && !isSingleplayer;
+            const partidaEmExibicao = gameState.fase !== 'setup' && gameState.fase !== 'closed';
+            const apresentar = ehProfessor && visaoProfessor === 'apresentacao' && partidaEmExibicao;
+            tela.classList.toggle('oculto', !apresentar);
+            tela.setAttribute('aria-hidden', String(!apresentar));
+            if (apresentar) renderizarApresentacaoProfessor();
+        }
+
+        function renderizarApresentacaoProfessor() {
+            // Sempre gera apenas enunciado e quatro alternativas neutras.
+            const indicador = document.getElementById('apresentacao-indicador');
+            const pergunta = document.getElementById('apresentacao-pergunta');
+            const alternativas = document.getElementById('apresentacao-alternativas');
+            if (gameState.fase === 'ended') {
+                indicador.textContent = '';
+                pergunta.textContent = 'Partida encerrada';
+                alternativas.replaceChildren();
+                alternativas.dataset.round = '';
+                return;
+            }
+            const questao = gameState.currentQuestion;
+            if (!questao) {
+                indicador.textContent = '';
+                pergunta.textContent = 'Aguardando questão...';
+                alternativas.replaceChildren();
+                alternativas.dataset.round = '';
+                return;
+            }
+            indicador.textContent = 'QUESTÃO ' + (gameState.round || 1);
+            pergunta.textContent = questao.q;
+            // Não recria os cartões a cada 100 ms; preserva fluidez no projetor.
+            const chave = String(gameState.round) + '|' + questao.q + '|' + questao.alt.join('|');
+            if (alternativas.dataset.round === chave) return;
+            alternativas.dataset.round = chave;
+            alternativas.replaceChildren();
+            questao.alt.forEach((texto, indice) => {
+                const cartao = document.createElement('div');
+                cartao.className = 'apresentacao-alternativa';
+                const letra = document.createElement('span');
+                letra.className = 'apresentacao-letra';
+                letra.textContent = 'ABCD'[indice] || '';
+                const descricao = document.createElement('span');
+                descricao.className = 'apresentacao-texto';
+                descricao.textContent = texto;
+                cartao.append(letra, descricao);
+                alternativas.appendChild(cartao);
+            });
+        }
+
+        document.addEventListener('keydown', event => {
+            if (event.key === 'Escape' && papel === 'professor' && visaoProfessor === 'apresentacao') {
+                selecionarVisaoProfessor('monitoramento');
+            }
+        });
+
         // ---------------------------------------------------------
         // MODO INDIVIDUAL (INICIA DA TELA DE LOGIN)
         // ---------------------------------------------------------
@@ -1066,6 +1247,7 @@
             document.getElementById('painel-professor').classList.remove('oculto');
             document.querySelector('#painel-professor h2').innerText = "Fire Quiz — Todos contra a Máquina 🔥 | Modo Solo";
             
+            document.getElementById('seletor-visao-professor').classList.add('oculto');
             document.querySelector('.ranking-container').classList.add('oculto');
             document.getElementById('painel-professor').style.maxWidth = "600px";
             document.querySelector('.painel-grid').style.gridTemplateColumns = "1fr";
@@ -1096,8 +1278,11 @@
             document.getElementById('tela-selecao').classList.add('oculto');
             document.getElementById('painel-professor').classList.remove('oculto');
             document.getElementById('display-sala-id').innerText = salaId;
+            visaoProfessor = 'monitoramento';
+            document.getElementById('seletor-visao-professor').classList.remove('oculto');
+            atualizarVisaoProfessor();
             
-            database.ref(`Salas/${salaId}`).set({ state: gameState, respostas: null, jogadores: null });
+            await database.ref(`Salas/${salaId}`).set({ state: gameState, respostas: null, jogadores: null, presencas: null });
             ouvirLobbyETabelaRanking();
         }
 
@@ -1110,105 +1295,112 @@
             if (confirmou) database.ref(`Salas/${salaId}/jogadores/${nome}`).remove();
         }
 
-        function pararPresencaAluno() {
-            if (presencaInterval) {
-                clearInterval(presencaInterval);
-                presencaInterval = null;
-            }
-            if (presencaConexaoRef) {
-                presencaConexaoRef.off();
-                presencaConexaoRef = null;
-            }
+        // PRESENÇA: um registro por conexão. A sessão anterior não pode desconectar a nova.
+        function informarConexaoAluno(conectado, mensagem) {
+            const alvo = document.getElementById('estado-conexao-aluno');
+            if (!alvo) return;
+            alvo.className = 'estado-conexao ' + (conectado ? 'conectado' : 'desconectado');
+            alvo.textContent = mensagem || (conectado ? '● Conectado ao servidor' : '● Reconectando ao servidor...');
         }
 
-        function atualizarPresencaAluno() {
-            if (!jogadorRef || papel !== 'aluno' || isSingleplayer) return;
-            jogadorRef.update({
-                online: true,
-                lastSeen: firebase.database.ServerValue.TIMESTAMP
-            }).catch(erro => console.warn('Não foi possível atualizar a presença:', erro));
+        function pararPresencaAluno() {
+            if (presencaConexaoRef && presencaListener) presencaConexaoRef.off('value', presencaListener);
+            presencaConexaoRef = null;
+            presencaListener = null;
+            conexaoFirebaseAtiva = false;
+            if (presencaSessaoRef) {
+                const refAnterior = presencaSessaoRef;
+                presencaSessaoRef = null;
+                refAnterior.remove().catch(erro => console.warn('Falha ao encerrar presença:', erro));
+            }
         }
 
         function iniciarPresencaAluno() {
             pararPresencaAluno();
             if (!jogadorRef || papel !== 'aluno' || isSingleplayer) return;
-
+            // Um novo identificador por aba/conexão evita que onDisconnect de outra aba
+            // escreva online:false em um jogador que já se reconectou.
+            presencaSessaoRef = database.ref(`Salas/${salaId}/presencas/${nomeAluno}`).push();
             presencaConexaoRef = database.ref('.info/connected');
-            presencaConexaoRef.on('value', snap => {
-                if (snap.val() !== true || !jogadorRef) return;
-
-                jogadorRef.onDisconnect().update({
-                    online: false,
-                    lastSeen: firebase.database.ServerValue.TIMESTAMP
-                });
-                atualizarPresencaAluno();
-            });
-
-            presencaInterval = setInterval(atualizarPresencaAluno, INTERVALO_PRESENCA_MS);
-
-            document.addEventListener('visibilitychange', () => {
-                if (document.visibilityState === 'visible') atualizarPresencaAluno();
-            });
-            window.addEventListener('focus', atualizarPresencaAluno);
-            window.addEventListener('pageshow', atualizarPresencaAluno);
-            window.addEventListener('online', atualizarPresencaAluno);
+            const sessaoAtual = presencaSessaoRef;
+            presencaListener = async snap => {
+                const conectado = snap.val() === true;
+                conexaoFirebaseAtiva = conectado;
+                informarConexaoAluno(false, conectado ? '● Registrando conexão...' : '● Reconectando ao servidor...');
+                if (!conectado || sessaoAtual !== presencaSessaoRef) return;
+                try {
+                    // CRÍTICO: registrar onDisconnect no servidor ANTES de anunciar presença.
+                    await sessaoAtual.onDisconnect().remove();
+                    if (sessaoAtual !== presencaSessaoRef) return;
+                    await sessaoAtual.set({ desde: firebase.database.ServerValue.TIMESTAMP, token: tokenAluno });
+                    if (conexaoFirebaseAtiva && sessaoAtual === presencaSessaoRef) {
+                        informarConexaoAluno(true);
+                    }
+                } catch (erro) {
+                    console.error('Erro ao registrar presença:', erro);
+                    informarConexaoAluno(false, '● Falha na conexão; aguarde ou reconecte');
+                }
+            };
+            presencaConexaoRef.on('value', presencaListener);
         }
 
-        function jogadorEstaAtivo(dados) {
-            if (!dados || dados.online !== true) return false;
-            const ultimoSinal = Number(dados.lastSeen || 0);
-            return ultimoSinal > 0 && (Date.now() - ultimoSinal) <= LIMITE_PRESENCA_ATIVA_MS;
+        function possuiSessaoAtiva(nome, presencas = salaPresencas) {
+            const sessoes = presencas && presencas[nome];
+            return !!(sessoes && typeof sessoes === 'object' && Object.keys(sessoes).length);
         }
 
-        function entrarSalaAluno() {
-            nomeAluno = document.getElementById('input-aluno-nome').value.trim().toUpperCase();
+        async function entrarSalaAluno() {
+            nomeAluno = document.getElementById('input-aluno-nome').value.trim().replace(/\s+/g, ' ').toUpperCase();
             salaId = document.getElementById('input-sala-id').value.trim();
             if (!nomeAluno || !salaId) return mostrarAlerta('Preencha seu nome e o código da sala.', 'Campos incompletos', '✍️');
-
+            if (/[.#$\[\]\/]/.test(nomeAluno) || nomeAluno.length > 48) {
+                return mostrarAlerta('Use um nome de até 48 caracteres, sem os símbolos . # $ [ ] /', 'Nome inválido', '✍️');
+            }
             papel = 'aluno'; isSingleplayer = false;
-            const salaRef = database.ref(`Salas/${salaId}`);
-
-            salaRef.once('value').then(snapSala => {
+            try {
+                const salaRef = database.ref(`Salas/${salaId}`);
+                const snapSala = await salaRef.once('value');
                 if (!snapSala.exists()) return mostrarAlerta('Código de sala inválido. Verifique o número e tente novamente.', 'Sala não encontrada', '🔎');
-
+                const [presencaAtual, snapJog] = await Promise.all([
+                    database.ref(`Salas/${salaId}/presencas/${nomeAluno}`).once('value'),
+                    database.ref(`Salas/${salaId}/jogadores/${nomeAluno}`).once('value')
+                ]);
+                // Reconexão da mesma aba não deve ser barrada por uma presença antiga.
+                const chaveToken = `firequiz_sessao_${salaId}_${nomeAluno}`;
+                try {
+                    tokenAluno = sessionStorage.getItem(chaveToken);
+                    if (!tokenAluno) {
+                        tokenAluno = database.ref('identificadores-temporarios').push().key;
+                        sessionStorage.setItem(chaveToken, tokenAluno);
+                    }
+                } catch (_) {
+                    tokenAluno = database.ref('identificadores-temporarios').push().key;
+                }
+                const outrasSessoes = Object.values(presencaAtual.val() || {});
+                if (outrasSessoes.some(sessao => !sessao || sessao.token !== tokenAluno)) {
+                    await mostrarAlerta('Esse nome está conectado em outro dispositivo. Feche a outra aba ou use um apelido.', 'Nome já utilizado', '👥');
+                    return;
+                }
                 jogadorRef = database.ref(`Salas/${salaId}/jogadores/${nomeAluno}`);
-                jogadorRef.once('value').then(async snapJog => {
-                    const dadosExistentes = snapJog.val() || {};
-                    if (snapJog.exists() && jogadorEstaAtivo(dadosExistentes)) {
-                        await mostrarAlerta('Esse nome já está em uso por outro jogador ativo. Adicione um apelido ou número.', 'Nome já utilizado', '👥');
-                        document.getElementById('input-aluno-nome').value = '';
-                        jogadorRef = null;
-                        return;
+                if (!snapJog.exists()) {
+                    await jogadorRef.set({ acertos: 0, erros: 0 });
+                }
+                // Registrar presença antes de entrar no jogo; permite reentrada com pontuação mantida.
+                document.getElementById('tela-selecao').classList.add('oculto');
+                document.getElementById('tela-aluno').classList.remove('oculto');
+                iniciarPresencaAluno();
+                jogadorRef.on('value', monitor => {
+                    if (!monitor.exists()) {
+                        pararPresencaAluno();
+                        mostrarAlerta('Você foi removido desta partida pelo professor.', 'Participação encerrada', '🚪')
+                            .then(() => location.reload());
                     }
-
-                    const dadosEntrada = {
-                        online: true,
-                        lastSeen: firebase.database.ServerValue.TIMESTAMP
-                    };
-                    if (!snapJog.exists()) {
-                        dadosEntrada.acertos = 0;
-                        dadosEntrada.erros = 0;
-                    }
-                    await jogadorRef.update(dadosEntrada);
-
-                    document.getElementById('tela-selecao').classList.add('oculto');
-                    document.getElementById('tela-aluno').classList.remove('oculto');
-
-                    iniciarPresencaAluno();
-
-                    jogadorRef.on('value', monitor => {
-                        if (!monitor.exists() && gameState.fase !== 'setup') {
-                            pararPresencaAluno();
-                            mostrarAlerta('Você foi removido desta partida pelo professor.', 'Participação encerrada', '🚪')
-                                .then(() => location.reload());
-                        }
-                    });
-                    ouvirEstadoDaSala();
                 });
-            }).catch(erro => {
+                ouvirEstadoDaSala();
+            } catch (erro) {
                 console.error('Erro ao entrar na sala:', erro);
                 mostrarAlerta('Não foi possível conectar à sala. Verifique sua internet e tente novamente.', 'Erro de conexão', '📡');
-            });
+            }
         }
 
         // ---------------------------------------------------------
@@ -1283,7 +1475,7 @@
             perguntaAtualIndex = 0;
             tempoQuestaoSelecionado = parseInt(document.getElementById('tempo-questao').value) || 15;
             numeroRodadasPlacarSelecionado = parseInt(document.getElementById('numero-rodadas-placar').value) || 3;
-            gameState = { fase: "setup", paused: false, gameMode: modoSelecionado, ropePosition: 50, round: 1, vencedor: null, scoreGlobal: { certas: 0, erradas: 0 }, questionTimeLeft: tempoQuestaoSelecionado, participantsRound: {}, answersReceived: 0, roundResult: null, finalRanking: [], placar: { totalRodadas: numeroRodadasPlacarSelecionado, rodadaAtual: 1, perguntaNaRodada: 1, pontosTurma: 0, pontosMaquina: 0, rodadasTurma: 0, rodadasMaquina: 0, desempate: false, resultadosPerguntas: [], resultadosRodadas: [], aguardandoProxima: false }, timers: { freezeRestante: 0, feedbackRestante: 0 } };
+            gameState = { fase: "setup", paused: false, gameMode: modoSelecionado, ropePosition: 50, round: 1, partidaId: modoSolo ? null : database.ref(`Salas/${salaId}/respostas`).push().key, vencedor: null, scoreGlobal: { certas: 0, erradas: 0 }, questionTimeLeft: tempoQuestaoSelecionado, participantsRound: {}, answersReceived: 0, roundResult: null, finalRanking: [], placar: { totalRodadas: numeroRodadasPlacarSelecionado, rodadaAtual: 1, perguntaNaRodada: 1, pontosTurma: 0, pontosMaquina: 0, rodadasTurma: 0, rodadasMaquina: 0, desempate: false, resultadosPerguntas: [], resultadosRodadas: [], aguardandoProxima: false }, timers: { freezeRestante: 0, feedbackRestante: 0 } };
             
             if (modoSelecionado === 'time_attack') {
                 gameState.timeLeft = parseInt(document.getElementById('tempo-customizado').value) || 60;
@@ -1324,36 +1516,103 @@
                 document.getElementById('titulo-monitor').innerText = "Ranking ao vivo";
                 if (modoSelecionado === 'time_attack') document.getElementById('prof-timer-container').classList.remove('oculto');
                 
-                iniciarRodada();
+                await database.ref(`Salas/${salaId}/respostas`).remove();
+                await iniciarRodada();
                 if(engineInterval) clearInterval(engineInterval);
                 engineInterval = setInterval(gameEngineLoopFirebase, 100);
             }
         }
 
+        function refVotosDaRodada() {
+            return database.ref(`Salas/${salaId}/respostas/${gameState.partidaId}/${gameState.round}`);
+        }
+
+        function votoDaRodadaValido(voto, partidaId = gameState.partidaId, numero = gameState.round) {
+            return !!(voto && voto.partidaId === partidaId && voto.round === numero &&
+                Number.isInteger(voto.alternativa) && voto.alternativa >= 0 && voto.alternativa < 4);
+        }
+
         async function obterParticipantesOnline() {
-            const snap = await database.ref(`Salas/${salaId}/jogadores`).once('value');
+            const [jogadores, presencas] = await Promise.all([
+                database.ref(`Salas/${salaId}/jogadores`).once('value'),
+                database.ref(`Salas/${salaId}/presencas`).once('value')
+            ]);
+            const presentes = presencas.val() || {};
             const participantes = {};
-            snap.forEach(child => {
-                const dados = child.val();
-                if (dados && dados.online === true) participantes[child.key] = true;
+            jogadores.forEach(child => {
+                if (possuiSessaoAtiva(child.key, presentes)) participantes[child.key] = true;
             });
             return participantes;
         }
 
+        function sincronizarParticipantesRodada() {
+            if (papel !== 'professor' || isSingleplayer ||
+                !['leitura', 'respondendo'].includes(gameState.fase)) return;
+            let alterou = false;
+            const participantes = gameState.participantsRound || (gameState.participantsRound = {});
+            Object.keys(salaJogadores).forEach(nome => {
+                // Quem entrou durante a leitura participa normalmente; quem chegou
+                // com a votação em andamento só entra na contagem após votar.
+                if (gameState.fase === 'leitura' && possuiSessaoAtiva(nome) && !participantes[nome]) {
+                    participantes[nome] = true;
+                    alterou = true;
+                }
+            });
+            // Se o voto chegou antes do evento de presença, o aluno cadastrado também é admitido.
+            Object.entries(respostasRodada).forEach(([nome, voto]) => {
+                if (Object.prototype.hasOwnProperty.call(salaJogadores, nome) &&
+                    votoDaRodadaValido(voto) && !participantes[nome]) {
+                    participantes[nome] = true;
+                    alterou = true;
+                }
+            });
+            if (alterou) {
+                atualizarContagemRespostas();
+                database.ref(`Salas/${salaId}/state/participantsRound`).set(participantes)
+                    .catch(erro => console.error('Falha ao atualizar participantes:', erro));
+            }
+        }
+
+        function atualizarContagemRespostas() {
+            if (gameState.fase !== 'respondendo') return;
+            const quantidade = Object.keys(gameState.participantsRound || {}).filter(nome =>
+                votoDaRodadaValido(respostasRodada[nome])).length;
+            if (quantidade !== gameState.answersReceived) {
+                gameState.answersReceived = quantidade;
+                database.ref(`Salas/${salaId}/state/answersReceived`).set(quantidade)
+                    .catch(erro => console.error('Falha ao atualizar contagem:', erro));
+            }
+        }
+
+        function ouvirRespostasDaRodada() {
+            if (respostasRodadaRef && respostasRodadaListener) {
+                respostasRodadaRef.off('value', respostasRodadaListener);
+            }
+            respostasRodada = {};
+            respostasRodadaRef = refVotosDaRodada();
+            const partida = gameState.partidaId, numero = gameState.round;
+            respostasRodadaListener = snap => {
+                if (partida !== gameState.partidaId || numero !== gameState.round) return;
+                respostasRodada = snap.val() || {};
+                sincronizarParticipantesRodada();
+                atualizarContagemRespostas();
+            };
+            respostasRodadaRef.on('value', respostasRodadaListener);
+        }
+
         async function iniciarRodada() {
             gameState.currentQuestion = perguntasSelecionadas[perguntaAtualIndex];
-            gameState.fase = "leitura";
+            gameState.fase = 'leitura';
             gameState.timers.freezeRestante = TEMPO_FREEZE;
             gameState.questionTimeLeft = tempoQuestaoSelecionado;
             gameState.answersReceived = 0;
             gameState.roundResult = null;
             alternativaSelecionadaIndex = null;
             if (gameState.gameMode === 'placar') renderizarPlacarRodadas();
-            
             if (!isSingleplayer) {
                 gameState.participantsRound = await obterParticipantesOnline();
-                await database.ref(`Salas/${salaId}/respostas`).remove();
-                atualizarFirebaseState();
+                ouvirRespostasDaRodada();
+                await atualizarFirebaseState();
                 renderizarTelaProfessor();
             } else {
                 renderizarTelaSolo();
@@ -1493,67 +1752,106 @@
         }
 
         async function encerrarVotacaoECalcularRodada() {
-            if (gameState.fase !== "respondendo") return;
-            gameState.fase = "calculando";
-            atualizarFirebaseState();
-
-            const snap = await database.ref(`Salas/${salaId}/respostas`).once('value');
-            const respostas = snap.val() || {};
-            const participantes = Object.keys(gameState.participantsRound || {});
-            const totalParticipantes = participantes.length;
-            let acertos = 0;
-            let erros = 0;
-            const distribuicao = [0, 0, 0, 0];
-
-            for (const nome of participantes) {
-                const voto = respostas[nome];
-                const acertou = voto && voto.round === gameState.round && voto.alternativa === gameState.currentQuestion.correta;
-                if (voto && voto.round === gameState.round && Number.isInteger(voto.alternativa)) {
-                    distribuicao[voto.alternativa]++;
+            if (gameState.fase !== 'respondendo') return;
+            const partida = gameState.partidaId, rodada = gameState.round;
+            gameState.fase = 'calculando';
+            await atualizarFirebaseState();
+            // Pequena margem para gravações iniciadas antes do fim do cronômetro.
+            await new Promise(resolve => setTimeout(resolve, MARGEM_ENTREGA_RESPOSTAS_MS));
+            if (gameState.partidaId !== partida || gameState.round !== rodada || gameState.fase !== 'calculando') return;
+            const estadoAntesApuracao = {
+                scoreGlobal: JSON.parse(JSON.stringify(gameState.scoreGlobal)),
+                placar: JSON.parse(JSON.stringify(gameState.placar)),
+                ropePosition: gameState.ropePosition
+            };
+            try {
+                const [snapVotos, snapJogadores] = await Promise.all([
+                    refVotosDaRodada().once('value'),
+                    database.ref(`Salas/${salaId}/jogadores`).once('value')
+                ]);
+                const respostas = snapVotos.val() || {};
+                const participantesMap = { ...(gameState.participantsRound || {}) };
+                const confirmados = {};
+                for (const [nome, voto] of Object.entries(respostas)) {
+                    if (snapJogadores.child(nome).exists() && votoDaRodadaValido(voto, partida, rodada)) {
+                        // Nunca desconsiderar um envio válido só porque a presença chegou depois.
+                        participantesMap[nome] = true;
+                        confirmados[nome] = true;
+                    }
                 }
-                if (acertou) {
-                    acertos++;
-                    database.ref(`Salas/${salaId}/jogadores/${nome}/acertos`).transaction(c => (c || 0) + 1);
+                gameState.participantsRound = participantesMap;
+                const participantes = Object.keys(participantesMap);
+                const totalParticipantes = participantes.length;
+                const quantidadeValidada = Object.keys(confirmados).length;
+                gameState.answersReceived = quantidadeValidada;
+                let acertos = 0, erros = 0;
+                const distribuicao = [0, 0, 0, 0];
+                const operacoesPontos = [];
+                for (const nome of participantes) {
+                    const voto = confirmados[nome] ? respostas[nome] : null;
+                    const acertou = !!(voto && voto.alternativa === gameState.currentQuestion.correta);
+                    if (voto) distribuicao[voto.alternativa]++;
+                    if (acertou) acertos++; else erros++;
+                    const campo = acertou ? 'acertos' : 'erros';
+                    // Transação idempotente: a mesma rodada nunca soma duas vezes,
+                    // inclusive após reconexão e nova tentativa de apuração.
+                    const marcadorPontuacao = `${partida}_${rodada}`;
+                    operacoesPontos.push(database.ref(`Salas/${salaId}/jogadores/${nome}`)
+                        .transaction(registro => {
+                            const dados = registro || { acertos: 0, erros: 0 };
+                            if (dados.pontuacoesProcessadas?.[marcadorPontuacao]) return;
+                            dados.pontuacoesProcessadas = dados.pontuacoesProcessadas || {};
+                            dados.pontuacoesProcessadas[marcadorPontuacao] = true;
+                            dados[campo] = (Number(dados[campo]) || 0) + 1;
+                            return dados;
+                        }));
+                }
+                // O ranking somente é atualizado após confirmar todas as transações.
+                await Promise.all(operacoesPontos);
+                const percentual = totalParticipantes > 0 ? acertos / totalParticipantes : 0;
+                gameState.scoreGlobal.certas += acertos;
+                gameState.scoreGlobal.erradas += erros;
+                if (gameState.gameMode === 'placar') {
+                    const decisao = concluirPerguntaPlacar(percentual);
+                    gameState.roundResult = {
+                        participantes: totalParticipantes, respostas: quantidadeValidada,
+                        confirmados, acertos, erros, percentual: Math.round(percentual * 100), distribuicao,
+                        vencedorPergunta: decisao.vencedorPergunta,
+                        vencedorRodada: decisao.vencedorRodada || null,
+                        iniciouDesempate: !!decisao.iniciouDesempate,
+                        encerrouPartida: !!decisao.encerrouPartida,
+                        vencedorPartida: decisao.vencedorPartida || null
+                    };
+                    renderizarPlacarRodadas();
                 } else {
-                    erros++;
-                    database.ref(`Salas/${salaId}/jogadores/${nome}/erros`).transaction(e => (e || 0) + 1);
+                    const impulsoTurma = calcularImpulsoColetivo(percentual);
+                    const ataqueMaquina = forcaMaquinaPorRodada[dificuldadeSelecionada];
+                    const movimentoFinal = impulsoTurma > 0 ? Math.max(1, impulsoTurma - ataqueMaquina) : impulsoTurma - ataqueMaquina;
+                    gameState.ropePosition = Math.max(0, Math.min(100, gameState.ropePosition + movimentoFinal));
+                    gameState.roundResult = {
+                        participantes: totalParticipantes, respostas: quantidadeValidada,
+                        confirmados, acertos, erros, percentual: Math.round(percentual * 100),
+                        impulsoTurma, ataqueMaquina, movimentoFinal, distribuicao
+                    };
+                    const vencedorPorContato = verificarFimPorContato();
+                    if (vencedorPorContato) return finalizarJogo(vencedorPorContato);
                 }
+                gameState.fase = 'feedback';
+                gameState.timers.feedbackRestante = TEMPO_FEEDBACK;
+                await atualizarFirebaseState();
+                renderizarTelaProfessor();
+            } catch (erro) {
+                console.error('Não foi possível apurar a rodada:', erro);
+                gameState.scoreGlobal = estadoAntesApuracao.scoreGlobal;
+                gameState.placar = estadoAntesApuracao.placar;
+                gameState.ropePosition = estadoAntesApuracao.ropePosition;
+                gameState.roundResult = null;
+                gameState.fase = 'respondendo';
+                gameState.questionTimeLeft = 0; // Nova tentativa após retomar a partida.
+                gameState.paused = true;
+                await atualizarFirebaseState().catch(console.error);
+                mostrarAlerta('A apuração falhou ou a conexão caiu. A partida foi pausada. Verifique a conexão e use Retomar Partida para tentar novamente, sem duplicar pontos já processados.', 'Falha na apuração', '⚠️');
             }
-
-            const percentual = totalParticipantes > 0 ? acertos / totalParticipantes : 0;
-            gameState.scoreGlobal.certas += acertos;
-            gameState.scoreGlobal.erradas += erros;
-
-            if (gameState.gameMode === 'placar') {
-                const decisao = concluirPerguntaPlacar(percentual);
-                gameState.roundResult = {
-                    participantes: totalParticipantes, respostas: Object.keys(respostas).length,
-                    acertos, erros, percentual: Math.round(percentual * 100), distribuicao,
-                    vencedorPergunta: decisao.vencedorPergunta,
-                    vencedorRodada: decisao.vencedorRodada || null,
-                    iniciouDesempate: !!decisao.iniciouDesempate,
-                    encerrouPartida: !!decisao.encerrouPartida,
-                    vencedorPartida: decisao.vencedorPartida || null
-                };
-                renderizarPlacarRodadas();
-            } else {
-                const impulsoTurma = calcularImpulsoColetivo(percentual);
-                const ataqueMaquina = forcaMaquinaPorRodada[dificuldadeSelecionada];
-                let movimentoFinal = impulsoTurma > 0 ? Math.max(1, impulsoTurma - ataqueMaquina) : impulsoTurma - ataqueMaquina;
-                gameState.ropePosition = Math.max(0, Math.min(100, gameState.ropePosition + movimentoFinal));
-                gameState.roundResult = {
-                    participantes: totalParticipantes, respostas: Object.keys(respostas).length,
-                    acertos, erros, percentual: Math.round(percentual * 100),
-                    impulsoTurma, ataqueMaquina, movimentoFinal, distribuicao
-                };
-                const vencedorPorContato = verificarFimPorContato();
-                if (vencedorPorContato) return finalizarJogo(vencedorPorContato);
-            }
-
-            gameState.fase = "feedback";
-            gameState.timers.feedbackRestante = TEMPO_FEEDBACK;
-            atualizarFirebaseState();
-            renderizarTelaProfessor();
         }
 
         function mostrarFeedbackFlutuante(acertou) {
@@ -1601,6 +1899,8 @@
                 }
 
                 const totalParticipantes = Object.keys(gameState.participantsRound || {}).length;
+                // Contagem filtrada por partida, rodada e participantes elegíveis.
+                // Aguarda o envio efetivo no servidor, nunca apenas o clique local.
                 if (totalParticipantes > 0 && gameState.answersReceived >= totalParticipantes) {
                     encerrarVotacaoECalcularRodada();
                     return;
@@ -1761,6 +2061,7 @@
                 currentQuestion: null,
                 scoreGlobal: { certas: 0, erradas: 0 },
                 questionTimeLeft: tempoQuestaoSelecionado,
+                partidaId: null,
                 participantsRound: {},
                 answersReceived: 0,
                 roundResult: null,
@@ -1769,6 +2070,8 @@
                 timers: { freezeRestante: 0, feedbackRestante: 0 }
             };
 
+            if (respostasRodadaRef && respostasRodadaListener) respostasRodadaRef.off('value', respostasRodadaListener);
+            respostasRodadaRef = null; respostasRodadaListener = null; respostasRodada = {};
             await database.ref(`Salas/${salaId}/respostas`).remove();
             await database.ref(`Salas/${salaId}/state`).set(gameState);
 
@@ -1783,6 +2086,7 @@
             document.getElementById('placar-final-professor').innerHTML = '';
             document.getElementById('prof-status-coletivo').innerText = "Aguardando a rodada...";
             document.getElementById('marcador').style.left = '50%';
+            atualizarVisaoProfessor();
         }
 
         function escaparHtml(texto) {
@@ -1891,11 +2195,11 @@
             document.body.classList.add(vencedor === 'alunos' ? 'resultado-vitoria' : 'resultado-derrota');
 
             if (!isSingleplayer) {
-                // Aguarda as transações de pontuação concluírem antes de montar o ranking.
-                await new Promise(resolve => setTimeout(resolve, 300));
+                // As transações de pontuação foram aguardadas na apuração de cada rodada.
                 gameState.finalRanking = await montarRankingFinal();
                 await atualizarFirebaseState();
                 exibirPlacarFinalProfessor(gameState.finalRanking, vencedor);
+                atualizarVisaoProfessor();
             } else {
                 exibirResultadoFinalSolo(vencedor);
             }
@@ -1988,68 +2292,52 @@
         function atualizarFirebaseState() { return database.ref(`Salas/${salaId}/state`).set(gameState); }
 
         function ouvirLobbyETabelaRanking() {
-            database.ref(`Salas/${salaId}/jogadores`).on('value', snap => {
-                const painelRanking = document.getElementById('lista-ranking-alunos');
+            const painelRanking = document.getElementById('lista-ranking-alunos');
+            function redesenharRanking() {
                 painelRanking.innerHTML = '';
-                if (!snap.exists()) {
-                    painelRanking.innerHTML = 'Aguardando conexões...';
+                const nomes = Object.keys(salaJogadores);
+                if (!nomes.length) {
+                    painelRanking.textContent = 'Aguardando conexões...';
                     return;
                 }
-
-                const jogadoresOrdenados = [];
-                snap.forEach(child => {
-                    const dados = child.val() || {};
-                    const acertos = dados.acertos || 0;
-                    const erros = dados.erros || 0;
+                const jogadoresOrdenados = nomes.map(nome => {
+                    const dados = salaJogadores[nome] || {};
+                    const acertos = dados.acertos || 0, erros = dados.erros || 0;
                     const total = acertos + erros;
-                    jogadoresOrdenados.push({
-                        nome: child.key,
-                        online: jogadorEstaAtivo(dados),
-                        acertos,
-                        erros,
-                        aproveitamento: total > 0 ? Math.round((acertos / total) * 100) : 0
-                    });
+                    return {
+                        nome, online: possuiSessaoAtiva(nome), acertos, erros,
+                        aproveitamento: total ? Math.round(acertos / total * 100) : 0
+                    };
                 });
-
                 jogadoresOrdenados.sort((a, b) =>
-                    b.acertos - a.acertos ||
-                    a.erros - b.erros ||
-                    b.aproveitamento - a.aproveitamento ||
-                    a.nome.localeCompare(b.nome, 'pt-BR')
-                );
-
+                    b.acertos - a.acertos || a.erros - b.erros ||
+                    b.aproveitamento - a.aproveitamento || a.nome.localeCompare(b.nome, 'pt-BR'));
                 jogadoresOrdenados.forEach((jogador, indice) => {
-                    const statusClass = jogador.online ? '' : 'offline';
-                    const statusTxt = jogador.online ? '🟢' : '🔴';
-                    const posicao = indice === 0 ? '🥇' : indice === 1 ? '🥈' : indice === 2 ? '🥉' : `${indice + 1}º`;
-                    painelRanking.innerHTML += `
-                        <div class="ranking-item ${statusClass} ${indice === 0 ? 'ranking-top-1' : indice === 1 ? 'ranking-top-2' : indice === 2 ? 'ranking-top-3' : ''}">
-                            <span>${posicao}</span>
-                            <span>${escaparHtml(jogador.nome)}</span>
-                            <span>${statusTxt}</span>
-                            <span>${jogador.acertos}</span>
-                            <span>${jogador.erros}</span>
-                            <button class="btn-expulsar" onclick="expulsarAluno('${jogador.nome.replace(/'/g, "\'")}')">X</button>
-                        </div>`;
+                    const linha = document.createElement('div');
+                    linha.className = `ranking-item ${jogador.online ? '' : 'offline'} ${indice === 0 ? 'ranking-top-1' : indice === 1 ? 'ranking-top-2' : indice === 2 ? 'ranking-top-3' : ''}`;
+                    [indice === 0 ? '🥇' : indice === 1 ? '🥈' : indice === 2 ? '🥉' : `${indice + 1}º`,
+                        jogador.nome, jogador.online ? '🟢' : '🔴', String(jogador.acertos), String(jogador.erros)]
+                        .forEach(texto => { const span = document.createElement('span'); span.textContent = texto; linha.appendChild(span); });
+                    const expulsar = document.createElement('button');
+                    expulsar.className = 'btn-expulsar'; expulsar.textContent = 'X';
+                    expulsar.onclick = () => expulsarAluno(jogador.nome);
+                    linha.appendChild(expulsar);
+                    painelRanking.appendChild(linha);
                 });
-
-                document.getElementById('titulo-monitor').innerText = gameState.fase === 'setup'
-                    ? 'Ranking da sala'
-                    : 'Ranking ao vivo';
+                document.getElementById('titulo-monitor').textContent = gameState.fase === 'setup'
+                    ? 'Ranking da sala' : 'Ranking ao vivo';
+            }
+            database.ref(`Salas/${salaId}/jogadores`).on('value', snap => {
+                salaJogadores = snap.val() || {};
+                redesenharRanking();
+                sincronizarParticipantesRodada();
             });
-
-            database.ref(`Salas/${salaId}/respostas`).on('value', snap => {
-                if (gameState.fase !== 'respondendo') return;
-                let quantidade = 0;
-                snap.forEach(child => {
-                    const voto = child.val();
-                    if (voto && voto.round === gameState.round) quantidade++;
-                });
-                if (quantidade !== gameState.answersReceived) {
-                    gameState.answersReceived = quantidade;
-                    atualizarFirebaseState();
-                }
+            database.ref(`Salas/${salaId}/presencas`).on('value', snap => {
+                salaPresencas = snap.val() || {};
+                redesenharRanking();
+                sincronizarParticipantesRodada();
             });
+            // O listener de respostas é vinculado à rodada em iniciarRodada().
         }
 
         function atualizarAlertasVisuais(posicao, tempoRestante = null) {
@@ -2142,6 +2430,7 @@
                     resultado.classList.remove('oculto');
                 }
             }
+            atualizarVisaoProfessor();
         }
 
         // TELA SINGLEPLAYER (MISTURA DE UI SEM SPOILERS)
@@ -2267,7 +2556,11 @@
                     statusColetivo.classList.remove('oculto');
                     resultado.classList.add('oculto');
 
-                    if (document.getElementById('pergunta-texto').innerText !== estado.currentQuestion.q) {
+                    const idQuestao = String(estado.partidaId || '') + '/' + String(estado.round);
+                    if (ultimoIdQuestaoAluno !== idQuestao) {
+                        ultimoIdQuestaoAluno = idQuestao;
+                        envioRespostaAluno = null;
+                        informarEnvioAluno('', '');
                         alternativaSelecionadaIndex = null;
                         document.getElementById('pergunta-texto').innerText = estado.currentQuestion.q;
                         const lista = document.getElementById('lista-opcoes'); lista.innerHTML = '';
@@ -2286,11 +2579,16 @@
                     } else {
                         bFreeze.classList.add('oculto');
                         statusColetivo.innerText = `Respostas recebidas: ${estado.answersReceived || 0}/${total} • ${Math.ceil(estado.questionTimeLeft || 0)}s`;
-                        if (alternativaSelecionadaIndex === null) {
+                        if (envioRespostaAluno?.idQuestao === idQuestao) {
+                            status.innerText = envioRespostaAluno.situacao === 'confirmado'
+                                ? 'Resposta recebida pelo servidor. Aguardando apuração...'
+                                : 'Enviando resposta ao servidor...';
+                            document.querySelectorAll('#lista-opcoes .btn-opcao').forEach(b => b.disabled = true);
+                        } else if (alternativaSelecionadaIndex === null) {
                             status.innerText = modoPlacar ? "Escolha sua resposta e ajude a turma a pontuar!" : "Escolha sua resposta e empurre o fogo! 🔥";
                             document.querySelectorAll('#lista-opcoes .btn-opcao').forEach(b => b.disabled = false);
                         } else {
-                            status.innerText = "Resposta registrada. Aguardando a turma...";
+                            status.innerText = 'Alternativa selecionada. Confirme para enviar.';
                         }
                     }
                 } else if (estado.fase === "calculando") {
@@ -2315,6 +2613,12 @@
                     if (estado.roundResult) {
                         const r = estado.roundResult;
                         statusColetivo.innerText = `Aproveitamento da turma: ${r.percentual}%`;
+                        if (envioRespostaAluno?.idQuestao === idQuestao && envioRespostaAluno.situacao === 'confirmado') {
+                            informarEnvioAluno(r.confirmados?.[nomeAluno]
+                                ? '✓ Sua resposta foi contabilizada nesta rodada.'
+                                : 'Atenção: sua resposta não entrou na apuração desta rodada.',
+                                r.confirmados?.[nomeAluno] ? 'sucesso' : 'erro');
+                        }
                         if (estado.gameMode === 'placar') {
                             const textoPonto = r.vencedorPergunta === 'alunos' ? 'Ponto para a turma' : r.vencedorPergunta === 'maquina' ? 'Ponto para a máquina' : 'Empate na pergunta';
                             const extra = r.iniciouDesempate ? '<br><strong>⚡ Rodada empatada: vem aí o desempate.</strong>' : r.vencedorRodada ? `<br><strong>${r.vencedorRodada === 'alunos' ? '🎉 A turma' : '🤖 A máquina'} venceu a rodada.</strong>` : '';
@@ -2361,26 +2665,56 @@
             });
         }
 
+        function informarEnvioAluno(mensagem, classe = '') {
+            const campo = document.getElementById('estado-envio-aluno');
+            if (!campo) return;
+            campo.textContent = mensagem;
+            campo.className = mensagem ? 'estado-envio ' + classe : 'estado-envio oculto';
+        }
+
         function selecionarAlternativa(index) {
-            if (gameState.fase !== "respondendo") return;
+            if (gameState.fase !== 'respondendo' || envioRespostaAluno) return;
             alternativaSelecionadaIndex = index;
             document.querySelectorAll('#lista-opcoes .btn-opcao').forEach(btn => btn.classList.remove('selecionada'));
             document.getElementById(`aluno-opt-${index}`).classList.add('selecionada');
             document.getElementById('btn-confirmar-puxao').classList.remove('oculto');
         }
 
-        function confirmarEEnviar() {
-            if (alternativaSelecionadaIndex === null || gameState.fase !== 'respondendo') return;
+        async function confirmarEEnviar() {
+            if (alternativaSelecionadaIndex === null || gameState.fase !== 'respondendo' || envioRespostaAluno) return;
+            const partida = gameState.partidaId, rodada = gameState.round;
+            const idQuestao = String(partida || '') + '/' + String(rodada);
+            const alternativa = alternativaSelecionadaIndex;
+            envioRespostaAluno = { idQuestao, situacao: 'enviando', alternativa };
             document.getElementById('btn-confirmar-puxao').classList.add('oculto');
             document.querySelectorAll('#lista-opcoes .btn-opcao').forEach(b => b.disabled = true);
-            document.getElementById('status-aluno').innerText = "Resposta registrada. Aguardando a turma...";
-
-            database.ref(`Salas/${salaId}/respostas/${nomeAluno}`).set({
-                nome: nomeAluno,
-                alternativa: alternativaSelecionadaIndex,
-                round: gameState.round,
-                enviadoEm: firebase.database.ServerValue.TIMESTAMP
-            });
+            document.getElementById('status-aluno').textContent = 'Enviando resposta ao servidor...';
+            informarEnvioAluno('Aguardando confirmação do servidor. Se a internet cair, o envio poderá ficar pendente.');
+            try {
+                await database.ref(`Salas/${salaId}/respostas/${partida}/${rodada}/${nomeAluno}`).set({
+                    nome: nomeAluno, alternativa, partidaId: partida, round: rodada,
+                    enviadoEm: firebase.database.ServerValue.TIMESTAMP
+                });
+                if (!envioRespostaAluno || envioRespostaAluno.idQuestao !== idQuestao) return;
+                envioRespostaAluno.situacao = 'confirmado';
+                if (gameState.partidaId === partida && gameState.round === rodada &&
+                    ['leitura','respondendo'].includes(gameState.fase)) {
+                    informarEnvioAluno('✓ Resposta recebida pelo servidor. Aguardando validação na apuração.', 'sucesso');
+                    document.getElementById('status-aluno').textContent = 'Resposta recebida pelo servidor. Aguardando apuração...';
+                } else {
+                    informarEnvioAluno('Resposta entregue ao servidor após o fim da votação. A confirmação da contagem aparece no resultado.', 'erro');
+                }
+            } catch (erro) {
+                console.error('Falha no envio da resposta:', erro);
+                if (!envioRespostaAluno || envioRespostaAluno.idQuestao !== idQuestao) return;
+                envioRespostaAluno = null;
+                informarEnvioAluno('✕ O servidor não confirmou a resposta. Verifique sua conexão e tente novamente.', 'erro');
+                if (gameState.partidaId === partida && gameState.round === rodada && gameState.fase === 'respondendo') {
+                    document.getElementById('btn-confirmar-puxao').classList.remove('oculto');
+                    document.querySelectorAll('#lista-opcoes .btn-opcao').forEach(b => b.disabled = false);
+                    document.getElementById('status-aluno').textContent = 'Falha no envio. Tente confirmar novamente.';
+                }
+            }
         }
     </script>
 </body>
