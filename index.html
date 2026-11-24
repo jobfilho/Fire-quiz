@@ -399,7 +399,7 @@
             #painel-professor .ranking-item { min-width:420px; }
         }
 
-        /* Fire Quiz 08.6 — apresentação da partida e monitoramento com hierarquia visual */
+        /* Fire Quiz 11.1.26 — apresentação da partida e monitoramento com hierarquia visual */
         #painel-professor.monitoramento-ativo.card { max-width:1500px; padding:clamp(16px,2vw,30px); }
         #painel-professor.monitoramento-ativo > h2 { margin:0; font-size:clamp(18px,1.65vw,25px); }
         #painel-professor.monitoramento-ativo .seletor-visao-professor { margin:10px 0 15px; padding:8px; }
@@ -469,6 +469,23 @@
         .apresentacao-alternativa {min-height:clamp(83px,13.4vh,136px);border-color:#aebcd2;background:#f8fbff;box-shadow:0 8px 20px rgba(0,0,0,.18);padding:clamp(12px,1.4vw,20px);}
         .apresentacao-letra {background:#dfe8f5;color:#19365d;width:clamp(42px,3.4vw,53px);height:clamp(42px,3.4vw,53px);border-radius:12px;font-size:clamp(21px,1.8vw,27px);}
         .apresentacao-texto {font-size:clamp(18px,1.75vw,29px);line-height:1.22;}
+        /* Resultado revelado somente após o encerramento da votação. */
+        .apresentacao-alternativa.resposta-correta {
+            background:linear-gradient(125deg,#eaffef,#d2f5de);border:3px solid #34b76b;
+            box-shadow:0 0 0 3px rgba(50,211,127,.17),0 10px 25px rgba(5,36,18,.24);
+        }
+        .apresentacao-alternativa.resposta-correta .apresentacao-letra {background:#197545;color:#fff;}
+        .apresentacao-alternativa.resposta-correta .apresentacao-texto {color:#11532f;font-weight:900;}
+        .apresentacao-alternativa.resposta-correta::after {
+            content:'✓ CORRETA';margin-left:auto;align-self:center;flex-shrink:0;
+            font-size:clamp(11px,1vw,15px);font-weight:950;letter-spacing:.04em;
+            color:#16663e;background:#baf0ca;border:1px solid #69c78b;padding:7px 10px;border-radius:9px;
+        }
+        .apresentacao-gabarito {display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;
+            padding:9px 16px;background:rgba(31,143,82,.22);border:1px solid #5ee09b;border-radius:12px;
+            color:#e8fff1;text-align:center;font-size:clamp(14px,1.2vw,19px);line-height:1.3;}
+        .apresentacao-gabarito-selo {font-weight:950;letter-spacing:.07em;color:#8df0b7;white-space:nowrap;}
+        .apresentacao-gabarito strong {font-weight:800;overflow-wrap:anywhere;}
         .apresentacao-painel-metricas {display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:9px;}
         .apresentacao-metrica {border:1px solid #415979;background:rgba(255,255,255,.075);border-radius:13px;padding:13px 8px;text-align:center;min-width:0;}
         .apresentacao-metrica span {display:block;font-size:clamp(9px,.84vw,12px);font-weight:850;letter-spacing:.07em;color:#b5c9de;white-space:normal;}
@@ -776,7 +793,7 @@
     </div>
 
 
-    <!-- Telão do professor: progresso coletivo e placar, sem nomes nem gabarito das alternativas. -->
+    <!-- Telão do professor: gabarito oculto até o encerramento da votação. -->
     <section id="tela-apresentacao-professor" class="tela-apresentacao-professor oculto" aria-label="Apresentação da partida" aria-hidden="true">
         <div class="conteudo-apresentacao-professor">
             <header class="apresentacao-cabecalho">
@@ -793,6 +810,10 @@
             <main class="apresentacao-questao-area">
                 <h2 id="apresentacao-pergunta"></h2>
                 <div id="apresentacao-alternativas" class="apresentacao-alternativas" aria-label="Alternativas da questão"></div>
+                <div id="apresentacao-gabarito" class="apresentacao-gabarito oculto" role="status" aria-live="polite">
+                    <span class="apresentacao-gabarito-selo">✓ RESPOSTA CORRETA</span>
+                    <strong id="apresentacao-gabarito-texto"></strong>
+                </div>
             </main>
             <section class="apresentacao-painel-metricas" aria-label="Indicadores coletivos da rodada" aria-live="polite">
                 <div class="apresentacao-metrica"><span>ACERTOS</span><strong id="apresentacao-acertos">0</strong></div>
@@ -879,7 +900,7 @@
     <div id="feedback-flutuante" class="feedback-flutuante" aria-live="assertive"></div>
 
     <footer style="text-align: center; padding: 20px; color: #666; font-weight: bold; font-size: 14px; margin-top: 20px; line-height: 1.6;">
-        <div>Versão atual: 08.6</div>
+        <div>Versão atual: 11.1.26</div>
         <div>Desenvolvido pelo Prof. Job Inácio</div>
     </footer>
 
@@ -1288,7 +1309,7 @@
         let conexaoFirebaseAtiva = false, tokenAluno = null;
         let salaJogadores = {}, salaPresencas = {}, respostasRodada = {};
         let respostasRodadaRef = null, respostasRodadaListener = null;
-        let ultimoIdQuestaoAluno = null, envioRespostaAluno = null;
+        let ultimoIdQuestaoAluno = null, envioRespostaAluno = null, ultimaPartidaAluno = null;
         const MARGEM_ENTREGA_RESPOSTAS_MS = 850;
         let perguntasSelecionadas = [], perguntaAtualIndex = 0, alternativaSelecionadaIndex = null;
         let dificuldadeSelecionada = 'medium', modoSelecionado = 'survivor', tempoSelecionado = 60, tempoQuestaoSelecionado = 15, numeroRodadasPlacarSelecionado = 3;
@@ -1296,7 +1317,7 @@
         let isSingleplayer = false;
         let soloAcertos = 0, soloErros = 0;
         let feedbackFlutuanteTimer = null;
-        let ultimaRodadaFeedbackAluno = null;
+        let ultimoFeedbackQuestaoAluno = null;
         let ultimaOrdemPerguntas = ''; // Evita repetir exatamente a sequência da partida anterior
         
         const TEMPO_FREEZE = 2500;
@@ -1369,7 +1390,7 @@
 
 
         // VISUALIZAÇÃO DO PROFESSOR — independente do modo de jogo.
-        // O modo Apresentação não lê nem renderiza a propriedade "correta".
+        // O modo Apresentação revela o gabarito somente quando a votação se encerra.
         function selecionarVisaoProfessor(modo) {
             if (papel !== 'professor' || isSingleplayer) return;
             if (modo !== 'monitoramento' && modo !== 'apresentacao') return;
@@ -1465,12 +1486,16 @@
             const indicador = document.getElementById('apresentacao-indicador');
             const pergunta = document.getElementById('apresentacao-pergunta');
             const alternativas = document.getElementById('apresentacao-alternativas');
+            const painelGabarito = document.getElementById('apresentacao-gabarito');
+            const textoGabarito = document.getElementById('apresentacao-gabarito-texto');
             atualizarIndicadoresApresentacao();
             if (gameState.fase === 'ended') {
                 indicador.textContent = 'FIM DA PARTIDA';
                 pergunta.textContent = gameState.vencedor === 'alunos' ? 'A turma venceu!' : 'A máquina venceu!';
                 alternativas.replaceChildren();
                 alternativas.dataset.round = '';
+                painelGabarito.classList.add('oculto');
+                textoGabarito.textContent = '';
                 return;
             }
             const questao = gameState.currentQuestion;
@@ -1479,28 +1504,42 @@
                 pergunta.textContent = 'Aguardando questão...';
                 alternativas.replaceChildren();
                 alternativas.dataset.round = '';
+                painelGabarito.classList.add('oculto');
+                textoGabarito.textContent = '';
                 return;
             }
             indicador.textContent = gameState.gameMode === 'placar'
                 ? `RODADA ${gameState.placar?.rodadaAtual || 1} · PERGUNTA ${gameState.placar?.perguntaNaRodada || 1}`
                 : `QUESTÃO ${gameState.round || 1}`;
             pergunta.textContent = questao.q;
-            // Os cartões são estáticos durante a questão, os indicadores mudam em tempo real.
+            // Os cartões permanecem estáticos; o destaque muda sem reconstruí-los.
             const chave = (gameState.partidaId || '') + '|' + gameState.round + '|' + questao.q + '|' + questao.alt.join('|');
-            if (alternativas.dataset.round === chave) return;
-            alternativas.dataset.round = chave;
-            alternativas.replaceChildren();
-            questao.alt.forEach((texto, indice) => {
-                const cartao = document.createElement('div');
-                cartao.className = 'apresentacao-alternativa';
-                const letra = document.createElement('span');
-                letra.className = 'apresentacao-letra';
-                letra.textContent = 'ABCD'[indice] || '';
-                const descricao = document.createElement('span');
-                descricao.className = 'apresentacao-texto';
-                descricao.textContent = texto;
-                cartao.append(letra, descricao);
-                alternativas.appendChild(cartao);
+            if (alternativas.dataset.round !== chave) {
+                alternativas.dataset.round = chave;
+                alternativas.replaceChildren();
+                questao.alt.forEach((texto, indice) => {
+                    const cartao = document.createElement('div');
+                    cartao.className = 'apresentacao-alternativa';
+                    const letra = document.createElement('span');
+                    letra.className = 'apresentacao-letra';
+                    letra.textContent = 'ABCD'[indice] || '';
+                    const descricao = document.createElement('span');
+                    descricao.className = 'apresentacao-texto';
+                    descricao.textContent = texto;
+                    cartao.append(letra, descricao);
+                    alternativas.appendChild(cartao);
+                });
+            }
+            // No fim do tempo (ou quando todos votam), a fase muda para
+            // "calculando". Nunca exibir o gabarito durante leitura/votação.
+            const votacaoEncerrada = ['calculando','feedback','intervalo_rodada'].includes(gameState.fase);
+            const correta = Number(questao.correta);
+            const revelar = votacaoEncerrada && Number.isInteger(correta) &&
+                correta >= 0 && correta < questao.alt.length && correta < 4;
+            painelGabarito.classList.toggle('oculto', !revelar);
+            textoGabarito.textContent = revelar ? `${'ABCD'[correta]} — ${questao.alt[correta]}` : '';
+            alternativas.querySelectorAll('.apresentacao-alternativa').forEach((cartao, indice) => {
+                cartao.classList.toggle('resposta-correta', revelar && indice === correta);
             });
         }
 
@@ -2935,6 +2974,34 @@
                 const bFreeze = document.getElementById('container-freeze');
                 const statusColetivo = document.getElementById('aluno-status-coletivo');
                 const resultado = document.getElementById('aluno-resultado-coletivo');
+                const placarFinalAluno = document.getElementById('placar-final-aluno');
+                const idQuestao = String(estado.partidaId || '') + '/' + String(estado.round);
+
+                // A partida seguinte pode começar direto em "leitura" sem que o
+                // Firebase entregue o estado transitório "setup". Por isso o
+                // placar final deve ser ocultado em TODAS as fases não finais.
+                if (estado.fase !== 'ended') {
+                    placarFinalAluno.classList.add('oculto');
+                    if (placarFinalAluno.hasChildNodes()) placarFinalAluno.replaceChildren();
+                }
+
+                // Ao trocar o ID da partida, limpar também os estados LOCAIS
+                // da anterior, inclusive quando o aluno permanece na mesma sala.
+                if ((estado.partidaId || null) !== ultimaPartidaAluno) {
+                    ultimaPartidaAluno = estado.partidaId || null;
+                    ultimoIdQuestaoAluno = null;
+                    ultimoFeedbackQuestaoAluno = null;
+                    envioRespostaAluno = null;
+                    alternativaSelecionadaIndex = null;
+                    informarEnvioAluno('');
+                    resultado.classList.add('oculto');
+                    resultado.replaceChildren();
+                    document.getElementById('btn-confirmar-puxao').classList.add('oculto');
+                    document.getElementById('container-freeze').classList.add('oculto');
+                    document.getElementById('feedback-flutuante')?.classList.remove('visivel');
+                    clearTimeout(feedbackFlutuanteTimer);
+                    document.body.classList.remove('flash-acerto', 'flash-erro');
+                }
                 const total = Object.keys(estado.participantsRound || {}).length;
                 const modoPlacar = estado.gameMode === 'placar';
                 document.getElementById('tela-aluno').classList.toggle('modo-placar-ativo', modoPlacar);
@@ -2958,8 +3025,6 @@
                 }
 
                 if (estado.fase === "setup") {
-                    document.getElementById('placar-final-aluno').classList.add('oculto');
-                    document.getElementById('placar-final-aluno').innerHTML = '';
                     status.innerText = "Aguardando o professor iniciar a rodada...";
                     containerQuiz.classList.add('oculto');
                     cabecalho.style.visibility = "hidden"; trilho.style.visibility = "hidden";
@@ -2969,7 +3034,6 @@
                     statusColetivo.classList.remove('oculto');
                     resultado.classList.add('oculto');
 
-                    const idQuestao = String(estado.partidaId || '') + '/' + String(estado.round);
                     if (ultimoIdQuestaoAluno !== idQuestao) {
                         ultimoIdQuestaoAluno = idQuestao;
                         envioRespostaAluno = null;
@@ -3019,9 +3083,9 @@
                         const btnE = document.getElementById(`aluno-opt-${alternativaSelecionadaIndex}`);
                         if (btnE) btnE.classList.add('errada');
                     }
-                    if (alternativaSelecionadaIndex !== null && ultimaRodadaFeedbackAluno !== estado.round) {
+                    if (alternativaSelecionadaIndex !== null && ultimoFeedbackQuestaoAluno !== idQuestao) {
                         mostrarFeedbackFlutuante(alternativaSelecionadaIndex === estado.currentQuestion.correta);
-                        ultimaRodadaFeedbackAluno = estado.round;
+                        ultimoFeedbackQuestaoAluno = idQuestao;
                     }
                     if (estado.roundResult) {
                         const r = estado.roundResult;
@@ -3054,8 +3118,7 @@
                     containerQuiz.classList.add('oculto');
                     cabecalho.style.visibility = "hidden";
                     trilho.style.visibility = "hidden";
-                    const placarFinalAluno = document.getElementById('placar-final-aluno');
-                    if (placarFinalAluno) placarFinalAluno.classList.add('oculto');
+                    placarFinalAluno.classList.add('oculto');
                     mostrarAlerta(estado.closedMessage || 'A sala foi encerrada pelo professor.', 'Sala encerrada', '🏁')
                         .then(() => location.reload());
                 } else if (estado.fase === "ended") {
@@ -3063,7 +3126,6 @@
                     containerQuiz.classList.add('oculto');
                     cabecalho.style.visibility = "hidden";
                     trilho.style.visibility = "hidden";
-                    const placarFinalAluno = document.getElementById('placar-final-aluno');
                     placarFinalAluno.innerHTML = criarHtmlPlacarFinalAluno(estado.finalRanking || [], estado.vencedor, nomeAluno);
                     placarFinalAluno.classList.remove('oculto');
                 }
