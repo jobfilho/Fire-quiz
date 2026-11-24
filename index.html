@@ -264,7 +264,7 @@
         .ajuda-card h3 { margin:0 0 8px; color:#263859; }
         @media(max-width:650px){ .ajuda-grid{grid-template-columns:1fr;} }
     
-        /* Fire Quiz 08.4 — duas visualizações independentes para o professor */
+        /* Fire Quiz 08.5 — duas visualizações independentes para o professor */
         .seletor-visao-professor {
             display:flex; gap:10px; align-items:center; justify-content:center;
             flex-wrap:wrap; margin:12px 0 24px; padding:12px;
@@ -349,6 +349,55 @@
             font-size:16px; font-weight:700;}
         .estado-envio.sucesso {background:#e7f7ed; border-color:#85c39d; color:#155c35;}
         .estado-envio.erro {background:#ffeded; border-color:#eba5a5; color:#8f1a1a;}
+
+        /* Fire Quiz 08.5 — painel de monitoramento exclusivo do professor */
+        #painel-professor.card { max-width: 1320px; }
+        #painel-professor .painel-grid { grid-template-columns: minmax(0, 1.65fr) minmax(365px, 1fr); align-items:start; gap:20px; }
+        #painel-professor .painel-grid > div { min-width:0; }
+        .monitor-fogo-cabecalho { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:12px; padding:0 2px; font-size:14px; color:#263859; }
+        .monitor-fogo-cabecalho span { font-weight:800; color:#b44c15; }
+        .monitor-painel-rodada { background:#f8faff; border:2px solid #dfe7f2; border-radius:16px; padding:16px; margin:16px 0; box-shadow:0 6px 15px rgba(18,38,65,.05); }
+        .monitor-topo { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:12px; }
+        .monitor-topo strong { font-size:17px; color:#263859; }
+        .monitor-estado { font-size:12px; padding:6px 10px; background:#e7edf8; color:#344c76; border-radius:50px; font-weight:800; }
+        .monitor-metricas { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:9px; }
+        .monitor-metrica { border:1px solid #dce5ef; background:#fff; border-radius:12px; padding:11px 7px; text-align:center; }
+        .monitor-metrica .monitor-rotulo { display:block; font-size:11px; font-weight:850; color:#58687a; text-transform:uppercase; letter-spacing:.2px; }
+        .monitor-metrica strong { display:block; font-size:clamp(23px,2.5vw,31px); line-height:1.2; margin:4px 0; color:#263859; }
+        .monitor-metrica.acertos strong { color:#237849; }
+        .monitor-metrica.erros strong { color:#b12e2e; }
+        .monitor-metrica.sem-voto strong { color:#9b6617; }
+        .monitor-meio { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:10px; margin-top:12px; }
+        .monitor-bloco { background:#fff; padding:13px; border:1px solid #dce5ef; border-radius:12px; min-width:0; }
+        .monitor-bloco h4 { font-size:11px; letter-spacing:.65px; text-transform:uppercase; margin:0 0 9px; color:#50627b; }
+        .monitor-gabarito { display:inline-block; padding:4px 10px; background:#e2f6e8; color:#1e693c; font-size:24px; font-weight:900; border:1px solid #a0d6b3; border-radius:10px; }
+        .monitor-alternativa { display:block; margin-top:8px; color:#263859; font-size:14px; font-weight:700; line-height:1.45; overflow-wrap:anywhere; }
+        .monitor-pontos { font-size:16px; font-weight:900; line-height:1.45; color:#263859; }
+        .monitor-pontos-detalhe { margin-top:8px; font-size:12px; color:#52647a; line-height:1.45; }
+        .monitor-distribuicao-titulo { font-size:11px; text-transform:uppercase; letter-spacing:.65px; color:#50627b; font-weight:900; margin:14px 0 8px; }
+        .monitor-distribuicao { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px; }
+        .monitor-alternativa-contagem { min-width:0; background:#fff; padding:8px; border:1px solid #e0e6ef; border-radius:9px; }
+        .monitor-alternativa-contagem .monitor-distribuicao-valores { display:flex; justify-content:space-between; font-size:12px; font-weight:850; margin-bottom:5px; }
+        .monitor-trilha-respostas { height:8px; background:#e9edf4; border-radius:9px; overflow:hidden; }
+        .monitor-preenchimento-respostas { height:100%; background:#607d9f; width:0%; transition:width .2s; border-radius:9px; }
+        .monitor-alternativa-contagem.gabarito { border-color:#75c790; background:#f1fbf4; }
+        .monitor-alternativa-contagem.gabarito .monitor-preenchimento-respostas { background:#35a063; }
+        .monitor-observacao { color:#657387; font-size:12px; margin-top:10px; line-height:1.45; }
+        #painel-professor .ranking-container { max-height:min(78vh,900px); overflow:auto; }
+        #painel-professor .ranking-item { grid-template-columns: 29px minmax(74px, 1fr) 27px 29px 29px minmax(80px, .92fr) 25px; gap:5px; font-size:11px; padding:10px 5px; }
+        #painel-professor .ranking-item span:nth-child(2) { overflow-wrap:anywhere; text-align:left; }
+        .monitor-jogador-status { border-radius:7px; padding:5px 3px; font-size:11px; line-height:1.25; font-weight:800; text-align:center; background:#eaf0f8; color:#50627b; }
+        .monitor-jogador-status.acertou { color:#166b3b; background:#dff6e8; }
+        .monitor-jogador-status.errou { color:#9d2929; background:#ffe7e7; }
+        .monitor-jogador-status.pendente { color:#7c5d18; background:#fff5d9; }
+        #painel-professor .ranking-item .btn-expulsar { margin:0; padding:5px 2px; font-size:11px; }
+        @media(max-width:1120px) { #painel-professor .painel-grid { grid-template-columns:1fr; } }
+        @media(max-width:600px) {
+            .monitor-painel-rodada { padding:12px; }
+            .monitor-metricas {grid-template-columns:repeat(2,minmax(0,1fr));}
+            .monitor-meio {grid-template-columns:1fr;}
+            #painel-professor .ranking-item { min-width:420px; }
+        }
     </style>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -558,12 +607,37 @@
                     <div id="placar-rodadas-prof" class="placar-rodadas oculto"></div>
                     <button id="btn-proxima-rodada-placar" class="btn-proxima-rodada oculto" onclick="iniciarProximaRodadaPlacar()">▶️ Iniciar próxima rodada</button>
 
+                    <div id="monitor-fogo-cabecalho" class="monitor-fogo-cabecalho oculto">
+                        <strong>🔥 BARRA DO FOGO — TURMA × MÁQUINA</strong>
+                        <span id="monitor-fogo-posicao">Posição do fogo: 50%</span>
+                    </div>
                     <div class="trilho"><div id="marcador" class="marcador">🔥</div></div>
                     <div class="arena-legenda">
                         <span id="arena-lado-prof" class="arena-lado turma">🧑‍🎓 TURMA</span>
                         <span id="arena-objetivo-prof" class="arena-objetivo">ACERTEM JUNTOS E EMPURREM O FOGO →</span>
                         <span class="arena-lado maquina">MÁQUINA 🤖</span>
                     </div>
+                    <section id="monitor-painel-rodada" class="monitor-painel-rodada oculto" aria-label="Monitoramento da rodada">
+                        <div class="monitor-topo"><strong>📊 Monitoramento da rodada</strong><span id="monitor-estado" class="monitor-estado">Aguardando início</span></div>
+                        <div class="monitor-metricas" aria-live="polite">
+                            <div class="monitor-metrica acertos"><span class="monitor-rotulo">✅ Acertos</span><strong id="monitor-acertos">0</strong></div>
+                            <div class="monitor-metrica erros"><span class="monitor-rotulo">❌ Erros*</span><strong id="monitor-erros">0</strong></div>
+                            <div class="monitor-metrica"><span class="monitor-rotulo">📩 Responderam</span><strong id="monitor-respostas">0/0</strong></div>
+                            <div class="monitor-metrica sem-voto"><span class="monitor-rotulo">⏳ Sem resposta</span><strong id="monitor-sem-voto">0</strong></div>
+                        </div>
+                        <div class="monitor-meio">
+                            <div class="monitor-bloco"><h4>Resposta correta — somente professor</h4><span id="monitor-gabarito-letra" class="monitor-gabarito">—</span><span id="monitor-gabarito-texto" class="monitor-alternativa">Aguardando questão</span></div>
+                            <div class="monitor-bloco"><h4 id="monitor-pontos-titulo">Pontuação desta rodada</h4><div id="monitor-pontos" class="monitor-pontos">Aguardando apuração</div><div id="monitor-pontos-detalhe" class="monitor-pontos-detalhe">O resultado aparecerá ao final da votação.</div></div>
+                        </div>
+                        <div class="monitor-distribuicao-titulo">Respostas recebidas por alternativa</div>
+                        <div id="monitor-distribuicao" class="monitor-distribuicao">
+                            <div class="monitor-alternativa-contagem" data-alternativa="0"><div class="monitor-distribuicao-valores"><span>A</span><span class="monitor-quantidade">0</span></div><div class="monitor-trilha-respostas"><div class="monitor-preenchimento-respostas"></div></div></div>
+                            <div class="monitor-alternativa-contagem" data-alternativa="1"><div class="monitor-distribuicao-valores"><span>B</span><span class="monitor-quantidade">0</span></div><div class="monitor-trilha-respostas"><div class="monitor-preenchimento-respostas"></div></div></div>
+                            <div class="monitor-alternativa-contagem" data-alternativa="2"><div class="monitor-distribuicao-valores"><span>C</span><span class="monitor-quantidade">0</span></div><div class="monitor-trilha-respostas"><div class="monitor-preenchimento-respostas"></div></div></div>
+                            <div class="monitor-alternativa-contagem" data-alternativa="3"><div class="monitor-distribuicao-valores"><span>D</span><span class="monitor-quantidade">0</span></div><div class="monitor-trilha-respostas"><div class="monitor-preenchimento-respostas"></div></div></div>
+                        </div>
+                        <div id="monitor-observacao" class="monitor-observacao">* Ao encerrar a rodada, estudantes sem resposta são contabilizados como erro.</div>
+                    </section>
                     <div id="prof-aviso-final" class="aviso-final oculto"></div>
                     <div id="prof-status-coletivo" class="status-coletivo">Aguardando a rodada...</div>
                     <div id="prof-resultado-coletivo" class="resultado-coletivo oculto"></div>
@@ -583,7 +657,7 @@
             <div class="ranking-container">
                 <h4 id="titulo-monitor" style="margin-top: 0; border-bottom: 2px solid #ccc; padding-bottom: 5px; text-align:center;">Estudantes no Lobby</h4>
                 <div class="ranking-item" style="border-bottom: 2px solid #ddd; background:#eee;">
-                    <span>#</span><span>Nome</span><span>St</span><span>✨ AC</span><span>❌ ER</span><span>Ação</span>
+                    <span>#</span><span>Nome</span><span>St</span><span>✨ AC</span><span>❌ ER</span><span>Rodada</span><span>Ação</span>
                 </div>
                 <div id="lista-ranking-alunos">Aguardando conexões...</div>
             </div>
@@ -674,7 +748,7 @@
     <div id="feedback-flutuante" class="feedback-flutuante" aria-live="assertive"></div>
 
     <footer style="text-align: center; padding: 20px; color: #666; font-weight: bold; font-size: 14px; margin-top: 20px; line-height: 1.6;">
-        <div>Versão atual: 08.4</div>
+        <div>Versão atual: 08.5</div>
         <div>Desenvolvido pelo Prof. Job Inácio</div>
     </footer>
 
@@ -1596,6 +1670,7 @@
                 respostasRodada = snap.val() || {};
                 sincronizarParticipantesRodada();
                 atualizarContagemRespostas();
+                atualizarPainelMonitoramento();
             };
             respostasRodadaRef.on('value', respostasRodadaListener);
         }
@@ -2315,9 +2390,16 @@
                 jogadoresOrdenados.forEach((jogador, indice) => {
                     const linha = document.createElement('div');
                     linha.className = `ranking-item ${jogador.online ? '' : 'offline'} ${indice === 0 ? 'ranking-top-1' : indice === 1 ? 'ranking-top-2' : indice === 2 ? 'ranking-top-3' : ''}`;
+                    linha.dataset.jogador = jogador.nome;
                     [indice === 0 ? '🥇' : indice === 1 ? '🥈' : indice === 2 ? '🥉' : `${indice + 1}º`,
                         jogador.nome, jogador.online ? '🟢' : '🔴', String(jogador.acertos), String(jogador.erros)]
                         .forEach(texto => { const span = document.createElement('span'); span.textContent = texto; linha.appendChild(span); });
+                    const status = document.createElement('span');
+                    status.className = 'monitor-jogador-status';
+                    const situacao = situacaoJogadorNaRodada(jogador.nome);
+                    status.textContent = situacao.texto;
+                    if (situacao.classe) status.classList.add(situacao.classe);
+                    linha.appendChild(status);
                     const expulsar = document.createElement('button');
                     expulsar.className = 'btn-expulsar'; expulsar.textContent = 'X';
                     expulsar.onclick = () => expulsarAluno(jogador.nome);
@@ -2387,6 +2469,122 @@
             cronometros.forEach(c => c.classList.toggle('alerta-tempo', typeof tempoRestante === 'number' && tempoRestante <= 10));
         }
 
+
+        // Monitoramento local do professor. Estes dados nunca são renderizados na apresentação.
+        function situacaoJogadorNaRodada(nome) {
+            const fase = gameState.fase;
+            const rodadaAtiva = ['leitura','respondendo','calculando','feedback','intervalo_rodada'].includes(fase);
+            if (!rodadaAtiva || isSingleplayer) return { texto:'—', classe:'' };
+            if (!gameState.participantsRound?.[nome]) return { texto:'Fora', classe:'' };
+            const voto = respostasRodada[nome];
+            const valido = votoDaRodadaValido(voto);
+            const apurado = (fase === 'feedback' || fase === 'intervalo_rodada') && !!gameState.roundResult;
+            if (apurado && !gameState.roundResult.confirmados?.[nome]) return { texto:'Sem resposta', classe:'errou' };
+            if (valido && gameState.currentQuestion && Number.isInteger(gameState.currentQuestion.correta)) {
+                return voto.alternativa === gameState.currentQuestion.correta
+                    ? { texto:'✓ Acertou', classe:'acertou' }
+                    : { texto:'✕ Errou', classe:'errou' };
+            }
+            if (apurado && gameState.roundResult.confirmados?.[nome]) return { texto:'Confirmado', classe:'' };
+            return { texto:'Aguardando', classe:'pendente' };
+        }
+
+        function atualizarStatusRankingRodada() {
+            if (papel !== 'professor' || isSingleplayer) return;
+            document.querySelectorAll('#lista-ranking-alunos .ranking-item[data-jogador]').forEach(linha => {
+                const status = linha.querySelector('.monitor-jogador-status');
+                if (!status) return;
+                const situacao = situacaoJogadorNaRodada(linha.dataset.jogador);
+                if (status.textContent !== situacao.texto) status.textContent = situacao.texto;
+                status.className = 'monitor-jogador-status' + (situacao.classe ? ' ' + situacao.classe : '');
+            });
+        }
+
+        function atualizarPainelMonitoramento() {
+            const painel = document.getElementById('monitor-painel-rodada');
+            const cabecalhoFogo = document.getElementById('monitor-fogo-cabecalho');
+            if (!painel || !cabecalhoFogo) return;
+            const ativo = papel === 'professor' && !isSingleplayer &&
+                !['setup','closed'].includes(gameState.fase);
+            painel.classList.toggle('oculto', !ativo);
+            cabecalhoFogo.classList.toggle('oculto', !ativo || gameState.gameMode === 'placar');
+            if (!ativo) return;
+
+            const posicao = Number(gameState.ropePosition);
+            document.getElementById('monitor-fogo-posicao').textContent =
+                `Posição: ${Number.isFinite(posicao) ? Math.round(Math.max(0,Math.min(100,posicao))) : 50}% • 0% máquina / 100% turma`;
+            const fase = gameState.fase;
+            const apurado = !!gameState.roundResult && ['feedback','intervalo_rodada','ended'].includes(fase);
+            const participantes = Object.keys(gameState.participantsRound || {});
+            const total = participantes.length;
+            let respostas = 0, acertos = 0, errosVotados = 0;
+            let distribuicao = [0, 0, 0, 0];
+            const correta = Number(gameState.currentQuestion?.correta);
+            const temGabarito = Number.isInteger(correta) && correta >= 0 && correta < 4 &&
+                Array.isArray(gameState.currentQuestion?.alt);
+            if (apurado) {
+                const r = gameState.roundResult;
+                acertos = r.acertos || 0;
+                respostas = r.respostas || 0;
+                errosVotados = r.erros || 0; // Inclui ausência de resposta na apuração final.
+                distribuicao = Array.isArray(r.distribuicao) ? r.distribuicao : distribuicao;
+            } else {
+                participantes.forEach(nome => {
+                    const voto = respostasRodada[nome];
+                    if (!votoDaRodadaValido(voto)) return;
+                    respostas++;
+                    distribuicao[voto.alternativa]++;
+                    if (temGabarito && voto.alternativa === correta) acertos++;
+                    else errosVotados++;
+                });
+            }
+            const semResposta = Math.max(0, total - respostas);
+            document.getElementById('monitor-acertos').textContent = String(acertos);
+            document.getElementById('monitor-erros').textContent = String(errosVotados);
+            document.getElementById('monitor-respostas').textContent = `${respostas}/${total}`;
+            document.getElementById('monitor-sem-voto').textContent = String(semResposta);
+            const estados = {leitura:'Leitura',respondendo:'Recebendo respostas',calculando:'Apurando',feedback:'Resultado apurado',intervalo_rodada:'Intervalo',ended:'Partida encerrada'};
+            document.getElementById('monitor-estado').textContent = (estados[fase] || 'Aguardando') +
+                (gameState.paused ? ' • Pausado' : '');
+            document.getElementById('monitor-gabarito-letra').textContent = temGabarito ? 'ABCD'[correta] : '—';
+            document.getElementById('monitor-gabarito-texto').textContent = temGabarito
+                ? gameState.currentQuestion.alt[correta] : 'Aguardando questão';
+            const tituloPontos = document.getElementById('monitor-pontos-titulo');
+            const pontos = document.getElementById('monitor-pontos');
+            const detalhe = document.getElementById('monitor-pontos-detalhe');
+            if (gameState.gameMode === 'placar') {
+                const p = gameState.placar || {};
+                tituloPontos.textContent = 'Placar da rodada atual';
+                pontos.textContent = `Turma ${p.pontosTurma || 0} × ${p.pontosMaquina || 0} Máquina`;
+                detalhe.textContent = `Rodadas vencidas: Turma ${p.rodadasTurma || 0} × ${p.rodadasMaquina || 0} Máquina` +
+                    (apurado && gameState.roundResult.vencedorPergunta
+                        ? ' • Última pergunta: ' + ({alunos:'turma', maquina:'máquina', empate:'empate'}[gameState.roundResult.vencedorPergunta] || 'apurada')
+                        : '');
+            } else if (apurado && typeof gameState.roundResult.movimentoFinal === 'number') {
+                const r = gameState.roundResult;
+                const sinal = numero => (numero > 0 ? '+' : '') + numero;
+                tituloPontos.textContent = 'Pontuação desta rodada';
+                pontos.textContent = `${sinal(r.movimentoFinal)} pontos de movimento do fogo`;
+                detalhe.textContent = `Turma: ${sinal(r.impulsoTurma)} • Máquina: -${r.ataqueMaquina} • Resultado: ${sinal(r.movimentoFinal)}`;
+            } else {
+                tituloPontos.textContent = 'Pontuação desta rodada';
+                pontos.textContent = 'Aguardando apuração';
+                detalhe.textContent = `Acumulado na partida: ${gameState.scoreGlobal?.certas || 0} acertos e ${gameState.scoreGlobal?.erradas || 0} erros.`;
+            }
+            document.querySelectorAll('#monitor-distribuicao .monitor-alternativa-contagem').forEach((item, indice) => {
+                const quantidade = Number(distribuicao[indice]) || 0;
+                item.querySelector('.monitor-quantidade').textContent = String(quantidade);
+                item.querySelector('.monitor-preenchimento-respostas').style.width =
+                    (respostas ? Math.max(0, Math.min(100, quantidade / respostas * 100)) : 0) + '%';
+                item.classList.toggle('gabarito', temGabarito && indice === correta);
+            });
+            document.getElementById('monitor-observacao').textContent = apurado
+                ? '* Erros contabilizados incluem quem não respondeu. ' +
+                  `Erros de respostas enviadas: ${Math.max(0, errosVotados - semResposta)}; sem resposta: ${semResposta}.`
+                : 'Contagem parcial, baseada nos votos recebidos pelo Firebase. Estudantes sem resposta serão contabilizados como erro ao encerrar a rodada.';
+            atualizarStatusRankingRodada();
+        }
+
         // TELA PROFESSOR (COM GABARITO SUTIL)
         function renderizarTelaProfessor() {
             document.getElementById('marcador').style.left = gameState.ropePosition + '%';
@@ -2430,6 +2628,7 @@
                     resultado.classList.remove('oculto');
                 }
             }
+            atualizarPainelMonitoramento();
             atualizarVisaoProfessor();
         }
 
