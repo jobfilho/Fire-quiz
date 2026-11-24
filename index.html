@@ -398,6 +398,114 @@
             .monitor-meio {grid-template-columns:1fr;}
             #painel-professor .ranking-item { min-width:420px; }
         }
+
+        /* Fire Quiz 08.6 — apresentação da partida e monitoramento com hierarquia visual */
+        #painel-professor.monitoramento-ativo.card { max-width:1500px; padding:clamp(16px,2vw,30px); }
+        #painel-professor.monitoramento-ativo > h2 { margin:0; font-size:clamp(18px,1.65vw,25px); }
+        #painel-professor.monitoramento-ativo .seletor-visao-professor { margin:10px 0 15px; padding:8px; }
+        #painel-professor.monitoramento-ativo .painel-grid { grid-template-columns:minmax(0,1.7fr) minmax(380px,1fr); gap:18px; }
+        #painel-professor.monitoramento-ativo .monitor-coluna-lateral { display:flex; flex-direction:column; gap:14px; min-width:0; text-align:left; }
+        #painel-professor.monitoramento-ativo .ranking-container { max-height:290px; min-height:150px; overflow:auto; padding:12px; flex:none; }
+        #painel-professor.monitoramento-ativo .ranking-item { grid-template-columns:28px minmax(75px,1fr) 25px 26px 26px 35px minmax(68px,.82fr) 26px; gap:4px; font-size:11px; padding:9px 4px; min-width:0; }
+        #painel-professor.monitoramento-ativo .ranking-item span:nth-child(6) { color:#b25b16; font-weight:900; }
+        #painel-professor.monitoramento-ativo .ranking-item .monitor-jogador-status {font-size:10px;}
+        #painel-professor.monitoramento-ativo .monitor-painel-rodada {margin:0; padding:13px;}
+        #painel-professor.monitoramento-ativo .monitor-metricas { grid-template-columns:repeat(4,minmax(0,1fr)); gap:5px; }
+        #painel-professor.monitoramento-ativo .monitor-metrica { padding:9px 3px; }
+        #painel-professor.monitoramento-ativo .monitor-metrica .monitor-rotulo { font-size:10px; }
+        #painel-professor.monitoramento-ativo .monitor-metrica strong {font-size:clamp(19px,2.2vw,27px)}
+        #painel-professor.monitoramento-ativo .monitor-meio {grid-template-columns:1fr 1fr;}
+        #painel-professor.monitoramento-ativo #btn-pausar-jogo {margin:0 0 10px; padding:10px; font-size:15px;}
+        #painel-professor.monitoramento-ativo .cabecalho-jogo { margin:0 0 9px; }
+        #painel-professor.monitoramento-ativo .cabecalho-jogo p {font-size:14px !important;}
+        #painel-professor.monitoramento-ativo .prof-questao-destaque {
+            border:2px solid #d3deec; border-top:5px solid #ff7900; background:#fff;
+            border-radius:18px; padding:clamp(16px,2vw,25px); box-shadow:0 12px 29px rgba(22,42,74,.1);
+            margin:0 0 16px; text-align:left;
+        }
+        #painel-professor.monitoramento-ativo .prof-questao-topo {display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:10px;}
+        #painel-professor.monitoramento-ativo #prof-questao-indice {font-size:12px; letter-spacing:.14em; color:#c45617; font-weight:900;}
+        #painel-professor.monitoramento-ativo #prof-fase-atual {font-size:12px; font-weight:850; color:#304f7b; padding:6px 10px; background:#edf4ff; border-radius:100px;}
+        #painel-professor.monitoramento-ativo #prof-pergunta-texto {font-size:clamp(23px,2.25vw,35px); line-height:1.24; color:#192d4b; font-weight:850; margin:5px 0 18px; text-wrap:balance; overflow-wrap:anywhere;}
+        #painel-professor.monitoramento-ativo #prof-lista-opcoes {display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; margin:0;}
+        #painel-professor.monitoramento-ativo #prof-lista-opcoes .btn-opcao {display:flex;align-items:center;gap:12px; text-align:left; min-height:95px; padding:14px; background:#f8fbff; border:2px solid #d9e4f0; border-radius:13px; font-size:clamp(15px,1.3vw,19px); font-weight:750; line-height:1.32; color:#1f334e; box-shadow:0 3px 7px rgba(15,35,60,.035);}
+        #painel-professor.monitoramento-ativo #prof-lista-opcoes .btn-opcao::before {content:attr(data-letra);flex:0 0 43px;display:flex;align-items:center;justify-content:center;height:43px;background:#e6effa;color:#2f4d76;border-radius:10px;font-size:20px;font-weight:900;}
+        #painel-professor.monitoramento-ativo #prof-lista-opcoes .btn-opcao.gabarito-prof {border-left:5px solid #48a267;}
+        #painel-professor.monitoramento-ativo #prof-lista-opcoes .btn-opcao.correta {background:#e9f8ee;color:#155931;border-color:#43a26b;}
+        #painel-professor.monitoramento-ativo #prof-lista-opcoes .btn-opcao.correta::before {background:#227e4b;color:#fff;}
+        #painel-professor.monitoramento-ativo .monitor-fogo-cabecalho {margin-top:16px;}
+        #painel-professor.monitoramento-ativo .trilho {height:35px;margin:9px 0 7px;}
+        #painel-professor.monitoramento-ativo .marcador {height:32px;width:32px;font-size:17px;}
+        #painel-professor.monitoramento-ativo .arena-legenda {margin:7px 0 13px;}
+        #painel-professor.monitoramento-ativo .arena-lado, #painel-professor.monitoramento-ativo .arena-objetivo {font-size:11px;padding:8px 5px;}
+        .tela-apresentacao-professor {
+            background:radial-gradient(ellipse at 70% -10%,#243e64 0%,#111f36 48%,#0b1525 100%);
+            color:#f6f8ff; padding:clamp(14px,2vw,26px); display:flex; align-items:center;
+            justify-content:center; overflow:auto;
+        }
+        .conteudo-apresentacao-professor { width:min(1500px,100%); min-height:calc(100dvh - 48px); margin:auto; display:flex; flex-direction:column; justify-content:space-between; gap:clamp(9px,1.55vh,16px); }
+        .apresentacao-cabecalho {display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;}
+        .apresentacao-identidade {display:flex; align-items:center; flex-wrap:wrap; gap:22px;}
+        .apresentacao-marca {font-weight:950;letter-spacing:.03em;font-size:clamp(19px,2vw,28px);color:#fff;}
+        .apresentacao-marca > span:first-child {color:#ff8c36;}
+        .apresentacao-chama {font-size:20px;}
+        .apresentacao-indicador {color:#ffc28a;letter-spacing:.14em;text-align:left;font-size:clamp(12px,1.2vw,16px);}
+        .apresentacao-acoes {display:flex;align-items:center;gap:9px;flex-wrap:wrap;}
+        .apresentacao-pill {font-size:11px;letter-spacing:.065em;font-weight:850;color:#dbe9fc;background:#243b5a;border:1px solid #365377;padding:8px 12px;border-radius:10px;white-space:nowrap;}
+        .apresentacao-voltar {position:static; opacity:1; color:#fff;background:#32486a;border:1px solid #526c91;padding:9px 13px;font-size:12px;}
+        .apresentacao-arena {background:rgba(255,255,255,.055);border:1px solid #3c506c;border-radius:17px;padding:13px 20px 15px;}
+        .apresentacao-fogo-topo {display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:12px;letter-spacing:.07em;color:#d9e8fa;}
+        .apresentacao-fogo-topo span {color:#ffc287;font-weight:800;}
+        .apresentacao-trilho {position:relative;height:30px;margin-top:12px;border-radius:20px;background:linear-gradient(90deg,#63c7a4,#fee0a4 49%,#ed887c);border:2px solid #8296ad;box-shadow:inset 0 2px 6px #0a142650;}
+        .apresentacao-marcador {position:absolute;z-index:1;left:50%;top:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center;border-radius:100%;background:#fff4da;color:#c74b00;border:3px solid #f97630;box-shadow:0 5px 14px #0b152570;transform:translate(-50%,-50%);font-size:22px;transition:left .45s ease;}
+        .apresentacao-placar-modo {display:flex;justify-content:center;align-items:center;gap:22px;flex-wrap:wrap;background:rgba(255,255,255,.08);border:1px solid #3d5772;border-radius:17px;padding:9px 15px;}
+        .apresentacao-placar-modo div {color:#b8cae0;font-size:12px;font-weight:900;letter-spacing:.12em;}
+        .apresentacao-placar-modo div strong {font-size:32px;color:#fff;margin-left:12px;}
+        .apresentacao-versus {color:#ffa14f;font-size:24px;font-weight:900;}
+        #apresentacao-rodadas-placar {color:#b9cee3;font-size:12px;}
+        .apresentacao-questao-area {display:flex;flex-direction:column;justify-content:center;min-height:0;flex:1 1 auto;gap:clamp(13px,2vh,24px);}
+        #apresentacao-pergunta {color:#fff; font-size:clamp(26px,3.1vw,47px);line-height:1.19;max-width:1300px;margin:0 auto;text-align:center;text-wrap:balance;}
+        .apresentacao-alternativas {gap:clamp(10px,1.3vw,17px);}
+        .apresentacao-alternativa {min-height:clamp(83px,13.4vh,136px);border-color:#aebcd2;background:#f8fbff;box-shadow:0 8px 20px rgba(0,0,0,.18);padding:clamp(12px,1.4vw,20px);}
+        .apresentacao-letra {background:#dfe8f5;color:#19365d;width:clamp(42px,3.4vw,53px);height:clamp(42px,3.4vw,53px);border-radius:12px;font-size:clamp(21px,1.8vw,27px);}
+        .apresentacao-texto {font-size:clamp(18px,1.75vw,29px);line-height:1.22;}
+        .apresentacao-painel-metricas {display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:9px;}
+        .apresentacao-metrica {border:1px solid #415979;background:rgba(255,255,255,.075);border-radius:13px;padding:13px 8px;text-align:center;min-width:0;}
+        .apresentacao-metrica span {display:block;font-size:clamp(9px,.84vw,12px);font-weight:850;letter-spacing:.07em;color:#b5c9de;white-space:normal;}
+        .apresentacao-metrica strong {display:block;margin-top:6px;color:#fff;font-size:clamp(20px,2.2vw,32px);font-weight:950;line-height:1.05;overflow-wrap:anywhere;}
+        .apresentacao-metrica:first-child strong {color:#81e6b2;}
+        .apresentacao-metrica:nth-child(2) strong {color:#ff9494;}
+        .apresentacao-metrica.tempo strong {color:#ffd091;}
+        .apresentacao-metrica.pontos strong {font-size:clamp(17px,1.65vw,24px);color:#ffd091;}
+        .apresentacao-rodape {display:flex;justify-content:space-between;align-items:center;gap:12px;color:#b9c8da;font-size:12px;font-weight:850;letter-spacing:.035em;}
+        #apresentacao-resumo {color:#f7bb85;}
+        @media(max-width:1020px){
+            #painel-professor.monitoramento-ativo .painel-grid {grid-template-columns:minmax(0,1fr);}
+            #painel-professor.monitoramento-ativo .ranking-container {max-height:360px;}
+            #painel-professor.monitoramento-ativo .monitor-metricas {grid-template-columns:repeat(4,minmax(0,1fr));}
+            #painel-professor.monitoramento-ativo .monitor-coluna-lateral {display:grid;grid-template-columns:1fr;}
+            .apresentacao-painel-metricas {grid-template-columns:repeat(3,minmax(0,1fr));}
+            .apresentacao-alternativa {min-height:80px;}
+        }
+        @media(max-width:650px){
+            #painel-professor.monitoramento-ativo #prof-lista-opcoes {grid-template-columns:1fr;}
+            #painel-professor.monitoramento-ativo #prof-lista-opcoes .btn-opcao {min-height:76px;}
+            #painel-professor.monitoramento-ativo .monitor-meio {grid-template-columns:1fr;}
+            #painel-professor.monitoramento-ativo .ranking-container {overflow-x:auto;}
+            #painel-professor.monitoramento-ativo .ranking-item {min-width:375px;}
+            .tela-apresentacao-professor {padding:12px;}
+            .conteudo-apresentacao-professor {min-height:calc(100dvh - 24px);}
+            .apresentacao-cabecalho {align-items:flex-start;}
+            .apresentacao-identidade {gap:10px;}
+            .apresentacao-acoes {width:100%;}
+            .apresentacao-alternativas {grid-template-columns:1fr;}
+            .apresentacao-alternativa {min-height:66px;}
+            #apresentacao-pergunta {font-size:clamp(22px,6vw,35px);}
+            .apresentacao-texto {font-size:clamp(17px,4vw,23px);}
+            .apresentacao-fogo-topo {font-size:10px;}
+            .apresentacao-painel-metricas {grid-template-columns:repeat(2,minmax(0,1fr));}
+            .apresentacao-rodape {flex-wrap:wrap;}
+        }
     </style>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -600,6 +708,11 @@
                         <p id="info-rodada" style="font-size: 18px; font-weight: bold; margin: 0;">Rodada: 1</p>
                         <div id="prof-timer-container" class="oculto"><span class="cronometro">⏱️ <span id="prof-tempo">60s</span></span></div>
                     </div>
+                    <div id="prof-quiz-container" class="prof-questao-destaque">
+                        <div class="prof-questao-topo"><span id="prof-questao-indice">QUESTÃO 01</span><span id="prof-fase-atual">Aguardando</span></div>
+                        <h3 id="prof-pergunta-texto"></h3>
+                        <div class="opcoes-prof" id="prof-lista-opcoes" style="pointer-events: none;"></div>
+                    </div>
                     <div id="placar-solo" class="placar-solo oculto">
                         <span class="placar-certas">✨ Acertos: <span id="solo-acertos">0</span></span>
                         <span class="placar-erradas">❌ Erros: <span id="solo-erros">0</span></span>
@@ -617,6 +730,26 @@
                         <span id="arena-objetivo-prof" class="arena-objetivo">ACERTEM JUNTOS E EMPURREM O FOGO →</span>
                         <span class="arena-lado maquina">MÁQUINA 🤖</span>
                     </div>
+                    <div id="prof-aviso-final" class="aviso-final oculto"></div>
+                    <div id="prof-status-coletivo" class="status-coletivo">Aguardando a rodada...</div>
+                    <div id="prof-resultado-coletivo" class="resultado-coletivo oculto"></div>
+                    
+                </div>
+                <div id="placar-final-professor" class="placar-final oculto"></div>
+                <div id="acoes-partida-inferior" class="acoes-partida-inferior oculto">
+                    <button id="btn-configurar-durante-solo" class="btn-configurar-durante-solo oculto" onclick="abrirConfirmacaoConfigSolo()">⚙️ Configurar nova partida</button>
+                    <button class="btn-encerrar" id="btn-encerrar-geral" onclick="forcarEncerramento()">❌ Encerrar Partida</button>
+                </div>
+            </div>
+            
+            <aside id="monitor-coluna-lateral" class="monitor-coluna-lateral" aria-label="Painel de dados do professor">
+                <div class="ranking-container">
+                    <h4 id="titulo-monitor" style="margin-top: 0; border-bottom: 2px solid #ccc; padding-bottom: 5px; text-align:center;">Estudantes no Lobby</h4>
+                    <div class="ranking-item" style="border-bottom: 2px solid #ddd; background:#eee;" title="FORA: número de rodadas em que o aluno participou, mas não respondeu.">
+                        <span>#</span><span>Nome</span><span>St</span><span>AC</span><span>ER</span><span>FORA</span><span>Rodada</span><span>Ação</span>
+                    </div>
+                    <div id="lista-ranking-alunos">Aguardando conexões...</div>
+                </div>
                     <section id="monitor-painel-rodada" class="monitor-painel-rodada oculto" aria-label="Monitoramento da rodada">
                         <div class="monitor-topo"><strong>📊 Monitoramento da rodada</strong><span id="monitor-estado" class="monitor-estado">Aguardando início</span></div>
                         <div class="monitor-metricas" aria-live="polite">
@@ -638,40 +771,38 @@
                         </div>
                         <div id="monitor-observacao" class="monitor-observacao">* Ao encerrar a rodada, estudantes sem resposta são contabilizados como erro.</div>
                     </section>
-                    <div id="prof-aviso-final" class="aviso-final oculto"></div>
-                    <div id="prof-status-coletivo" class="status-coletivo">Aguardando a rodada...</div>
-                    <div id="prof-resultado-coletivo" class="resultado-coletivo oculto"></div>
-                    
-                    <div id="prof-quiz-container" style="background: #fff3e0; padding: 20px; border-radius: 8px; border: 2px solid #ff9800;">
-                        <h3 id="prof-pergunta-texto"></h3>
-                        <div class="opcoes-prof" id="prof-lista-opcoes" style="pointer-events: none;"></div>
-                    </div>
-                </div>
-                <div id="placar-final-professor" class="placar-final oculto"></div>
-                <div id="acoes-partida-inferior" class="acoes-partida-inferior oculto">
-                    <button id="btn-configurar-durante-solo" class="btn-configurar-durante-solo oculto" onclick="abrirConfirmacaoConfigSolo()">⚙️ Configurar nova partida</button>
-                    <button class="btn-encerrar" id="btn-encerrar-geral" onclick="forcarEncerramento()">❌ Encerrar Partida</button>
-                </div>
-            </div>
-            
-            <div class="ranking-container">
-                <h4 id="titulo-monitor" style="margin-top: 0; border-bottom: 2px solid #ccc; padding-bottom: 5px; text-align:center;">Estudantes no Lobby</h4>
-                <div class="ranking-item" style="border-bottom: 2px solid #ddd; background:#eee;">
-                    <span>#</span><span>Nome</span><span>St</span><span>✨ AC</span><span>❌ ER</span><span>Rodada</span><span>Ação</span>
-                </div>
-                <div id="lista-ranking-alunos">Aguardando conexões...</div>
-            </div>
+            </aside>
         </div>
     </div>
 
 
-    <!-- Tela independente do professor: não contém gabarito, respostas, ranking nem pontuação. -->
-    <section id="tela-apresentacao-professor" class="tela-apresentacao-professor oculto" aria-label="Apresentação das questões" aria-hidden="true">
-        <button class="apresentacao-voltar" type="button" onclick="selecionarVisaoProfessor('monitoramento')" title="Voltar ao monitoramento (Esc)">← Monitoramento (Esc)</button>
+    <!-- Telão do professor: progresso coletivo e placar, sem nomes nem gabarito das alternativas. -->
+    <section id="tela-apresentacao-professor" class="tela-apresentacao-professor oculto" aria-label="Apresentação da partida" aria-hidden="true">
         <div class="conteudo-apresentacao-professor">
-            <div id="apresentacao-indicador" class="apresentacao-indicador"></div>
-            <h2 id="apresentacao-pergunta"></h2>
-            <div id="apresentacao-alternativas" class="apresentacao-alternativas" aria-label="Alternativas da questão"></div>
+            <header class="apresentacao-cabecalho">
+                <div class="apresentacao-identidade"><div class="apresentacao-marca">FIRE <span>QUIZ</span> <span class="apresentacao-chama">🔥</span></div><div id="apresentacao-indicador" class="apresentacao-indicador">QUESTÃO 01</div></div>
+                <div class="apresentacao-acoes"><span id="apresentacao-modo" class="apresentacao-pill">Sobrevivência</span><span id="apresentacao-estado" class="apresentacao-pill">Aguardando</span><button class="apresentacao-voltar" type="button" onclick="selecionarVisaoProfessor('monitoramento')" title="Voltar ao monitoramento (Esc)">← Monitoramento (Esc)</button></div>
+            </header>
+            <section id="apresentacao-arena" class="apresentacao-arena" aria-label="Barra do fogo">
+                <div class="apresentacao-fogo-topo"><strong>TURMA</strong><span>POSIÇÃO DO FOGO: <b id="apresentacao-posicao">50%</b></span><strong>MÁQUINA</strong></div>
+                <div class="apresentacao-trilho"><div id="apresentacao-marcador" class="apresentacao-marcador">🔥</div></div>
+            </section>
+            <section id="apresentacao-placar-modo" class="apresentacao-placar-modo oculto" aria-label="Placar da partida">
+                <div>TURMA <strong id="apresentacao-placar-turma">0</strong></div><span class="apresentacao-versus">×</span><div>MÁQUINA <strong id="apresentacao-placar-maquina">0</strong></div><span id="apresentacao-rodadas-placar">Rodada 1</span>
+            </section>
+            <main class="apresentacao-questao-area">
+                <h2 id="apresentacao-pergunta"></h2>
+                <div id="apresentacao-alternativas" class="apresentacao-alternativas" aria-label="Alternativas da questão"></div>
+            </main>
+            <section class="apresentacao-painel-metricas" aria-label="Indicadores coletivos da rodada" aria-live="polite">
+                <div class="apresentacao-metrica"><span>ACERTOS</span><strong id="apresentacao-acertos">0</strong></div>
+                <div class="apresentacao-metrica"><span>ERROS</span><strong id="apresentacao-erros">0</strong></div>
+                <div class="apresentacao-metrica"><span>RESPONDERAM</span><strong id="apresentacao-responderam">0/0</strong></div>
+                <div class="apresentacao-metrica"><span>SEM RESPOSTA</span><strong id="apresentacao-pendentes">0</strong></div>
+                <div class="apresentacao-metrica tempo"><span>TEMPO DA QUESTÃO</span><strong id="apresentacao-tempo">—</strong></div>
+                <div class="apresentacao-metrica pontos"><span id="apresentacao-pontos-rotulo">PONTUAÇÃO DA RODADA</span><strong id="apresentacao-pontos">Em jogo</strong></div>
+            </section>
+            <footer class="apresentacao-rodape"><span id="apresentacao-resumo">Aguardando a próxima questão</span><span id="apresentacao-acumulado">Total da partida: 0 acertos • 0 erros</span></footer>
         </div>
     </section>
 
@@ -748,7 +879,7 @@
     <div id="feedback-flutuante" class="feedback-flutuante" aria-live="assertive"></div>
 
     <footer style="text-align: center; padding: 20px; color: #666; font-weight: bold; font-size: 14px; margin-top: 20px; line-height: 1.6;">
-        <div>Versão atual: 08.5</div>
+        <div>Versão atual: 08.6</div>
         <div>Desenvolvido pelo Prof. Job Inácio</div>
     </footer>
 
@@ -1255,6 +1386,7 @@
             botaoMonitor.setAttribute('aria-pressed', String(visaoProfessor === 'monitoramento'));
             botaoApresentar.setAttribute('aria-pressed', String(visaoProfessor === 'apresentacao'));
             const ehProfessor = papel === 'professor' && !isSingleplayer;
+            document.getElementById('painel-professor').classList.toggle('monitoramento-ativo', ehProfessor);
             const partidaEmExibicao = gameState.fase !== 'setup' && gameState.fase !== 'closed';
             const apresentar = ehProfessor && visaoProfessor === 'apresentacao' && partidaEmExibicao;
             tela.classList.toggle('oculto', !apresentar);
@@ -1262,30 +1394,99 @@
             if (apresentar) renderizarApresentacaoProfessor();
         }
 
+        // Indicadores do telão: informações agregadas, nunca gabarito ou nomes.
+        function atualizarIndicadoresApresentacao() {
+            const fase = gameState.fase;
+            const encerrada = fase === 'ended';
+            const p = gameState.placar || {};
+            const modo = gameState.gameMode;
+            const emPlacar = modo === 'placar';
+            document.getElementById('apresentacao-arena').classList.toggle('oculto', emPlacar);
+            document.getElementById('apresentacao-placar-modo').classList.toggle('oculto', !emPlacar);
+            document.getElementById('apresentacao-modo').textContent = emPlacar ? 'MODO PLACAR' : (modo === 'time_attack' ? 'CONTRA O TEMPO' : 'SOBREVIVÊNCIA');
+            const fases = {leitura:'PREPARAÇÃO',respondendo:'VOTAÇÃO ABERTA',calculando:'APURANDO',feedback:'RESULTADO',intervalo_rodada:'INTERVALO',ended:'FIM DE JOGO'};
+            document.getElementById('apresentacao-estado').textContent = gameState.paused ? '⏸ PAUSADO' : (fases[fase] || 'AGUARDANDO');
+            document.getElementById('apresentacao-marcador').style.left = Math.min(100,Math.max(0,Number(gameState.ropePosition) || 0)) + '%';
+            document.getElementById('apresentacao-posicao').textContent = Math.round(Math.min(100,Math.max(0,Number(gameState.ropePosition) || 0))) + '%';
+            document.getElementById('apresentacao-placar-turma').textContent = String(p.pontosTurma || 0);
+            document.getElementById('apresentacao-placar-maquina').textContent = String(p.pontosMaquina || 0);
+            document.getElementById('apresentacao-rodadas-placar').textContent = `Rodada ${p.rodadaAtual || 1} • Vencidas: ${p.rodadasTurma || 0} × ${p.rodadasMaquina || 0}`;
+
+            const nomes = Object.keys(gameState.participantsRound || {});
+            const total = nomes.length;
+            const apurado = !!gameState.roundResult && ['feedback','intervalo_rodada','ended'].includes(fase);
+            let recebidas = 0, acertos = 0, erros = 0;
+            if (apurado) {
+                recebidas = Number(gameState.roundResult.respostas) || 0;
+                acertos = Number(gameState.roundResult.acertos) || 0;
+                erros = Number(gameState.roundResult.erros) || 0;
+            } else if (gameState.currentQuestion) {
+                nomes.forEach(nome => {
+                    const voto = respostasRodada[nome];
+                    if (!votoDaRodadaValido(voto)) return;
+                    recebidas++;
+                    if (voto.alternativa === gameState.currentQuestion.correta) acertos++;
+                    else erros++;
+                });
+            }
+            const pendentes = Math.max(0,total-recebidas);
+            document.getElementById('apresentacao-acertos').textContent = String(acertos);
+            document.getElementById('apresentacao-erros').textContent = String(erros);
+            document.getElementById('apresentacao-responderam').textContent = `${recebidas}/${total}`;
+            document.getElementById('apresentacao-pendentes').textContent = String(pendentes);
+            const tempoTexto = fase === 'leitura'
+                ? Math.ceil(Math.max(0,Number(gameState.timers?.freezeRestante) || 0) / 1000) + 's'
+                : fase === 'respondendo' ? Math.ceil(Math.max(0,Number(gameState.questionTimeLeft) || 0)) + 's'
+                : fase === 'calculando' ? 'Apurando' : fase === 'feedback' ? 'Concluída' : '—';
+            document.getElementById('apresentacao-tempo').textContent = tempoTexto;
+            document.getElementById('apresentacao-pontos-rotulo').textContent = emPlacar ? 'PONTOS DA RODADA' : 'MOVIMENTO DO FOGO';
+            const pontuacao = document.getElementById('apresentacao-pontos');
+            if (emPlacar) pontuacao.textContent = `${p.pontosTurma || 0} × ${p.pontosMaquina || 0}`;
+            else if (apurado && typeof gameState.roundResult.movimentoFinal === 'number') {
+                const valor = gameState.roundResult.movimentoFinal;
+                pontuacao.textContent = `${valor > 0 ? '+' : ''}${valor} pontos`;
+            } else pontuacao.textContent = 'Em disputa';
+
+            const resumo = document.getElementById('apresentacao-resumo');
+            if (encerrada) resumo.textContent = gameState.vencedor === 'alunos' ? 'VITÓRIA DA TURMA!' : 'VITÓRIA DA MÁQUINA';
+            else if (gameState.paused) resumo.textContent = 'PARTIDA PAUSADA PELO PROFESSOR';
+            else if (fase === 'respondendo') resumo.textContent = 'RESPOSTAS SENDO RECEBIDAS';
+            else if (fase === 'leitura') resumo.textContent = 'LEITURA DA QUESTÃO';
+            else if (fase === 'calculando') resumo.textContent = 'APURAÇÃO EM ANDAMENTO';
+            else if (apurado) resumo.textContent = `${gameState.roundResult.percentual || 0}% DE APROVEITAMENTO NESTA QUESTÃO`;
+            else resumo.textContent = 'AGUARDANDO A PRÓXIMA QUESTÃO';
+            const totalPartida = gameState.scoreGlobal || {};
+            document.getElementById('apresentacao-acumulado').textContent =
+                `ACUMULADO: ${totalPartida.certas || 0} ACERTOS • ${totalPartida.erradas || 0} ERROS` +
+                (modo === 'time_attack' ? `  |  PARTIDA: ${Math.ceil(Math.max(0,Number(gameState.timeLeft) || 0))}s` : '');
+        }
+
         function renderizarApresentacaoProfessor() {
-            // Sempre gera apenas enunciado e quatro alternativas neutras.
             const indicador = document.getElementById('apresentacao-indicador');
             const pergunta = document.getElementById('apresentacao-pergunta');
             const alternativas = document.getElementById('apresentacao-alternativas');
+            atualizarIndicadoresApresentacao();
             if (gameState.fase === 'ended') {
-                indicador.textContent = '';
-                pergunta.textContent = 'Partida encerrada';
+                indicador.textContent = 'FIM DA PARTIDA';
+                pergunta.textContent = gameState.vencedor === 'alunos' ? 'A turma venceu!' : 'A máquina venceu!';
                 alternativas.replaceChildren();
                 alternativas.dataset.round = '';
                 return;
             }
             const questao = gameState.currentQuestion;
             if (!questao) {
-                indicador.textContent = '';
+                indicador.textContent = 'AGUARDANDO';
                 pergunta.textContent = 'Aguardando questão...';
                 alternativas.replaceChildren();
                 alternativas.dataset.round = '';
                 return;
             }
-            indicador.textContent = 'QUESTÃO ' + (gameState.round || 1);
+            indicador.textContent = gameState.gameMode === 'placar'
+                ? `RODADA ${gameState.placar?.rodadaAtual || 1} · PERGUNTA ${gameState.placar?.perguntaNaRodada || 1}`
+                : `QUESTÃO ${gameState.round || 1}`;
             pergunta.textContent = questao.q;
-            // Não recria os cartões a cada 100 ms; preserva fluidez no projetor.
-            const chave = String(gameState.round) + '|' + questao.q + '|' + questao.alt.join('|');
+            // Os cartões são estáticos durante a questão, os indicadores mudam em tempo real.
+            const chave = (gameState.partidaId || '') + '|' + gameState.round + '|' + questao.q + '|' + questao.alt.join('|');
             if (alternativas.dataset.round === chave) return;
             alternativas.dataset.round = chave;
             alternativas.replaceChildren();
@@ -1457,7 +1658,7 @@
                 }
                 jogadorRef = database.ref(`Salas/${salaId}/jogadores/${nomeAluno}`);
                 if (!snapJog.exists()) {
-                    await jogadorRef.set({ acertos: 0, erros: 0 });
+                    await jogadorRef.set({ acertos: 0, erros: 0, semResposta: 0 });
                 }
                 // Registrar presença antes de entrar no jogo; permite reentrada com pontuação mantida.
                 document.getElementById('tela-selecao').classList.add('oculto');
@@ -1540,6 +1741,7 @@
                 jogadoresSnap.forEach(child => {
                     atualizacoes[`${child.key}/acertos`] = 0;
                     atualizacoes[`${child.key}/erros`] = 0;
+                    atualizacoes[`${child.key}/semResposta`] = 0;
                 });
                 if (Object.keys(atualizacoes).length) {
                     await database.ref(`Salas/${salaId}/jogadores`).update(atualizacoes);
@@ -1878,6 +2080,9 @@
                             dados.pontuacoesProcessadas = dados.pontuacoesProcessadas || {};
                             dados.pontuacoesProcessadas[marcadorPontuacao] = true;
                             dados[campo] = (Number(dados[campo]) || 0) + 1;
+                            // FORA contabiliza apenas ausência de voto de participante elegível.
+                            // Também é idempotente pelo marcador desta partida/rodada.
+                            if (!voto) dados.semResposta = (Number(dados.semResposta) || 0) + 1;
                             return dados;
                         }));
                 }
@@ -2378,9 +2583,10 @@
                 const jogadoresOrdenados = nomes.map(nome => {
                     const dados = salaJogadores[nome] || {};
                     const acertos = dados.acertos || 0, erros = dados.erros || 0;
+                    const semResposta = Number(dados.semResposta) || 0;
                     const total = acertos + erros;
                     return {
-                        nome, online: possuiSessaoAtiva(nome), acertos, erros,
+                        nome, online: possuiSessaoAtiva(nome), acertos, erros, semResposta,
                         aproveitamento: total ? Math.round(acertos / total * 100) : 0
                     };
                 });
@@ -2392,7 +2598,7 @@
                     linha.className = `ranking-item ${jogador.online ? '' : 'offline'} ${indice === 0 ? 'ranking-top-1' : indice === 1 ? 'ranking-top-2' : indice === 2 ? 'ranking-top-3' : ''}`;
                     linha.dataset.jogador = jogador.nome;
                     [indice === 0 ? '🥇' : indice === 1 ? '🥈' : indice === 2 ? '🥉' : `${indice + 1}º`,
-                        jogador.nome, jogador.online ? '🟢' : '🔴', String(jogador.acertos), String(jogador.erros)]
+                        jogador.nome, jogador.online ? '🟢' : '🔴', String(jogador.acertos), String(jogador.erros), String(jogador.semResposta)]
                         .forEach(texto => { const span = document.createElement('span'); span.textContent = texto; linha.appendChild(span); });
                     const status = document.createElement('span');
                     status.className = 'monitor-jogador-status';
@@ -2591,6 +2797,9 @@
             atualizarAlertasVisuais(gameState.ropePosition, gameState.gameMode === 'time_attack' ? gameState.timeLeft : null);
             document.getElementById('info-rodada').innerText = gameState.gameMode === 'placar' ? `Rodada ${gameState.placar?.rodadaAtual || 1} • Pergunta ${gameState.placar?.desempate ? 'de desempate' : (gameState.placar?.perguntaNaRodada || 1) + ' de 5'}` : "Rodada: " + gameState.round;
             document.getElementById('prof-quiz-container').classList.remove('oculto');
+            document.getElementById('prof-questao-indice').textContent = `QUESTÃO ${gameState.round || 1}`;
+            const fasesQuestao = {leitura:'Leitura',respondendo:'Votação aberta',calculando:'Apurando',feedback:'Resultado',intervalo_rodada:'Intervalo',ended:'Encerrada'};
+            document.getElementById('prof-fase-atual').textContent = gameState.paused ? 'Pausado' : (fasesQuestao[gameState.fase] || 'Aguardando');
             const statusColetivo = document.getElementById('prof-status-coletivo');
             const resultado = document.getElementById('prof-resultado-coletivo');
             const total = Object.keys(gameState.participantsRound || {}).length;
@@ -2605,12 +2814,17 @@
             if (gameState.currentQuestion) {
                 document.getElementById('prof-pergunta-texto').innerText = gameState.currentQuestion.q;
                 const lista = document.getElementById('prof-lista-opcoes');
-                if (lista.dataset.round != gameState.round) {
-                    lista.innerHTML = ''; lista.dataset.round = gameState.round;
+                const chaveQuestao = `${gameState.partidaId || 'solo'}:${gameState.round}`;
+                if (lista.dataset.round !== chaveQuestao) {
+                    lista.replaceChildren(); lista.dataset.round = chaveQuestao;
                     resultado.classList.add('oculto');
                     gameState.currentQuestion.alt.forEach((opt, idx) => {
-                        const sutilClass = (idx === gameState.currentQuestion.correta) ? 'gabarito-prof' : '';
-                        lista.innerHTML += `<button id="prof-opt-${idx}" class="btn-opcao ${sutilClass}">${opt}</button>`;
+                        const botao = document.createElement('button');
+                        botao.id = `prof-opt-${idx}`;
+                        botao.className = 'btn-opcao' + (idx === gameState.currentQuestion.correta ? ' gabarito-prof' : '');
+                        botao.dataset.letra = 'ABCD'[idx];
+                        botao.textContent = opt;
+                        lista.appendChild(botao);
                     });
                 }
                 if (gameState.fase === "feedback" && gameState.roundResult) {
