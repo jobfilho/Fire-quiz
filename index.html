@@ -526,6 +526,478 @@
     </style>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+<style id="fire-quiz-hq-redesign">
+/* FIRE QUIZ — HQ EDITION · Design layer only. Original game logic preserved.
+   Identity: contemporary comic-book panels, halftone, speech bubbles and ink outlines.
+   Fonts: Outfit + DM Sans — moderate weights for comfortable reading. */
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap');
+:root{
+  --hq-ink:#263344; --hq-deep:#172837; --hq-paper:#fffdf6; --hq-canvas:#f3f1e9;
+  --hq-muted:#627081; --hq-line:#263344; --hq-orange:#ff9160; --hq-gold:#f9d671;
+  --hq-blue:#a8dfea; --hq-pink:#ffb6bd; --hq-green:#b9e6c5;
+  --hq-font:'DM Sans',Arial,sans-serif; --hq-head:'Outfit','DM Sans',Arial,sans-serif;
+  --hq-shadow:5px 5px 0 rgba(38,51,68,.95);
+}
+*{box-sizing:border-box}
+html{background:var(--hq-canvas)}
+body{
+  font-family:var(--hq-font);font-weight:400;color:var(--hq-ink);
+  background-color:var(--hq-canvas);
+  background-image:
+    radial-gradient(circle at 11% 12%,rgba(249,214,113,.32),transparent 27%),
+    radial-gradient(circle at 92% 88%,rgba(168,223,234,.28),transparent 33%),
+    radial-gradient(rgba(38,51,68,.085) .95px,transparent 1px);
+  background-size:auto,auto,18px 18px;
+  background-position:center;
+  padding:clamp(12px,2vw,25px);line-height:1.45;
+}
+body.flash-acerto{background:#d5f6d9!important}
+body.flash-erro{background:#ffdbd6!important}
+body.resultado-vitoria{background:#e5f4dc!important}
+body.resultado-derrota{background:#f9e6e6!important}
+h1,h2,h3,h4,h5{font-family:var(--hq-head);letter-spacing:-.018em;font-weight:600}
+p{line-height:1.48}
+button,input,select,textarea{font-family:var(--hq-font);font-weight:500}
+button{border-radius:10px;font-weight:600;transition:transform .15s,box-shadow .15s,background-color .15s}
+button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid #4b98af;outline-offset:3px}
+button:active:not(:disabled){transform:translate(2px,2px)!important;box-shadow:1px 1px 0 var(--hq-ink)!important}
+.card{
+  max-width:1070px;background:var(--hq-paper);border:2px solid var(--hq-ink);
+  border-radius:19px;box-shadow:var(--hq-shadow);padding:clamp(18px,2.4vw,30px);
+}
+/* A light comic masthead, with micro-halftone in the corner rather than all over the text. */
+#tela-selecao{max-width:1140px;overflow:visible}
+.home-hero{
+  position:relative;overflow:hidden;text-align:left;min-height:215px;
+  border:2px solid var(--hq-ink);border-radius:15px; margin:0 0 24px;
+  background:linear-gradient(105deg,#ffd46d 0%,#ffc181 59%,#ffa49d 100%);color:var(--hq-ink);
+  padding:36px clamp(26px,5vw,58px);
+  box-shadow:5px 5px 0 var(--hq-ink);
+}
+.home-hero:before{
+  content:"";position:absolute;z-index:0;right:0;top:0;width:42%;height:100%;pointer-events:none;
+  background-image:radial-gradient(rgba(38,51,68,.26) 1.45px,transparent 1.55px);
+  background-size:11px 11px;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000);
+  mask-image:linear-gradient(90deg,transparent,#000);
+}
+.home-hero:after{
+  content:'POW!';position:absolute;right:clamp(22px,7vw,92px);top:48px;
+  width:152px;height:100px;display:grid;place-items:center;
+  clip-path:polygon(50% 0%,61% 26%,86% 8%,78% 36%,100% 44%,78% 57%,92% 84%,62% 74%,50% 100%,38% 74%,9% 90%,21% 58%,0 44%,23% 35%,12% 10%,39% 25%);
+  background:#fff8f2;color:var(--hq-ink);font:600 28px var(--hq-head);transform:rotate(12deg);
+  opacity:1;text-shadow:none;border:0;
+}
+.home-hero>*{position:relative;z-index:1}
+.home-kicker{font:600 12px var(--hq-font);letter-spacing:.16em;color:#674b35;margin:0 0 12px}
+.home-hero h1{font:600 clamp(46px,7.5vw,80px)/1.0 var(--hq-head);color:var(--hq-deep);letter-spacing:-.05em;margin:0}
+.home-subtitle{font:500 clamp(18px,2.6vw,25px) var(--hq-head);color:#314256;margin-top:16px}
+.home-actions{gap:19px;align-items:stretch}
+.home-card{
+  border:2px solid var(--hq-ink);border-radius:13px;background:#fffdf9;
+  padding:22px 20px 20px;text-align:left;box-shadow:4px 4px 0 var(--hq-ink);
+  transition:transform .16s,box-shadow .16s;
+}
+.home-card.solo{background:#f6fbff;border-color:var(--hq-ink)}
+.home-card:nth-child(2){background:#fff9e9}
+.home-card:nth-child(3){background:#f1f6f5}
+.home-card:hover{transform:translateY(-3px);box-shadow:5px 7px 0 var(--hq-ink);border-color:var(--hq-ink)}
+.home-card h3{font:600 24px var(--hq-head);color:var(--hq-ink);margin:0 0 10px}
+.home-card p{font-size:14px;line-height:1.5;color:#5b6570}
+.home-card .inputs-login{max-width:none}
+.home-card .inputs-login input{text-align:left}
+.btn-principal,.btn-secundario,.btn-como-jogar,.btn-confirmar,.btn-cfg,.btn-visao-professor,.btn-pausa,.btn-encerrar,.btn-proxima-rodada{
+  border:2px solid var(--hq-ink);box-shadow:3px 3px 0 var(--hq-ink);border-radius:9px;
+}
+.btn-principal{background:#ff996a;color:var(--hq-ink);font-weight:600}
+.btn-principal:hover{background:#ffa77c;box-shadow:4px 5px 0 var(--hq-ink)}
+.btn-secundario{background:#b2e2e7;color:var(--hq-ink)}
+.btn-como-jogar{background:#fff;color:var(--hq-ink);margin-top:26px}
+.btn-confirmar{background:#bde7b4;color:#203b29}
+.btn-encerrar{background:#ffc3be;color:#6d2526}
+.btn-pausa{background:#ffdd81;color:#333}
+.btn-cfg{background:#fffaf1;border-color:var(--hq-ink);font-weight:500}
+.btn-cfg.ativo,.btn-cfg.ativo-modo{background:#ffe19a;color:var(--hq-ink);border-color:var(--hq-ink);box-shadow:3px 3px 0 var(--hq-ink)}
+input[type=text],input[type=number],select,textarea{
+  background:#fff;border:2px solid #536073;color:#273548;border-radius:9px;
+  font-weight:500;box-shadow:none;
+}
+label{color:var(--hq-ink)}
+/* Professor: illustrated comic panels, but question is still the principal content. */
+#painel-professor.card,#painel-professor.monitoramento-ativo.card{
+  max-width:1510px;background:#fffdf7;border:2px solid var(--hq-ink);
+  padding:clamp(15px,2.1vw,28px);box-shadow:6px 6px 0 var(--hq-ink);
+}
+#painel-professor>h2,#painel-professor.monitoramento-ativo>h2{
+  color:var(--hq-ink);font:600 clamp(21px,2.25vw,29px) var(--hq-head);padding:4px 0 12px;
+}
+#painel-professor #display-sala-id{color:#c35432!important}
+.seletor-visao-professor,#painel-professor.monitoramento-ativo .seletor-visao-professor{
+  background:#f1f9fb;border:2px solid #a5bac3;border-radius:12px;
+  padding:10px;margin:8px 0 22px;gap:10px;
+}
+.seletor-visao-professor .rotulo-visao{color:#394d62;font-weight:600;font-size:13px}
+.btn-visao-professor{background:white;color:var(--hq-ink);border:2px solid #879ba8;border-radius:8px;padding:9px 14px}
+.btn-visao-professor[aria-pressed=true]{background:#ffcf74;color:var(--hq-ink);border-color:var(--hq-ink);box-shadow:3px 3px 0 var(--hq-ink)}
+#painel-professor.monitoramento-ativo .painel-grid{grid-template-columns:minmax(0,1.75fr) minmax(345px,.95fr);gap:20px}
+#painel-professor.monitoramento-ativo .prof-questao-destaque{
+  position:relative;border:2.5px solid var(--hq-ink);border-top:2.5px solid var(--hq-ink);
+  background:#fffdf5;border-radius:17px 17px 17px 6px;
+  box-shadow:5px 5px 0 var(--hq-ink);padding:clamp(20px,2vw,28px);
+  overflow:visible;margin:10px 7px 24px 0;
+}
+#painel-professor.monitoramento-ativo .prof-questao-destaque:before{
+  content:"";position:absolute;right:0;top:0;width:120px;height:92px;
+  pointer-events:none;opacity:.48;border-radius:0 15px 0 0;
+  background-image:radial-gradient(#f5ae87 1.5px,transparent 1.6px);background-size:10px 10px;
+  -webkit-mask-image:linear-gradient(110deg,transparent 10%,#000 100%);mask-image:linear-gradient(110deg,transparent 10%,#000 100%);
+}
+#painel-professor.monitoramento-ativo #prof-questao-indice{
+  display:inline-flex;background:#ffda87;padding:6px 11px;border:1.5px solid var(--hq-ink);border-radius:7px;
+  letter-spacing:.07em;font:600 12px var(--hq-head);color:var(--hq-ink);
+}
+#painel-professor.monitoramento-ativo #prof-fase-atual{
+  background:#caeaf2;color:#26445b;border:1.5px solid #7599a6;border-radius:7px;font-weight:600
+}
+#painel-professor.monitoramento-ativo #prof-pergunta-texto{
+  font:600 clamp(23px,2.05vw,32px)/1.25 var(--hq-head);color:var(--hq-deep);margin:14px 0 24px;
+  letter-spacing:-.02em;
+}
+#painel-professor.monitoramento-ativo #prof-lista-opcoes{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px;margin:0;
+}
+#painel-professor.monitoramento-ativo #prof-lista-opcoes .btn-opcao{
+  display:flex;align-items:center;gap:12px;min-height:83px;text-align:left;
+  padding:13px 15px;background:#edf7f8;color:#243447;
+  border:2px solid var(--hq-ink);border-radius:9px;
+  box-shadow:3px 3px 0 #53616f;font:500 clamp(15px,1.35vw,19px)/1.32 var(--hq-font);
+}
+#painel-professor.monitoramento-ativo #prof-lista-opcoes .btn-opcao:nth-child(2){background:#fff2d5}
+#painel-professor.monitoramento-ativo #prof-lista-opcoes .btn-opcao:nth-child(3){background:#f6eaf6}
+#painel-professor.monitoramento-ativo #prof-lista-opcoes .btn-opcao:nth-child(4){background:#e7f1e6}
+#painel-professor.monitoramento-ativo #prof-lista-opcoes .btn-opcao:before{
+  content:attr(data-letra);height:40px;flex:0 0 40px;display:grid;place-items:center;
+  border:2px solid var(--hq-ink);background:#fff;border-radius:7px;
+  font:600 19px var(--hq-head);color:var(--hq-ink);
+}
+#painel-professor.monitoramento-ativo #prof-lista-opcoes .btn-opcao.gabarito-prof{border-left:2px solid var(--hq-ink)!important}
+#painel-professor.monitoramento-ativo #prof-lista-opcoes .btn-opcao.correta,
+#painel-professor.monitoramento-ativo #prof-lista-opcoes .btn-opcao.gabarito-prof.correta{
+  background:#d7f2d8!important;color:#1b482a!important;border:2px solid #367149!important;
+  box-shadow:3px 3px 0 #367149!important;
+}
+#painel-professor.monitoramento-ativo #prof-lista-opcoes .btn-opcao.correta:before{background:#29834f;color:#fff}
+#painel-professor.monitoramento-ativo .ranking-container{
+  background:#fff;border:2px solid var(--hq-ink);border-radius:13px;
+  box-shadow:4px 4px 0 #7a8590;max-height:350px;padding:15px;
+}
+#painel-professor .ranking-container h4,#painel-professor #titulo-monitor{font:600 18px var(--hq-head);color:var(--hq-ink)}
+#painel-professor .ranking-item{
+  background:#fffdf8;color:var(--hq-ink);border-bottom:1px dashed #b4bdc4;
+  font-size:12px;font-weight:500;box-shadow:none;
+}
+#painel-professor .ranking-item.cabecalho{background:#ffedc4;border-radius:6px;font-weight:600}
+#painel-professor .ranking-item .monitor-jogador-status{font-weight:600}
+#painel-professor .ranking-item .btn-expulsar{box-shadow:none;background:#ffe2de;border:1px solid #bf8b8b;color:#752d31}
+#painel-professor .monitor-painel-rodada{
+  background:#fffaf0;border:2px solid var(--hq-ink);border-radius:13px;
+  box-shadow:4px 4px 0 #76828b;padding:16px;
+}
+#painel-professor .monitor-metricas{gap:8px}
+#painel-professor .monitor-metrica{
+  background:#fff;border:1.5px solid #b7c1c7;border-radius:8px;padding:12px 8px;
+}
+#painel-professor .monitor-metrica strong{font-family:var(--hq-head);font-weight:600}
+#painel-professor .monitor-meio>*,#painel-professor .monitor-resposta,#painel-professor .monitor-pontuacao{
+  background:#fff;border:1.5px solid #aabac2;border-radius:9px;
+}
+#painel-professor .monitor-alternativa-contagem{border-color:#b5bcc0;background:#fff}
+#painel-professor #btn-pausar-jogo{box-shadow:3px 3px 0 var(--hq-ink);background:#f9d979}
+#painel-professor .monitor-fogo-cabecalho{background:#fff5dd;border:2px solid var(--hq-ink);border-radius:12px;padding:12px;margin-top:20px}
+#painel-professor.monitoramento-ativo .trilho,#aluno-trilho-container .trilho{
+  background:linear-gradient(90deg,#c9ead8,#fce0a5 52%,#f6b4aa);border:2.5px solid var(--hq-ink);
+  border-radius:14px;box-shadow:inset 0 2px 0 #ffffff5c;
+}
+#painel-professor.monitoramento-ativo .marcador,#aluno-trilho-container .marcador{
+  background:#fffbf0;border:2px solid var(--hq-ink);border-radius:9px;box-shadow:2px 2px 0 var(--hq-ink)
+}
+.arena-lado.turma{background:#d4f0de;color:#32513e;border:1.5px solid #9dc9aa}
+.arena-lado.maquina{background:#ffe2dd;color:#7b3b3b;border:1.5px solid #ebafa7}
+.arena-objetivo{background:#fff0c2;color:#755327;border:1.5px dashed #dfa949}
+#painel-professor #configuracoes-professor{
+  background:#fffdf7;border:2px solid #bcc3cb;border-radius:12px;padding:clamp(14px,2.5vw,24px)
+}
+#painel-professor #configuracoes-professor h3{font-weight:600}
+#painel-professor #area-cadastro-perguntas{background:#fff4db!important;border:2px dashed #e9a45a!important}
+/* Presentation: a giant readable comic page. The question is the speech bubble. */
+.tela-apresentacao-professor{
+  background-color:#f4f1e8;
+  background-image:
+    radial-gradient(circle at 0% 100%,rgba(255,183,166,.24),transparent 28%),
+    radial-gradient(circle at 100% 0%,rgba(167,214,229,.32),transparent 32%),
+    radial-gradient(#32425618 1px,transparent 1px);
+  background-size:auto,auto,21px 21px;color:var(--hq-ink);
+  padding:clamp(16px,2.4vw,36px);
+}
+.conteudo-apresentacao-professor{
+  max-width:1440px;gap:clamp(12px,1.8vh,22px);width:100%;
+  background:#fffdf7;border:2.5px solid var(--hq-ink);
+  border-radius:18px;padding:clamp(16px,2vw,30px);
+  box-shadow:7px 7px 0 var(--hq-ink);position:relative;
+}
+.conteudo-apresentacao-professor:before{
+  content:"";position:absolute;top:0;right:0;width:130px;height:130px;pointer-events:none;
+  border-radius:0 17px 0 0;opacity:.55;
+  background-image:radial-gradient(#f69b80 1.6px,transparent 1.7px);background-size:11px 11px;
+  -webkit-mask-image:linear-gradient(220deg,#000,transparent 77%);mask-image:linear-gradient(220deg,#000,transparent 77%);
+}
+.apresentacao-cabecalho{gap:12px;position:relative;z-index:1;align-items:center}
+.apresentacao-marca{font:600 clamp(25px,2.55vw,36px) var(--hq-head);color:var(--hq-deep);letter-spacing:-.04em}
+.apresentacao-marca span{color:#df693d}
+.apresentacao-marca .apresentacao-chama{color:inherit}
+.apresentacao-indicador{
+  font:600 13px var(--hq-head);color:#6c4b2b;letter-spacing:.08em;
+  background:#ffdda0;border:1.5px solid var(--hq-ink);padding:6px 11px;border-radius:7px;
+}
+.apresentacao-pill{background:#eef5f4;color:#425267;border:1.5px solid #b5c6ce;border-radius:7px;font-weight:500}
+.apresentacao-voltar{
+  color:#35445a;background:#f7f7f3;border:1.5px solid #9ba8b3;
+  opacity:.82;border-radius:8px;font-size:12px;
+}
+.apresentacao-arena{
+  background:#fef6df;border:1.5px solid #8695a1;border-radius:11px;
+  padding:10px 17px 13px;box-shadow:none;
+}
+.apresentacao-fogo-topo,.apresentacao-fogo-topo span{color:#394c5c;font:600 12px var(--hq-font);letter-spacing:.04em}
+.apresentacao-trilho{
+  height:24px;margin-top:9px;background:linear-gradient(90deg,#bbebd7 0%,#fae4a7 52%,#f8b8b1 100%);
+  border:2px solid var(--hq-ink);border-radius:12px;box-shadow:none;
+}
+.apresentacao-marcador{
+  width:40px;height:40px;background:#fff;border:2px solid var(--hq-ink);
+  border-radius:9px;box-shadow:2px 2px 0 var(--hq-ink);color:#da643d;
+}
+.apresentacao-placar-modo{background:#fff4cd;border:1.5px solid #c6a66b;border-radius:10px}
+.apresentacao-placar-modo div{color:var(--hq-ink);font-weight:600}
+.apresentacao-placar-modo div strong{color:var(--hq-ink);font-weight:600}
+.apresentacao-versus{color:#da5a35}
+#apresentacao-rodadas-placar{color:#4b5e6b}
+.apresentacao-questao-area{gap:clamp(13px,1.8vh,21px);min-height:0}
+#apresentacao-pergunta{
+  position:relative;background:#f1f8f8;border:2.5px solid var(--hq-ink);
+  border-radius:17px 17px 17px 6px;color:var(--hq-deep);
+  font:600 clamp(26px,3.0vw,45px)/1.24 var(--hq-head);letter-spacing:-.027em;
+  padding:clamp(17px,2.6vw,32px) clamp(24px,3.5vw,50px);
+  box-shadow:5px 5px 0 var(--hq-ink);max-width:1200px;width:100%;margin:0 auto 9px;
+  text-wrap:balance;overflow-wrap:anywhere;
+}
+#apresentacao-pergunta:after{
+  content:"";position:absolute;left:40px;bottom:-17px;width:24px;height:24px;
+  background:#f1f8f8;border-left:2.5px solid var(--hq-ink);border-bottom:2.5px solid var(--hq-ink);
+  transform:skewY(-35deg);z-index:0;
+}
+.apresentacao-alternativas{gap:clamp(11px,1.3vw,18px);grid-template-columns:repeat(2,minmax(0,1fr))}
+.apresentacao-alternativa{
+  background:#fffdf6;border:2.2px solid var(--hq-ink);border-radius:11px;
+  box-shadow:4px 4px 0 rgba(38,51,68,.92);
+  min-height:clamp(81px,11vh,119px);padding:clamp(12px,1.35vw,18px);
+  color:var(--hq-ink);gap:15px;
+}
+.apresentacao-alternativa:nth-child(1){background:#e6f5f7}
+.apresentacao-alternativa:nth-child(2){background:#fff2d6}
+.apresentacao-alternativa:nth-child(3){background:#f5eaf2}
+.apresentacao-alternativa:nth-child(4){background:#e8f5ea}
+.apresentacao-letra{
+  background:#fff;color:var(--hq-ink);border:2px solid var(--hq-ink);
+  width:clamp(42px,3.2vw,50px);height:clamp(42px,3.2vw,50px);
+  font:600 clamp(20px,1.7vw,25px) var(--hq-head);border-radius:8px;
+}
+.apresentacao-texto{font:500 clamp(18px,1.75vw,27px)/1.25 var(--hq-font);color:var(--hq-ink)}
+.apresentacao-alternativa.resposta-correta{
+  background:#c6edc9!important;border:2.5px solid #387248!important;
+  box-shadow:5px 5px 0 #387248!important;
+}
+.apresentacao-alternativa.resposta-correta .apresentacao-letra{
+  background:#35844e!important;border-color:#286d40;color:#fff!important;
+}
+.apresentacao-alternativa.resposta-correta .apresentacao-texto{color:#1a502c!important;font-weight:600}
+.apresentacao-alternativa.resposta-correta::after{
+  content:'✓ CORRETA';background:#fff;color:#247448;border:1.5px solid #367b4e;
+  border-radius:8px;padding:6px;font:600 11px var(--hq-font);box-shadow:none;
+}
+.apresentacao-gabarito{
+  color:#295836;background:#ddf4dd;border:2px solid #4c915d;border-radius:10px;
+  box-shadow:3px 3px 0 #4c915d;padding:12px;text-align:center;
+}
+.apresentacao-gabarito-selo{font-weight:600;color:#1f6937}
+.apresentacao-gabarito strong{font-weight:600;color:#295836}
+.apresentacao-painel-metricas{grid-template-columns:repeat(6,minmax(0,1fr));gap:10px}
+.apresentacao-metrica{
+  background:#fff;border:1.5px solid #b6c1c6;border-radius:10px;
+  padding:12px 8px;box-shadow:none;
+}
+.apresentacao-metrica:nth-child(1){background:#e6f5e7}
+.apresentacao-metrica:nth-child(2){background:#fff0ed}
+.apresentacao-metrica:nth-child(5){background:#eef6f8}
+.apresentacao-metrica:nth-child(6){background:#fff4d3}
+.apresentacao-metrica span{color:#526273;font:500 clamp(10px,.85vw,12px) var(--hq-font);letter-spacing:.02em}
+.apresentacao-metrica strong,.apresentacao-metrica.tempo strong,.apresentacao-metrica.pontos strong{
+  font:600 clamp(20px,2vw,31px) var(--hq-head);color:var(--hq-ink);margin-top:5px;
+}
+.apresentacao-metrica:first-child strong{color:#32744a}
+.apresentacao-metrica:nth-child(2) strong{color:#b3574b}
+.apresentacao-metrica.tempo strong{color:#337b91}
+.apresentacao-metrica.pontos strong{color:#ae642c;font-size:clamp(18px,1.6vw,24px)}
+.apresentacao-rodape{color:#536273;font-weight:500;letter-spacing:0}
+#apresentacao-resumo{color:#a75734}
+/* Player: readable speech-bubble question, touch-friendly pastel answer panels. */
+#tela-aluno.card{
+  max-width:680px;background:#fffef9;border:2.5px solid var(--hq-ink);
+  border-radius:17px;box-shadow:6px 6px 0 var(--hq-ink);padding:clamp(14px,3.5vw,26px)
+}
+#cabecalho-aluno-gameplay{
+  flex-wrap:wrap;align-items:stretch;gap:10px;margin-bottom:12px;
+}
+#aluno-info-rodada{
+  background:#ffdd95;border:1.5px solid var(--hq-ink);border-radius:8px;
+  display:grid;align-items:center;padding:10px 14px;font:600 14px var(--hq-head)!important;
+}
+#tela-aluno .placar{gap:7px;flex-wrap:wrap;justify-content:flex-end;margin:0;font-weight:500}
+#tela-aluno .placar>span{
+  background:#f8fbf7;border:1.5px solid #8ea7b2;border-radius:8px;
+  padding:8px 10px;font:500 12px var(--hq-font);color:var(--hq-ink);
+}
+#tela-aluno .placar .placar-certas{background:#e0f4e6;color:#275f3a}
+#tela-aluno .placar .placar-erradas{background:#fff0ed;color:#a15347}
+#aluno-trilho-container{background:#fff8e4;border:1.5px solid #e7d8ac;border-radius:10px;padding:12px 10px;margin-bottom:11px!important}
+#tela-aluno .arena-legenda{margin:9px 0 0;gap:4px}
+#tela-aluno .arena-lado,#tela-aluno .arena-objetivo{font-size:10px;padding:8px 3px}
+#estado-conexao-aluno{
+  background:#e7f6ee;color:#2a633e;border:1.5px solid #8bc4a1;border-radius:8px;
+  padding:6px 11px;font-weight:500;font-size:12px;
+}
+#estado-conexao-aluno.desconectado{background:#fff1df;color:#a05a31;border-color:#d6a27c}
+#status-aluno{font:500 clamp(17px,3.8vw,22px) var(--hq-head);color:var(--hq-ink);margin:10px 0 13px}
+#container-quiz{margin-top:16px}
+#pergunta-texto{
+  position:relative;text-align:left;background:#f0f8fa;color:var(--hq-ink);
+  border:2.2px solid var(--hq-ink);border-radius:14px 14px 14px 5px;
+  box-shadow:4px 4px 0 var(--hq-ink);
+  font:600 clamp(21px,4.35vw,29px)/1.3 var(--hq-head);letter-spacing:-.025em;
+  padding:clamp(17px,4vw,25px);margin:9px 4px 22px 0;
+}
+#pergunta-texto:after{
+  content:"";position:absolute;left:26px;bottom:-11px;width:16px;height:16px;
+  background:#f0f8fa;border-left:2px solid var(--hq-ink);border-bottom:2px solid var(--hq-ink);
+  transform:skewY(-38deg)
+}
+#lista-opcoes{gap:12px}
+#lista-opcoes .btn-opcao{
+  background:#fffaf0;color:var(--hq-ink);text-align:left;
+  border:2px solid var(--hq-ink);border-radius:10px;
+  box-shadow:3px 3px 0 #697782;padding:16px 18px;
+  font:500 clamp(16px,3.9vw,19px)/1.4 var(--hq-font);
+  min-height:68px;position:relative;
+}
+#lista-opcoes .btn-opcao:nth-child(1){background:#e9f6fa}
+#lista-opcoes .btn-opcao:nth-child(2){background:#fff3d8}
+#lista-opcoes .btn-opcao:nth-child(3){background:#f8eafa}
+#lista-opcoes .btn-opcao:nth-child(4){background:#e8f7e9}
+#lista-opcoes .btn-opcao:hover:not(:disabled){transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--hq-ink);border-color:var(--hq-ink)}
+#lista-opcoes .btn-opcao.selecionada{background:#ffdaa0!important;color:var(--hq-ink)!important;border-color:var(--hq-ink)!important;box-shadow:3px 3px 0 var(--hq-ink)!important}
+#lista-opcoes .btn-opcao.correta{background:#bdeac8!important;color:#245d35!important;border-color:#318352!important;box-shadow:3px 3px 0 #318352!important;transform:none}
+#lista-opcoes .btn-opcao.errada{background:#ffd1d0!important;color:#753737!important;border-color:#be6a68!important;box-shadow:3px 3px 0 #be6a68!important}
+#lista-opcoes .btn-opcao:disabled:not(.selecionada):not(.correta):not(.errada){opacity:.8}
+#btn-confirmar-puxao{min-height:55px;border-radius:10px;background:#b7e4bc;color:#294636;font-size:17px}
+#tela-aluno .resultado-coletivo,#tela-aluno .status-coletivo,
+#prof-resultado-coletivo,#prof-status-coletivo{
+  background:#fff9e9;border:1.5px solid #c3b38c;color:var(--hq-ink);
+  border-radius:9px;padding:12px;font-weight:500
+}
+#tela-aluno .aviso-final,#painel-professor .aviso-final{font-weight:600}
+/* Other dialogs, podium, streaks and warnings remain on theme. */
+.placar-final{background:#fff4d9;border:2.5px solid var(--hq-ink);border-radius:12px;box-shadow:5px 5px 0 var(--hq-ink)}
+.placar-final h2{color:#9b572a;font:600 clamp(23px,4vw,31px) var(--hq-head)}
+.placar-final-subtitulo{color:#5c6572;font-weight:500}
+.podio-item{background:#fffdf8;border:2px solid var(--hq-ink);border-radius:9px;box-shadow:3px 3px 0 var(--hq-ink);font-weight:500}
+.podio-item.pos-1{border-color:#c9963f}
+.placar-arena{background:#fff9eb;border:2px solid var(--hq-ink);border-radius:10px;box-shadow:3px 3px 0 var(--hq-ink)}
+.placar-partida-titulo,.placar-lado,.rodada-chip{font-weight:600}
+.modal-conteudo,.modal-ajuda-conteudo,.confirmacao-conteudo{background:#fffdf8;color:var(--hq-ink);border:2px solid var(--hq-ink);border-radius:13px;box-shadow:6px 6px 0 var(--hq-ink)}
+.modal-topo{background:#ffe3aa;color:var(--hq-ink)}
+.ajuda-card{background:#f6fbfa;border:1.5px solid #aab6b9;color:var(--hq-ink)}
+.confirmacao-conteudo h3{color:var(--hq-ink)}
+/* Retro editorial strip: small accent, not large black or orange blocks. */
+body::before{content:"";position:fixed;z-index:-1;top:0;left:0;right:0;height:8px;
+ background:repeating-linear-gradient(105deg,#f8b17e 0px,#f8b17e 28px,#f3f1e9 28px,#f3f1e9 36px,#a5dfe8 36px,#a5dfe8 66px,#f3f1e9 66px,#f3f1e9 74px);
+ pointer-events:none}
+@media(max-width:1140px){
+ #painel-professor.monitoramento-ativo .painel-grid{grid-template-columns:1fr}
+ #painel-professor.monitoramento-ativo .ranking-container{max-height:340px}
+}
+@media(max-width:820px){
+ .home-actions{grid-template-columns:1fr}
+ .home-hero{padding:30px 26px;min-height:175px}
+ .home-hero:after{right:6px;top:35px;width:120px;height:84px;font-size:22px;opacity:.78}
+ #painel-professor.monitoramento-ativo .monitor-metricas{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .apresentacao-painel-metricas{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .apresentacao-questao-area{flex:none}
+}
+@media(max-width:650px){
+ body{padding:11px 8px}
+ .card,#painel-professor.card{margin:10px auto;padding:14px}
+ .home-hero h1{font-size:46px}
+ .home-hero:after{opacity:.4}
+ #painel-professor.monitoramento-ativo #prof-lista-opcoes{grid-template-columns:1fr}
+ #painel-professor.monitoramento-ativo #prof-lista-opcoes .btn-opcao{min-height:72px}
+ #tela-aluno .placar{justify-content:space-between;flex:1 1 100%}
+ #tela-aluno .placar>span{flex:1 1 28%;font-size:11px;padding:6px}
+ .tela-apresentacao-professor{padding:12px 8px}
+ .conteudo-apresentacao-professor{padding:14px 13px;gap:12px}
+ .apresentacao-alternativas{grid-template-columns:1fr}
+ .apresentacao-alternativa{min-height:65px}
+ #apresentacao-pergunta{font-size:clamp(22px,5.6vw,32px)}
+ .apresentacao-texto{font-size:clamp(16px,4.2vw,21px)}
+ .apresentacao-painel-metricas{gap:6px}
+ .apresentacao-metrica{padding:8px 5px}
+ .apresentacao-metrica strong{font-size:20px}
+}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
+/* Consistent lobby ranking before the game has started. */
+#painel-professor .ranking-container{
+  background:#fffef9;border:2px solid #aab7c0;border-radius:12px;
+  box-shadow:none;padding:14px;
+}
+#painel-professor .ranking-item.cabecalho{background:#ffedc7;color:var(--hq-ink)}
+/* Keep the entire public display in-frame on a standard 1280×720 projector. */
+@media (min-width:901px) and (max-height:760px){
+  .tela-apresentacao-professor{padding:10px}
+  .conteudo-apresentacao-professor{padding:14px 22px;gap:10px}
+  .apresentacao-arena{padding:8px 14px 10px}
+  #apresentacao-pergunta{padding:15px 26px;margin-bottom:5px}
+  .apresentacao-alternativa{min-height:75px;padding:10px 13px}
+  .apresentacao-metrica{padding:8px 6px}
+  .apresentacao-metrica strong{margin-top:2px}
+}
+
+
+/* Fire Quiz HQ 11.2.2026 — gabarito visível exclusivamente no monitoramento. */
+#painel-professor.monitoramento-ativo #prof-lista-opcoes .btn-opcao.gabarito-prof {
+  position:relative; background:#17643d!important; color:#fff!important;
+  border:3px solid #103c29!important; box-shadow:4px 4px 0 #103c29!important;
+  font-weight:700; opacity:1; padding-top:30px; transform:none!important;
+}
+#painel-professor.monitoramento-ativo #prof-lista-opcoes .btn-opcao.gabarito-prof::before {
+  background:#fff!important; color:#17643d!important; border-color:#103c29!important;
+}
+#painel-professor.monitoramento-ativo #prof-lista-opcoes .btn-opcao.gabarito-prof::after {
+  content:'✓ CORRETA'; position:absolute; top:5px; right:8px;
+  background:#e0f8b5; color:#103c29; border:1px solid #103c29;
+  border-radius:5px; padding:2px 7px; font:700 11px/1.2 var(--hq-font);
+  letter-spacing:.04em;
+}
+</style>
 </head>
 <body>
 
@@ -658,6 +1130,7 @@
                 <div id="configuracoes-professor">
                     <label><strong>Escolha o Banco de Questões:</strong></label>
                     <select id="seletor-banco" onchange="alternarVisibilidadeBanco()">
+                        <option value="Artes">🎨 Artes</option>
                         <option value="Biologia">🧬 Biologia</option>
                         <option value="Filosofia">🦉 Filosofia</option>
                         <option value="Geografia">🌍 Geografia</option>
@@ -900,7 +1373,7 @@
     <div id="feedback-flutuante" class="feedback-flutuante" aria-live="assertive"></div>
 
     <footer style="text-align: center; padding: 20px; color: #666; font-weight: bold; font-size: 14px; margin-top: 20px; line-height: 1.6;">
-        <div>Versão atual: 11.1.26</div>
+        <div>Versão atual: 11.2.2026</div>
         <div>Desenvolvido pelo Prof. Job Inácio</div>
     </footer>
 
@@ -1005,9 +1478,51 @@
         });
 
         // ---------------------------------------------------------
-        // INSIRA AQUI O SEU ACERVO COMPLETO DE 350 QUESTÕES
+        // BANCO NATIVO DE QUESTÕES — 8 DISCIPLINAS, INCLUINDO ARTES
         // ---------------------------------------------------------
         const bancosNativos = {
+            Artes: [
+                {"q": "Qual característica é marcante na pintura impressionista?","alt": ["A representação de cenas religiosas idealizadas","A observação de mudanças na luz, na sombra e na cor","O uso exclusivo de contornos rígidos e precisos","A construção de figuras por planos geométricos"],"correta": 1},
+                {"q": "Qual pintor francês é um dos principais nomes do Impressionismo?","alt": ["Henri Matisse","Eugène Delacroix","Georges Seurat","Claude Monet"],"correta": 3},
+                {"q": "Quem pintou a obra Impressão, nascer do sol, que ajudou a nomear o movimento?","alt": ["Claude Monet","Pierre-Auguste Renoir","Edgar Degas","Camille Pissarro"],"correta": 0},
+                {"q": "O que significa a prática de pintar ao ar livre, comum entre impressionistas?","alt": ["Reproduzir de memória paisagens vistas em museus","Aplicar camadas de tinta apenas em ateliês fechados","Observar diretamente as mudanças da luz na paisagem","Desenhar paisagens usando só referências escritas"],"correta": 2},
+                {"q": "Por que Monet pintou a Catedral de Rouen em diferentes momentos?","alt": ["Para documentar alterações na planta da construção","Para comparar projetos de igrejas de épocas diferentes","Para investigar a variação da luz sobre o mesmo motivo","Para registrar somente os detalhes de sua estrutura"],"correta": 2},
+                {"q": "Como as pinturas impressionistas diferiam de muitos padrões acadêmicos da época?","alt": ["Valorizavam cenas cotidianas e efeitos momentâneos","Retomavam regras fixas da pintura histórica oficial","Rejeitavam paisagens e retratos da vida moderna","Preferiam composições religiosas idealizadas"],"correta": 0},
+                {"q": "A expressão Impressionismo foi associada inicialmente a qual obra?","alt": ["A noite estrelada, de Vincent van Gogh","O baile no Moulin de la Galette, de Renoir","A persistência da memória, de Salvador Dalí","Impressão, nascer do sol, de Claude Monet"],"correta": 3},
+                {"q": "Como as pinceladas costumam aparecer em muitas obras impressionistas?","alt": ["Uniformes e ocultas sob superfícies polidas","Visíveis e rápidas, sugerindo luz e movimento","Geométricas e rígidas, como em projetos técnicos","Delimitadas por contornos pretos muito precisos"],"correta": 1},
+                {"q": "O Expressionismo buscava enfatizar principalmente o quê?","alt": ["A reprodução exata das proporções naturais","A estabilidade das regras da arte acadêmica","O registro neutro de cenas históricas","Emoções e percepções subjetivas do artista"],"correta": 3},
+                {"q": "Qual tema ganhou destaque no Futurismo italiano?","alt": ["O retorno às paisagens medievais idealizadas","A velocidade e o dinamismo da vida moderna","A serenidade das cenas mitológicas antigas","A imobilidade das composições clássicas"],"correta": 1},
+                {"q": "Qual atitude está relacionada ao movimento dadaísta?","alt": ["Preservar as normas artísticas sem alterações","Evitar críticas às instituições culturais","Questionar a ideia tradicional do que é arte","Defender só pinturas com perspectiva clássica"],"correta": 2},
+                {"q": "O Surrealismo investigava especialmente qual universo?","alt": ["Sonhos, imaginação e processos inconscientes","Cálculos geométricos de projetos arquitetônicos","Regras de composição da pintura renascentista","Medições objetivas de paisagens urbanas"],"correta": 0},
+                {"q": "Qual característica se associa ao Fauvismo?","alt": ["O uso exclusivo de tonalidades cinzentas","O uso de cores intensas e pouco naturalistas","A proibição de contrastes cromáticos fortes","O desenho técnico baseado em escalas exatas"],"correta": 1},
+                {"q": "O que aproximava diferentes vanguardas europeias do início do século XX?","alt": ["A adoção de uma única técnica em todos os grupos","A recusa de experimentar materiais e linguagens","A defesa integral da pintura acadêmica vigente","A ruptura com convenções artísticas tradicionais"],"correta": 3},
+                {"q": "Qual artista é associado ao Surrealismo?","alt": ["Salvador Dalí","Édouard Manet","Claude Monet","Georges Braque"],"correta": 0},
+                {"q": "A obra Fonte, de Marcel Duchamp, tornou-se conhecida por qual procedimento?","alt": ["Representar o objeto em uma pintura de paisagem","Esculpir uma figura humana em mármore clássico","Apresentar um objeto cotidiano como obra de arte","Reproduzir uma imagem com perspectiva tradicional"],"correta": 2},
+                {"q": "Quais artistas foram fundamentais na criação do Cubismo?","alt": ["Claude Monet e Edgar Degas","Salvador Dalí e René Magritte","Pablo Picasso e Georges Braque","Henri Matisse e André Derain"],"correta": 2},
+                {"q": "Qual recurso visual caracteriza muitas obras cubistas?","alt": ["Vários pontos de vista sobre o mesmo objeto","Registrar um único instante de luz natural","Criar imagens usando apenas efeitos de sombra","Manter sempre um ponto de fuga central"],"correta": 0},
+                {"q": "Na pintura cubista, objetos frequentemente são representados por meio de quê?","alt": ["Perspectiva linear e contornos naturalistas","Pinceladas leves e iluminação atmosférica","Figuras idealizadas em poses mitológicas","Planos fragmentados e formas geométricas"],"correta": 3},
+                {"q": "O Cubismo Analítico costuma apresentar qual característica?","alt": ["Colagens amplas com recortes muito coloridos","Fragmentação de formas em cores discretas","Cores puras aplicadas em áreas planas regulares","Imagens oníricas com associações inesperadas"],"correta": 1},
+                {"q": "Qual procedimento se tornou importante no Cubismo Sintético?","alt": ["Incorporar recortes de papel e outros materiais","Eliminar todos os materiais além da tinta a óleo","Reproduzir somente cenas vistas pela janela","Manter as figuras com anatomia clássica exata"],"correta": 0},
+                {"q": "Qual artista criou Les Demoiselles d’Avignon, obra precursora do Cubismo?","alt": ["Georges Seurat","Claude Monet","Pablo Picasso","Wassily Kandinsky"],"correta": 2},
+                {"q": "O que o Cubismo questionou na perspectiva tradicional da pintura?","alt": ["A possibilidade de representar figuras humanas","A visão do objeto a partir de um único ângulo","O uso de tinta e pincel em superfícies planas","A presença de objetos em naturezas-mortas"],"correta": 1},
+                {"q": "Quais objetos são comuns em naturezas-mortas cubistas?","alt": ["Máquinas industriais, trens e automóveis","Paisagens costeiras, nuvens e reflexos","Personagens mitológicos, palácios e templos","Instrumentos musicais, garrafas e jornais"],"correta": 3},
+                {"q": "O que caracteriza uma obra não figurativa?","alt": ["Não depender da representação de objetos reconhecíveis","Reproduzir objetos de maneira fiel à aparência real","Representar obrigatoriamente personagens históricos","Descrever paisagens com perspectiva tradicional"],"correta": 0},
+                {"q": "Qual artista é considerado pioneiro da arte abstrata?","alt": ["Pierre-Auguste Renoir","Jacques-Louis David","Wassily Kandinsky","Gustave Courbet"],"correta": 2},
+                {"q": "Que elementos aparecem com frequência nas obras de Piet Mondrian?","alt": ["Cenas religiosas com luz dramática","Linhas retas e campos de cores primárias","Paisagens nebulosas feitas ao ar livre","Figuras humanas em movimentos velozes"],"correta": 1},
+                {"q": "O abstracionismo lírico costuma valorizar o quê?","alt": ["Cálculos rígidos de proporção arquitetônica","Cópias fiéis de rostos e objetos cotidianos","Ilustrações realistas de episódios históricos","Gestos, ritmos e expressividade das formas"],"correta": 3},
+                {"q": "Qual é uma diferença entre arte figurativa e arte abstrata não figurativa?","alt": ["A figurativa utiliza somente cores primárias puras","A não figurativa exige sempre desenhos geométricos","A não figurativa representa apenas cenas urbanas","A figurativa representa elementos reconhecíveis"],"correta": 3},
+                {"q": "A obra Composição VIII é associada a qual artista?","alt": ["Mondrian","Kandinsky","Paul Klee","Malevich"],"correta": 1},
+                {"q": "Na arte abstrata, cores e linhas podem ser usadas principalmente para quê?","alt": ["Reproduzir sempre a aparência real dos materiais","Explicar obrigatoriamente um acontecimento histórico","Compor imagens sem representar seres ou objetos","Registrar apenas a profundidade de paisagens naturais"],"correta": 2},
+                {"q": "Qual característica é típica do abstracionismo geométrico?","alt": ["Organização visual com linhas e formas geométricas","Representação de sonhos por figuras reconhecíveis","Registro de cenas urbanas em perspectiva linear","Pintura de paisagens com efeitos naturais de luz"],"correta": 0},
+                {"q": "Em qual local aconteceu a Semana de Arte Moderna de 1922?","alt": ["No Museu Nacional de Belas Artes, no Rio","No Theatro Municipal, na cidade de São Paulo","No Palácio das Artes de Belo Horizonte","Na Pinacoteca do Estado de São Paulo"],"correta": 1},
+                {"q": "Qual escritor foi um dos participantes da Semana de Arte Moderna?","alt": ["Machado de Assis","José de Alencar","Olavo Bilac","Mário de Andrade"],"correta": 3},
+                {"q": "Qual artista teve uma exposição de 1917 considerada marco do modernismo brasileiro?","alt": ["Tarsila do Amaral","Candido Portinari","Anita Malfatti","Lygia Clark"],"correta": 2},
+                {"q": "Qual obra de Tarsila do Amaral se tornou símbolo da Antropofagia?","alt": ["Abaporu","Operários","A Negra","O Mamoeiro"],"correta": 0},
+                {"q": "Quem escreveu o Manifesto Antropófago, publicado em 1928?","alt": ["Mário de Andrade","Menotti Del Picchia","Oswald de Andrade","Manuel Bandeira"],"correta": 2},
+                {"q": "Qual era uma proposta do movimento Pau-Brasil?","alt": ["Valorizar temas e expressões culturais brasileiras","Copiar os modelos europeus sem nenhuma mudança","Evitar referências ao cotidiano e à cultura local","Defender o retorno exclusivo às formas acadêmicas"],"correta": 0},
+                {"q": "Qual tema aparece em muitas obras de Di Cavalcanti?","alt": ["Somente cenas da mitologia grega e romana","Exclusivamente retratos da realeza europeia","Apenas paisagens de cidades medievais","Personagens da vida popular brasileira"],"correta": 3},
+                {"q": "Qual objetivo esteve presente entre artistas modernistas brasileiros?","alt": ["Restabelecer regras rígidas da pintura acadêmica","Renovar a arte e valorizar a cultura do Brasil","Substituir a produção local por cópias europeias","Eliminar referências às culturas populares brasileiras"],"correta": 1}
+            ],
             Biologia: [
                 {"q": "Qual organela celular é responsável pela maior parte da produção de ATP?","alt": ["Ribossomo","Mitocôndria","Lisossomo","Complexo golgiense"],"correta": 1},
                 {"q": "Qual pigmento capta principalmente a energia luminosa na fotossíntese?","alt": ["Clorofila","Hemoglobina","Queratina","Insulina"],"correta": 0},
@@ -1732,7 +2247,7 @@
                     if (partes.length === 6) tempPerguntas.push({ q: partes[0].trim(), alt: [partes[1].trim(), partes[2].trim(), partes[3].trim(), partes[4].trim()], correta: parseInt(partes[5].trim()) });
                 });
             } else if (escolhaBanco === 'ConhecimentosGerais') {
-                const materias = ["Biologia", "Geografia", "Historia", "Matematica", "Portugues", "Quimica", "Filosofia"];
+                const materias = ["Artes", "Biologia", "Geografia", "Historia", "Matematica", "Portugues", "Quimica", "Filosofia"];
                 materias.forEach(mat => {
                     if(bancosNativos[mat]) tempPerguntas = tempPerguntas.concat(PatternShuffle(JSON.parse(JSON.stringify(bancosNativos[mat]))).slice(0, 10));
                 });
